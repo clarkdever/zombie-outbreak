@@ -19,7 +19,7 @@ Alternatives considered:
 
 The MVP is a handcrafted 30x30 isometric neighborhood with exterior-only houses, streets, trees, grass, cars, fenced yards, and a few house variants. Buildings do not have interiors yet. The map wraps at the edges with a hard teleport: north to south, south to north, east to west, and west to east.
 
-The game starts from a preset-first modal with advanced tuning controls. The simulation ends when all zombies are killed, or when no living uninfected humans or dogs remain.
+The game starts from a preset-first modal with advanced tuning controls. The simulation ends when all zombies are killed, or when no living uninfected humans remain. Dogs can survive or turn, but they do not determine the win/loss condition.
 
 ## World And Movement
 
@@ -85,7 +85,7 @@ Names:
 
 - Humans and dogs use curated name lists.
 - Human survivor groups use templated funny names, such as "The <Adjective> <Noun>", "<Street Name> Watch", or "The Last <Plural Noun>".
-- Dogs inherit the affiliation name of their owner.
+- Dogs inherit their owner's character name as their affiliation label.
 - Zombies are named "Undead <former name>" and have the affiliation "The Horde".
 
 ## Perception
@@ -176,9 +176,9 @@ If the owner dies, a dog may:
 - Stay near the body.
 - Attach to the next living human it sees.
 - Be killed by a horde.
-- Be turned if the former owner reanimates nearby.
+- Be turned if their former owner reanimates and bites them.
 
-Dogs have HP, infection state, turning timer, and meat meter. Dogs inherit their owner's affiliation name.
+Dogs have HP, infection state, turning timer, and meat meter. Dogs inherit their owner's character name as their affiliation label.
 
 Dogs have wider vision cones and larger hearing radii than humans. Dog zombies retain diminished versions of those sensory advantages.
 
@@ -209,7 +209,7 @@ Downed infected bodies have:
 
 If the turning timer finishes before the meat meter reaches zero, the body reanimates as a zombie. If feeding depletes the meat meter first, the body becomes a skeleton and never reanimates.
 
-Zombies feed for a behavioral delay. Any zombie that sees a downed body can join feeding. Feeding distracts zombies from pursuit but emits noise, which can attract more zombies.
+Zombies feed from downed bodies using a per-body hunger cap. Each zombie will only consume up to 20% of a body's original meat meter, then loses interest in that body. While feeding, a zombie deals one bite of meat damage per second until it reaches that 20% cap, the body reanimates, or the body becomes a skeleton. Any zombie that sees a downed body can join feeding if it has not already hit its hunger cap for that body. Feeding distracts zombies from pursuit but emits noise, which can attract more zombies.
 
 ## UI And Overlays
 
@@ -229,23 +229,23 @@ Debug UI:
 
 ## End Modal
 
-The game ends when all zombies are killed, or when no living uninfected humans or dogs remain. A survivor loss can happen through reanimation, death, or skeletonization.
+The game ends when all zombies are killed, or when no living uninfected humans remain. A human-loss ending can happen through human reanimation, death, or skeletonization. Uninfected dogs do not keep the simulation alive after all humans are gone.
 
 The end modal shows:
 
 - Winner/outcome
 - Elapsed time
-- Survivors
+- Human survivors
+- Dog survivors
 - Zombies killed
 - Humans turned
 - Dogs turned
 - Skeletons created
-- First infected
-- Loudest event
-- Biggest horde
-- Best shot
-- Longest survivor
-- Notable dog moment if inferable
+- First infected character
+- Hungriest zombie: character name plus total meat eaten
+- Bestest doggo: dog name plus highest useful contribution, measured by humans alerted or zombie damage dealt
+- Best shot: armed human name plus zombie kills, if any guns were used
+- Most dramatic survivor: longest-living human name, if the zombies win
 - Simple bar chart or histogram of zombie population over time
 
 ## Visual Direction
@@ -269,6 +269,15 @@ Later generate:
 - Cars, trees, houses, gates, and props
 
 Use palette swaps to create variety in humans and zombies. Keep animation sheets consistent in camera angle, scale, frame count, anchor point, and lighting.
+
+Animation requirements:
+
+- Adult human male and female: idle, walk, run, panic/flee, talk/warn, aim, shoot, melee/struggle, bitten/hurt, downed/dying, infected stagger, turning, corpse.
+- Human zombie male and female: idle/shuffle, walk/chase, lunge/bite, feed, growl/alert, hit reaction, death/downed.
+- Dog: idle, walk/trot, run, bark, follow/heel, flee, bite/attack, hurt, downed/dying, infected stagger, turning, corpse.
+- Dog zombie: idle, shuffle/trot, chase, lunge/bite, feed, growl/snarl, hit reaction, death/downed.
+- Corpse and skeleton states: fresh downed body, partially eaten body, mostly eaten body, skeleton. Partially eaten zombie movement penalties and dedicated damaged zombie sprites remain a later backlog item.
+- Environment tiles and props do not need animation in the MVP, except optional simple effects for muzzle flash, bark/sound indicator, bite hit, and alert markers.
 
 ## Future Backlog
 
