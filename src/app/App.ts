@@ -35,9 +35,7 @@ export class App {
         return this.speed;
       },
       onStart: (preset, overrides) => {
-        this.sim = new Simulation(resolveScenarioOptions(preset, overrides, Date.now()));
-        this.visualPositions = new VisualPositionStore();
-        this.selectedId = this.sim.entities[0]?.id;
+        this.startSimulation(preset, overrides);
       }
     });
     this.root.append(this.canvas, this.hud);
@@ -85,8 +83,23 @@ export class App {
     }
     this.selectedId ??= this.sim.entities[0]?.id;
     this.renderer.render(this.sim.map, visualEntities, this.sim.bullets, this.camera, this.selectedId, this.debug);
-    updateHud(this.hud, this.sim, this.speed, this.selectedId);
+    updateHud(this.hud, this.sim, this.speed, this.selectedId, () => this.resetToSetup());
     requestAnimationFrame((nextTime) => this.frame(nextTime));
+  }
+
+  private startSimulation(preset: string, overrides: Parameters<typeof resolveScenarioOptions>[1]): void {
+    this.sim = new Simulation(resolveScenarioOptions(preset, overrides, Date.now()));
+    this.visualPositions = new VisualPositionStore();
+    this.selectedId = this.sim.entities[0]?.id;
+    this.speed = this.lastNonZeroSpeed;
+  }
+
+  private resetToSetup(): void {
+    this.sim = new Simulation({ humans: 10, dogs: 2, zombies: 3, armedPercent: 25, seed: Date.now() });
+    this.visualPositions = new VisualPositionStore();
+    this.selectedId = undefined;
+    this.speed = 0;
+    this.controlledMoveAccumulator = 0.18;
   }
 
   private resize(): void {

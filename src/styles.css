@@ -253,6 +253,17 @@ body,
   gap: 16px;
 }
 
+.end-modal button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 14px;
+  border: 1px solid rgba(241, 244, 234, 0.2);
+  border-radius: 6px;
+  background: #202620;
+  color: #f1f4ea;
+  font: inherit;
+}
+
 .histogram {
   display: flex;
   align-items: end;

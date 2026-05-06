@@ -89,7 +89,7 @@ export function createHud(options: HudOptions): HTMLElement {
   return hud;
 }
 
-export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, selectedId?: string): void {
+export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, selectedId?: string, onRestart?: () => void): void {
   const selected = sim.entities.find((entity) => entity.id === selectedId);
   hud.querySelector("[data-name]")!.textContent = selected?.name ?? "No selection";
   hud.querySelector("[data-affiliation]")!.textContent = selected?.affiliation ?? "";
@@ -123,7 +123,18 @@ export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, sele
       bar.style.height = `${Math.max(4, (sample / max) * 80)}px`;
       histogram.append(bar);
     }
-    end.append(title, reason, list, histogram);
+    const restart = document.createElement("button");
+    restart.type = "button";
+    restart.textContent = "Run another sim";
+    restart.addEventListener("click", () => {
+      end.hidden = true;
+      end.replaceChildren();
+      hud.querySelector<HTMLElement>("[data-start]")!.hidden = false;
+      hud.classList.add("hud--setup");
+      hud.classList.remove("hud--running", "hud--possessing");
+      onRestart?.();
+    });
+    end.append(title, reason, list, histogram, restart);
   }
 }
 
