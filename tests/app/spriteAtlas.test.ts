@@ -66,4 +66,17 @@ describe("sprite atlas keys", () => {
     expect(keys).toContain(spriteAtlasKey("dog", "up"));
     expect(keys).toContain(spriteAtlasKey("dog", "right"));
   });
+
+  it("publishes generated zombie-dog direction sheets", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+
+    expect(keys).toContain(spriteAtlasKey("zombieDog", "down"));
+    expect(keys).toContain(spriteAtlasKey("zombieDog", "left"));
+    expect(keys).toContain(spriteAtlasKey("zombieDog", "up"));
+    expect(keys).toContain(spriteAtlasKey("zombieDog", "right"));
+  });
 });

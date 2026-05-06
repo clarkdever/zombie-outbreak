@@ -127,6 +127,26 @@
       "src": "/assets/sprites/generated/dog-right.png"
     },
     {
+      "id": "zombieDog",
+      "direction": "down",
+      "src": "/assets/sprites/generated/zombie-dog-down.png"
+    },
+    {
+      "id": "zombieDog",
+      "direction": "left",
+      "src": "/assets/sprites/generated/zombie-dog-left.png"
+    },
+    {
+      "id": "zombieDog",
+      "direction": "up",
+      "src": "/assets/sprites/generated/zombie-dog-up.png"
+    },
+    {
+      "id": "zombieDog",
+      "direction": "right",
+      "src": "/assets/sprites/generated/zombie-dog-right.png"
+    },
+    {
       "id": "zombieHuman",
       "direction": "down",
       "animation": "idle",
