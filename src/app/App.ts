@@ -82,7 +82,7 @@ export class App {
       }
     }
     this.selectedId ??= this.sim.entities[0]?.id;
-    this.renderer.render(this.sim.map, visualEntities, this.sim.bullets, this.camera, this.selectedId, this.debug);
+    this.renderer.render(this.sim.map, visualEntities, this.sim.bullets, this.camera, this.selectedId, this.debug, time / 1000);
     updateHud(this.hud, this.sim, this.speed, this.selectedId, () => this.resetToSetup());
     requestAnimationFrame((nextTime) => this.frame(nextTime));
   }

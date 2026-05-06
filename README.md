@@ -34,6 +34,7 @@ The first build is intentionally graybox and includes:
 - Dog ownership and barking behavior
 - Possession, keyboard camera controls, Q/E turning, Space-to-shoot controls, and time controls
 - Visible bullet traces with collision damage for zombies, humans, and dogs
+- Code-native pixel sprite animations for humans, dogs, zombies, downed bodies, skeletons, shooting, fleeing, attacking, and feeding
 - Debug overlays for selected or all entities
 - End modal with name-based facts and a zombie-over-time histogram
 
@@ -120,6 +121,7 @@ npm test
 The backlog is full of good trouble:
 
 - GPT-image-2 sprite sheets and palette swaps
+- Replace code-native sprites with generated sprite sheets once the animation states and anchors feel right
 - Carcassonne-style procedural neighborhood macro-tiles
 - Seamless edge wrapping
 - Individual bravery, panic, accuracy, hearing, speed, and dog temperament

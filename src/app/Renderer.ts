@@ -1,4 +1,5 @@
-import { entityColor, entityRingColor } from "./entityPresentation";
+import { entityRingColor } from "./entityPresentation";
+import { drawEntitySprite } from "./sprites";
 import type { VisualEntity } from "./visualPositions";
 import { visionRadiansFor, visionRangeFor } from "../sim/perception";
 import type { Entity, GameMap, TilePos, Vec2 } from "../sim/types";
@@ -31,7 +32,8 @@ export class Renderer {
     bullets: BulletTrace[],
     camera: Camera,
     selectedId?: string,
-    debug = false
+    debug = false,
+    timeSeconds = 0
   ): void {
     this.ctx.fillStyle = "#151815";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -41,7 +43,7 @@ export class Renderer {
       }
     }
     for (const entity of entities) {
-      this.drawEntity(entity, camera, entity.id === selectedId, debug);
+      this.drawEntity(entity, camera, entity.id === selectedId, debug, timeSeconds);
     }
     for (const bullet of bullets) {
       this.drawBullet(bullet, camera);
@@ -80,10 +82,9 @@ export class Renderer {
     this.ctx.stroke();
   }
 
-  private drawEntity(entity: RenderableEntity, camera: Camera, selected: boolean, debug: boolean): void {
+  private drawEntity(entity: RenderableEntity, camera: Camera, selected: boolean, debug: boolean, timeSeconds: number): void {
     const tile = renderTileFor(entity);
     const p = isoToScreen(tile.x, tile.y, camera, this.canvas);
-    const color = entityColor(entity);
     if (selected || debug) {
       this.ctx.strokeStyle = senseStrokeColor(entity, "hearing");
       this.ctx.lineWidth = debug ? 2 : 1.5;
@@ -107,10 +108,7 @@ export class Renderer {
       this.ctx.arc(p.x, p.y - 14, 13, 0, Math.PI * 2);
       this.ctx.stroke();
     }
-    this.ctx.fillStyle = color;
-    this.ctx.beginPath();
-    this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 6 : 8, 0, Math.PI * 2);
-    this.ctx.fill();
+    drawEntitySprite(this.ctx, entity, p, timeSeconds);
   }
 
   private drawBullet(bullet: BulletTrace, camera: Camera): void {
