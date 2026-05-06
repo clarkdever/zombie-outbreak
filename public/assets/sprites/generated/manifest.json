@@ -3,6 +3,12 @@
     {
       "id": "armedHuman",
       "direction": "down",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/armed-human-down-idle.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "down",
       "animation": "walk",
       "src": "/assets/sprites/generated/armed-human-down-walk.png"
     },
@@ -14,6 +20,18 @@
     },
     {
       "id": "armedHuman",
+      "direction": "down",
+      "animation": "shoot",
+      "src": "/assets/sprites/generated/armed-human-down-shoot.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "left",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/armed-human-left-idle.png"
+    },
+    {
+      "id": "armedHuman",
       "direction": "left",
       "animation": "walk",
       "src": "/assets/sprites/generated/armed-human-left-walk.png"
@@ -21,8 +39,38 @@
     {
       "id": "armedHuman",
       "direction": "right",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/armed-human-right-idle.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "right",
       "animation": "walk",
       "src": "/assets/sprites/generated/armed-human-right-walk.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "up",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/armed-human-up-idle.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "up",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/armed-human-up-walk.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "up",
+      "animation": "run",
+      "src": "/assets/sprites/generated/armed-human-up-run.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "up",
+      "animation": "shoot",
+      "src": "/assets/sprites/generated/armed-human-up-shoot.png"
     },
     {
       "id": "armedHuman",

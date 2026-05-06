@@ -10,20 +10,19 @@ describe("sprite atlas keys", () => {
     expect(spriteAtlasKey("armedHuman")).toBe("armedHuman");
   });
 
-  it("publishes generated strips for common armed-human screen-facing states", () => {
+  it("publishes a complete armed-human v1 alive animation set", () => {
     const keys = new Set(
       generatedManifest.sheets.map((sheet) =>
         spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
       )
     );
+    const directions = ["down", "left", "up", "right"] as const;
+    const animations = ["idle", "walk", "run", "shoot"] as const;
 
-    expect(keys).toContain("armedHuman:down:walk");
-    expect(keys).toContain("armedHuman:down:run");
-    expect(keys).toContain("armedHuman:left:walk");
-    expect(keys).toContain("armedHuman:right:walk");
-    expect(keys).toContain("armedHuman:left:run");
-    expect(keys).toContain("armedHuman:right:run");
-    expect(keys).toContain("armedHuman:left:shoot");
-    expect(keys).toContain("armedHuman:right:shoot");
+    for (const direction of directions) {
+      for (const animation of animations) {
+        expect(keys).toContain(spriteAtlasKey("armedHuman", direction, animation));
+      }
+    }
   });
 });
