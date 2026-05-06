@@ -1,7 +1,7 @@
 import { entityColor, entityRingColor } from "./entityPresentation";
 import type { VisualEntity } from "./visualPositions";
-import { visionRadiansFor } from "../sim/perception";
-import type { Entity, GameMap, TilePos } from "../sim/types";
+import { visionRadiansFor, visionRangeFor } from "../sim/perception";
+import type { Entity, GameMap, TilePos, Vec2 } from "../sim/types";
 import type { BulletTrace } from "../sim/types";
 
 export interface Camera {
@@ -91,11 +91,13 @@ export class Renderer {
       this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 72 : 48, 0, Math.PI * 2);
       this.ctx.stroke();
       this.ctx.strokeStyle = senseStrokeColor(entity, "vision");
-      const halfVision = visionRadiansFor(entity) / 2;
+      const sector = visionSectorPathPoints(tile, entity.facing, visionRadiansFor(entity), visionRangeFor(entity), 16);
       this.ctx.beginPath();
-      this.ctx.moveTo(p.x, p.y - 14);
-      this.ctx.lineTo(p.x + Math.cos(entity.facing - halfVision) * 90, p.y - 14 + Math.sin(entity.facing - halfVision) * 90);
-      this.ctx.lineTo(p.x + Math.cos(entity.facing + halfVision) * 90, p.y - 14 + Math.sin(entity.facing + halfVision) * 90);
+      for (const [index, point] of sector.entries()) {
+        const screen = isoToScreen(point.x, point.y, camera, this.canvas);
+        if (index === 0) this.ctx.moveTo(screen.x, screen.y - 14);
+        else this.ctx.lineTo(screen.x, screen.y - 14);
+      }
       this.ctx.closePath();
       this.ctx.stroke();
 
@@ -142,4 +144,19 @@ function senseStrokeColor(entity: Entity, sense: "hearing" | "vision"): string {
 
 function renderTileFor(entity: RenderableEntity): TilePos {
   return "renderTile" in entity ? entity.renderTile : entity.tile;
+}
+
+export function visionSectorPathPoints(origin: Vec2, facing: number, radians: number, range: number, arcSegments: number): Vec2[] {
+  const halfVision = radians / 2;
+  const segmentCount = Math.max(1, Math.floor(arcSegments));
+  const points: Vec2[] = [{ x: origin.x, y: origin.y }];
+  for (let index = 0; index <= segmentCount; index += 1) {
+    const progress = index / segmentCount;
+    const angle = facing - halfVision + radians * progress;
+    points.push({
+      x: origin.x + Math.cos(angle) * range,
+      y: origin.y + Math.sin(angle) * range
+    });
+  }
+  return points;
 }

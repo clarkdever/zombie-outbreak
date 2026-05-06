@@ -40,6 +40,10 @@ export function visionRadiansFor(entity: Entity): number {
   return senses[entity.species].visionRadians;
 }
 
+export function visionRangeFor(entity: Entity): number {
+  return senses[entity.species].visionRange;
+}
+
 function hasLineOfSight(map: GameMap, from: TilePos, to: TilePos): boolean {
   const steps = Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
   if (steps <= 1) return true;

@@ -43,6 +43,7 @@ export interface Entity {
   species: Species;
   state: EntityState;
   tile: TilePos;
+  homeTile?: TilePos;
   facing: number;
   speed: number;
   hp: number;
@@ -54,6 +55,8 @@ export interface Entity {
   turnSeconds: number;
   meat: number;
   originalMeat: number;
+  infectionDamageRemainder?: number;
+  feedingRemainder?: number;
   ownerId?: string;
   groupId?: string;
   controlled: boolean;

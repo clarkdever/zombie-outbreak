@@ -1,4 +1,4 @@
-import { createNeighborhoodMap, tileBlocksMovement } from "./map";
+import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
 import { dogName, groupName, humanName } from "./names";
 import { Random } from "./random";
 import type { Entity, GameMap, HumanGroup, Species, TilePos, WorldState } from "./types";
@@ -45,7 +45,7 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
       name: dogName(index),
       affiliation: owner?.name ?? "No One",
       species: "dog",
-      tile: randomOpenTile(map, random),
+      tile: owner ? nearbyOpenTile(map, owner.tile, random) : randomOpenTile(map, random),
       ownerId: owner?.id
     }));
   }
@@ -87,6 +87,7 @@ function createEntity(input: {
     species: input.species,
     state: zombie ? "investigating" : "calm",
     tile: input.tile,
+    homeTile: input.tile,
     facing: 0,
     speed: dog ? 1.25 : zombie ? 0.7 : 1,
     hp: maxHp,
@@ -98,6 +99,8 @@ function createEntity(input: {
     turnSeconds: 0,
     meat: dog ? 60 : 100,
     originalMeat: dog ? 60 : 100,
+    infectionDamageRemainder: 0,
+    feedingRemainder: 0,
     ownerId: input.ownerId,
     groupId: input.groupId,
     controlled: false,
@@ -122,4 +125,16 @@ function randomOpenTile(map: GameMap, random: Random): TilePos {
     if (!tileBlocksMovement(map, tile)) return tile;
   }
   return { x: 1, y: 1 };
+}
+
+function nearbyOpenTile(map: GameMap, center: TilePos, random: Random): TilePos {
+  const options: TilePos[] = [];
+  for (let dx = -2; dx <= 2; dx += 1) {
+    for (let dy = -2; dy <= 2; dy += 1) {
+      if (Math.hypot(dx, dy) > 2) continue;
+      const tile = wrapTile(map, { x: center.x + dx, y: center.y + dy });
+      if (!tileBlocksMovement(map, tile)) options.push(tile);
+    }
+  }
+  return options.length > 0 ? random.pick(options) : randomOpenTile(map, random);
 }

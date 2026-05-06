@@ -1,7 +1,7 @@
 import { tickSimpleAi } from "./ai";
 import { applyBite, feedOnBody, tickInfectionAndBodies } from "./combat";
 import { createInitialWorld } from "./entities";
-import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
+import { createNeighborhoodMap, tileBlocksMovement, tileBlocksSight, wrapTile } from "./map";
 import { canSee } from "./perception";
 import { createStats } from "./stats";
 import type { BulletTrace, EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats, Vec2 } from "./types";
@@ -29,6 +29,7 @@ export class Simulation {
   endState?: EndState;
   private actionAccumulatorSeconds = 0;
   private bulletId = 0;
+  private grappledIds = new Set<string>();
 
   constructor(options: SimulationOptions) {
     this.map = createNeighborhoodMap();
@@ -66,11 +67,12 @@ export class Simulation {
 
   private stepActions(): void {
     this.updateStimulusFlags();
+    this.alertHumansByContact();
     this.resolveHumanAttacks();
-    this.resolveCloseInteractions();
+    const immobilizedIds = this.resolveCloseInteractions();
     const newNoises: NoiseEvent[] = [];
     for (const entity of this.entities) {
-      newNoises.push(...tickSimpleAi(entity, this.map, this.entities, this.noises));
+      newNoises.push(...tickSimpleAi(entity, this.map, this.entities, this.noises, immobilizedIds));
     }
     this.noises = [...this.noises, ...newNoises]
       .map((noise) => ({ ...noise, ageSeconds: noise.ageSeconds + 1 }))
@@ -86,6 +88,7 @@ export class Simulation {
   movePossessed(delta: { x: number; y: number }): void {
     const controlled = this.entities.find((entity) => entity.controlled);
     if (!controlled || controlled.skeleton || (!controlled.alive && !isZombie(controlled))) return;
+    if (this.isGrappled(controlled)) return;
     const candidate = wrapTile(this.map, {
       x: controlled.tile.x + Math.sign(delta.x),
       y: controlled.tile.y + Math.sign(delta.y)
@@ -157,13 +160,26 @@ export class Simulation {
     for (const human of this.entities) {
       if (human.species !== "human" || !human.alive || !human.armed || human.controlled) continue;
       if (human.shotCooldownSeconds > 0) continue;
-      const target = this.zombies.find((zombie) =>
-        Math.hypot(zombie.tile.x - human.tile.x, zombie.tile.y - human.tile.y) <= 6 && canSee(this.map, human, zombie.tile)
-      );
-      if (!target) continue;
-      human.facing = Math.atan2(target.tile.y - human.tile.y, target.tile.x - human.tile.x);
+      const target = this.nearestVisibleThreat(human, 8);
+      if (!target) {
+        human.targetTile = undefined;
+        continue;
+      }
+      const aimAngle = Math.atan2(target.tile.y - human.tile.y, target.tile.x - human.tile.x);
+      const delta = angleDelta(aimAngle, human.facing);
+      human.facing = normalizeRadians(human.facing + clamp(delta, -Math.PI / 4, Math.PI / 4));
+      human.state = "alerted";
+      human.targetTile = target.tile;
+      if (Math.abs(delta) > Math.PI / 18) continue;
       this.fireBullet(human);
     }
+  }
+
+  private nearestVisibleThreat(human: Entity, range: number): Entity | undefined {
+    return this.zombies
+      .map((zombie) => ({ zombie, distance: Math.hypot(zombie.tile.x - human.tile.x, zombie.tile.y - human.tile.y) }))
+      .filter(({ zombie, distance }) => distance <= range && canSee(this.map, human, zombie.tile) && hasClearShot(this.map, human.tile, zombie.tile))
+      .sort((a, b) => a.distance - b.distance)[0]?.zombie;
   }
 
   private fireBullet(shooter: Entity): void {
@@ -211,7 +227,8 @@ export class Simulation {
   }
 
   private applyBulletDamage(shooter: Entity, target: Entity, damage: number): void {
-    target.hp = Math.max(0, target.hp - damage);
+    const integerDamage = Math.max(0, Math.round(damage));
+    target.hp = Math.max(0, target.hp - integerDamage);
     if (isZombie(target) && target.hp <= 0) {
       target.skeleton = true;
       target.state = "downed";
@@ -223,7 +240,8 @@ export class Simulation {
     }
   }
 
-  private resolveCloseInteractions(): void {
+  private resolveCloseInteractions(): Set<string> {
+    const immobilizedIds = new Set<string>();
     const bodies = this.entities.filter((entity) => !entity.alive && !entity.skeleton && entity.meat > 0 && !this.zombies.includes(entity));
     for (const zombie of this.zombies) {
       let fedThisTick = false;
@@ -233,6 +251,8 @@ export class Simulation {
         Math.hypot(entity.tile.x - zombie.tile.x, entity.tile.y - zombie.tile.y) <= 1
       );
       if (livingTarget) {
+        immobilizedIds.add(zombie.id);
+        immobilizedIds.add(livingTarget.id);
         applyBite(zombie, livingTarget, 12);
         if (!livingTarget.alive) {
           livingTarget.turnSeconds = 8;
@@ -249,6 +269,28 @@ export class Simulation {
       if (!fedThisTick && zombie.state === "feeding") {
         zombie.state = "investigating";
       }
+    }
+    this.grappledIds = immobilizedIds;
+    return immobilizedIds;
+  }
+
+  private isGrappled(entity: Entity): boolean {
+    if (this.grappledIds.has(entity.id)) return true;
+    return this.zombies.some((zombie) =>
+      zombie.id !== entity.id &&
+      !zombie.skeleton &&
+      entity.alive &&
+      (entity.species === "human" || entity.species === "dog") &&
+      Math.hypot(entity.tile.x - zombie.tile.x, entity.tile.y - zombie.tile.y) <= 1
+    );
+  }
+
+  private alertHumansByContact(): void {
+    const alertedHumans = this.entities.filter((entity) => entity.species === "human" && entity.alive && entity.state === "alerted");
+    for (const human of this.entities) {
+      if (human.species !== "human" || !human.alive || human.state !== "calm") continue;
+      const contacted = alertedHumans.some((alerted) => Math.hypot(alerted.tile.x - human.tile.x, alerted.tile.y - human.tile.y) <= 1.5);
+      if (contacted) human.state = "alerted";
     }
   }
 
@@ -277,6 +319,25 @@ function hearingRange(entity: Entity): number {
 
 function normalizeRadians(value: number): number {
   return Math.atan2(Math.sin(value), Math.cos(value));
+}
+
+function angleDelta(target: number, current: number): number {
+  return Math.atan2(Math.sin(target - current), Math.cos(target - current));
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function hasClearShot(map: GameMap, from: Vec2, to: Vec2): boolean {
+  const steps = Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
+  if (steps <= 1) return true;
+  for (let step = 1; step < steps; step += 1) {
+    const x = Math.round(from.x + ((to.x - from.x) * step) / steps);
+    const y = Math.round(from.y + ((to.y - from.y) * step) / steps);
+    if (tileBlocksSight(map, { x, y })) return false;
+  }
+  return true;
 }
 
 function distanceAlongRay(from: Vec2, to: Vec2, point: Vec2): number {

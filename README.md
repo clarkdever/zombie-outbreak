@@ -32,7 +32,7 @@ The first build is intentionally graybox and includes:
 - Zombie feeding capped per body
 - Human groups, armed leaders, and basic armed-human attacks
 - Dog ownership and barking behavior
-- Possession, edge-scroll camera, Q/E turning, Space-to-shoot controls, and time controls
+- Possession, keyboard camera controls, Q/E turning, Space-to-shoot controls, and time controls
 - Visible bullet traces with collision damage for zombies, humans, and dogs
 - Debug overlays for selected or all entities
 - End modal with name-based facts and a zombie-over-time histogram
@@ -100,7 +100,7 @@ npm test
 2. Optionally open Advanced and adjust human, dog, zombie, and armed-human counts.
 3. Press Start.
 4. Watch the outbreak unfold on the isometric map.
-5. Move the mouse to screen edges to pan the camera.
+5. Use the arrow keys to pan the camera.
 6. Click a human, dog, or zombie to possess it.
 7. Use WASD to move the possessed entity.
 8. Use Q/E to turn and look around.

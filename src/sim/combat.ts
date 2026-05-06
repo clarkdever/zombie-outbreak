@@ -7,13 +7,14 @@ export interface BodyTickConfig {
 
 export function applyBite(attacker: Entity, target: Entity, damage: number): void {
   if (!target.alive || target.skeleton) return;
-  target.hp = Math.max(0, target.hp - damage);
+  const integerDamage = Math.max(0, Math.round(damage));
+  target.hp = Math.max(0, target.hp - integerDamage);
   target.infected = true;
   target.state = target.hp <= 0 ? "turning" : "infected";
   if (target.hp <= 0) {
     target.alive = false;
   }
-  attacker.zombieDamageDealt += damage;
+  attacker.zombieDamageDealt += integerDamage;
 }
 
 export function feedOnBody(zombie: Entity, body: Entity, biteDamagePerSecond: number): number {
@@ -21,7 +22,9 @@ export function feedOnBody(zombie: Entity, body: Entity, biteDamagePerSecond: nu
   const cap = body.originalMeat * 0.2;
   const alreadyEaten = zombie.meatEatenByBody[body.id] ?? 0;
   const remainingForZombie = Math.max(0, cap - alreadyEaten);
-  const amount = Math.min(biteDamagePerSecond, remainingForZombie, body.meat);
+  const available = (zombie.feedingRemainder ?? 0) + biteDamagePerSecond;
+  const amount = Math.min(Math.floor(available), remainingForZombie, body.meat);
+  zombie.feedingRemainder = available - Math.floor(available);
   if (amount <= 0) return 0;
   body.meat -= amount;
   zombie.meatEatenByBody[body.id] = alreadyEaten + amount;
@@ -41,7 +44,10 @@ export function tickInfectionAndBodies(
 
     if (entity.alive && entity.infected && !isZombie(entity)) {
       entity.infectionSeconds += dt;
-      entity.hp = Math.max(0, entity.hp - config.infectionDamagePerSecond * dt);
+      const availableDamage = (entity.infectionDamageRemainder ?? 0) + config.infectionDamagePerSecond * dt;
+      const integerDamage = Math.floor(availableDamage);
+      entity.infectionDamageRemainder = availableDamage - integerDamage;
+      entity.hp = Math.max(0, entity.hp - integerDamage);
       if (entity.hp <= 0) {
         entity.alive = false;
         entity.state = "turning";

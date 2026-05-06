@@ -107,6 +107,35 @@ describe("Simulation", () => {
     expect(human.tile).not.toEqual({ x: 10, y: 10 });
   });
 
+  it("keeps calm humans wandering near their spawn area", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    human.homeTile = { x: 10, y: 10 };
+    human.facing = Math.PI;
+    zombie.tile = { x: 25, y: 25 };
+
+    for (let tick = 0; tick < 12; tick += 1) sim.tick(1);
+
+    expect(Math.hypot(human.tile.x - human.homeTile.x, human.tile.y - human.homeTile.y)).toBeLessThanOrEqual(3);
+  });
+
+  it("lets dogs follow their living owners", () => {
+    const sim = new Simulation({ humans: 1, dogs: 1, zombies: 1, armedPercent: 0, seed: 13 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const dog = sim.entities.find((entity) => entity.species === "dog")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    dog.tile = { x: 6, y: 10 };
+    dog.facing = 0;
+    zombie.tile = { x: 25, y: 25 };
+
+    sim.tick(1);
+
+    expect(dog.tile.x).toBeGreaterThan(6);
+  });
+
   it("marks visible and audible stimuli for overlay feedback", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
@@ -145,6 +174,54 @@ describe("Simulation", () => {
     expect(sim.endState?.winner).toBe("humans");
   });
 
+  it("turns armed humans toward zombies before firing", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 15 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 5, y: 15 };
+    human.facing = Math.PI / 2;
+    zombie.tile = { x: 8, y: 15 };
+    zombie.hp = 200;
+
+    sim.tick(1);
+    expect(sim.bullets).toHaveLength(0);
+    expect(Math.abs(human.facing)).toBeLessThan(Math.PI / 2);
+
+    sim.tick(1);
+    sim.tick(1);
+    expect(zombie.hp).toBeLessThan(200);
+  });
+
+  it("does not let armed humans target zombies outside their vision cone", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 25 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    human.facing = 0;
+    zombie.tile = { x: 6, y: 10 };
+    zombie.hp = 200;
+
+    sim.tick(1);
+
+    expect(zombie.hp).toBe(200);
+    expect(human.targetTile).toBeUndefined();
+  });
+
+  it("clears stale armed-human targets so normal AI can resume", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 26 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    human.homeTile = { x: 10, y: 10 };
+    human.targetTile = { x: 12, y: 10 };
+    human.facing = 0;
+    zombie.tile = { x: 24, y: 24 };
+
+    sim.tick(1);
+
+    expect(human.targetTile).toBeUndefined();
+  });
+
   it("lets zombies resume chasing when no adjacent body remains to feed on", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 14 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
@@ -169,6 +246,35 @@ describe("Simulation", () => {
     expect(human.alive).toBe(false);
     sim.tick(1);
     expect(zombie.state).toBe("feeding");
+  });
+
+  it("keeps zombies and bite targets still while grappling", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 5, y: 5 };
+    zombie.tile = { x: 6, y: 5 };
+    human.hp = 100;
+
+    sim.tick(1);
+
+    expect(human.tile).toEqual({ x: 5, y: 5 });
+    expect(zombie.tile).toEqual({ x: 6, y: 5 });
+    expect(human.infected).toBe(true);
+  });
+
+  it("blocks possessed movement out of an active grapple", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 27 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 5, y: 5 };
+    zombie.tile = { x: 6, y: 5 };
+    sim.tick(1);
+    sim.possess(human.id);
+
+    sim.movePossessed({ x: -1, y: 0 });
+
+    expect(human.tile).toEqual({ x: 5, y: 5 });
   });
 
   it("lets controlled zombies infect humans by contact", () => {
