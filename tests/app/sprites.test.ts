@@ -16,6 +16,7 @@ function entity(overrides: Partial<Entity>): Entity {
     hp: 100,
     maxHp: 100,
     armed: false,
+    ammo: 0,
     shotCooldownSeconds: 0,
     infected: false,
     infectionSeconds: 0,
@@ -52,6 +53,6 @@ describe("sprite animation state", () => {
 
     expect(spriteFrameFor(walker, 0).frame).toBe(0);
     expect(spriteFrameFor(walker, 0.3).frame).toBeGreaterThan(0);
-    expect(spriteFrameFor(entity({ facing: Math.PI }), 0).flipX).toBe(true);
+    expect(spriteFrameFor(entity({ facing: Math.PI / 2 }), 0).flipX).toBe(true);
   });
 });

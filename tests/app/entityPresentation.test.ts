@@ -15,6 +15,7 @@ function entity(overrides: Partial<Entity>): Entity {
     hp: 75,
     maxHp: 100,
     armed: false,
+    ammo: 0,
     shotCooldownSeconds: 0,
     infected: false,
     infectionSeconds: 0,
@@ -52,10 +53,11 @@ describe("entity presentation", () => {
   });
 
   it("builds selected inspect rows with health and combat stats", () => {
-    const rows = getEntityInspectRows(entity({ armed: true, controlled: true, zombieKills: 2 }));
+    const rows = getEntityInspectRows(entity({ armed: true, ammo: 31, controlled: true, zombieKills: 2 }));
 
     expect(rows).toContainEqual({ label: "HP", value: "75 / 100" });
     expect(rows).toContainEqual({ label: "Weapon", value: "armed" });
+    expect(rows).toContainEqual({ label: "Ammo", value: "31" });
     expect(rows).toContainEqual({ label: "Control", value: "possessed" });
     expect(rows).toContainEqual({ label: "Zombie kills", value: "2" });
   });

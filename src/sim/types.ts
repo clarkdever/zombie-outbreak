@@ -49,6 +49,7 @@ export interface Entity {
   hp: number;
   maxHp: number;
   armed: boolean;
+  ammo: number;
   shotCooldownSeconds: number;
   infected: boolean;
   infectionSeconds: number;

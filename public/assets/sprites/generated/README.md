@@ -12,6 +12,8 @@ Drop generated sprite sheets here with this naming:
 
 Each sheet should be `384x768`, with `96x96` frames arranged in 4 columns and 8 rows. Start with one sheet in the manifest so we can judge scale and art direction before generating the full set.
 
+Complete sheets need front/down, back/up, and side views. Side views can be mirrored for left/right. The current `armed-human.png` test sheet is treated as side-view only until we generate proper front and back rows.
+
 When at least one sheet is ready, add `manifest.json` next to the images:
 
 ```json

@@ -377,6 +377,20 @@ describe("Simulation", () => {
     expect(sim.shootPossessed()).toBe(true);
   });
 
+  it("depletes armed human ammunition and prevents shooting when empty", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 0, armedPercent: 100, seed: 31 });
+    const shooter = sim.entities[0];
+    shooter.ammo = 1;
+
+    sim.possess(shooter.id);
+
+    expect(sim.shootPossessed()).toBe(true);
+    expect(shooter.ammo).toBe(0);
+    shooter.shotCooldownSeconds = 0;
+    expect(sim.shootPossessed()).toBe(false);
+    expect(sim.bullets).toHaveLength(1);
+  });
+
   it("ages bullet traces out while shot cooldown recovers", () => {
     const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 22 });
     const shooter = sim.entities[0];

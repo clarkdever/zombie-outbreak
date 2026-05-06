@@ -34,6 +34,7 @@ export function getEntityInspectRows(entity: Entity): InspectRow[] {
     { label: "HP", value: `${entity.hp} / ${entity.maxHp}` },
     { label: "State", value: stateLabel(entity) },
     { label: "Weapon", value: entity.armed ? "armed" : "unarmed" },
+    { label: "Ammo", value: entity.armed ? String(entity.ammo) : "none" },
     { label: "Control", value: entity.controlled ? "possessed" : "autonomous" },
     { label: "Meat", value: `${entity.meat} / ${entity.originalMeat}` },
     { label: "Zombie kills", value: String(entity.zombieKills) }

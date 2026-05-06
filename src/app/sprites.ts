@@ -1,5 +1,5 @@
 import { entityColor } from "./entityPresentation";
-import { spriteDrawPlanFor, spriteFrameFor, type SpriteFrame } from "./spriteManifest";
+import { spriteDrawPlanFor, spriteFrameFor, spriteSheetSupportsFacing, type SpriteFrame } from "./spriteManifest";
 import type { SpriteAtlas } from "./spriteAtlas";
 import type { Entity } from "../sim/types";
 
@@ -15,7 +15,7 @@ export function drawEntitySprite(
   const spriteTime = entity.lifetimeSeconds || timeSeconds;
   const plan = spriteDrawPlanFor(entity, spriteTime);
   const sheet = atlas?.get(plan.sheet.id);
-  if (sheet) {
+  if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction)) {
     drawSheetSprite(ctx, sheet.image, screen, plan);
     return;
   }

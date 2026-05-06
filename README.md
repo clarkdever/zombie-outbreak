@@ -34,6 +34,7 @@ The first build is intentionally graybox and includes:
 - Dog ownership and barking behavior
 - Possession, keyboard camera controls, Q/E turning, Space-to-shoot controls, and time controls
 - Visible bullet traces with collision damage for zombies, humans, and dogs
+- Glock 19 ammunition tracking for armed humans: one loaded pistol plus one spare magazine
 - Code-native pixel sprite animations for humans, dogs, zombies, downed bodies, skeletons, shooting, fleeing, attacking, and feeding
 - Asset-manifest sprite loading, ready for generated PNG sprite sheets in `public/assets/sprites/generated/`
 - Debug overlays for selected or all entities

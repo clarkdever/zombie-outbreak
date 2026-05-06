@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   SPRITE_ANCHOR,
   SPRITE_FRAME_SIZE,
+  spriteDirectionFor,
   spriteDrawPlanFor,
   spriteFrameRect,
+  spriteSheetSupportsFacing,
   spriteSheetKeyFor
 } from "../../src/app/spriteManifest";
 import type { Entity } from "../../src/sim/types";
@@ -22,6 +24,7 @@ function entity(overrides: Partial<Entity>): Entity {
     hp: 100,
     maxHp: 100,
     armed: false,
+    ammo: 0,
     shotCooldownSeconds: 0,
     infected: false,
     infectionSeconds: 0,
@@ -73,5 +76,19 @@ describe("sprite manifest contract", () => {
     expect(plan.destination.width).toBe(63);
     expect(plan.destination.height).toBe(63);
     expect(plan.anchor).toEqual(SPRITE_ANCHOR);
+  });
+
+  it("maps world facing to screen-facing sprite directions", () => {
+    expect(spriteDirectionFor(0)).toBe("down");
+    expect(spriteDirectionFor(Math.PI / 2)).toBe("left");
+    expect(spriteDirectionFor(Math.PI)).toBe("up");
+    expect(spriteDirectionFor(-Math.PI / 2)).toBe("right");
+  });
+
+  it("uses the generated armed-human sheet only for directions it currently supports", () => {
+    expect(spriteSheetSupportsFacing("armedHuman", "left")).toBe(true);
+    expect(spriteSheetSupportsFacing("armedHuman", "right")).toBe(true);
+    expect(spriteSheetSupportsFacing("armedHuman", "up")).toBe(false);
+    expect(spriteSheetSupportsFacing("armedHuman", "down")).toBe(false);
   });
 });

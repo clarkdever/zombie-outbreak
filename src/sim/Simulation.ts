@@ -114,6 +114,7 @@ export class Simulation {
     const controlled = this.entities.find((entity) => entity.controlled);
     if (!controlled || controlled.species !== "human" || !controlled.alive || !controlled.armed) return false;
     if (controlled.shotCooldownSeconds > 0) return false;
+    if (controlled.ammo <= 0) return false;
     this.fireBullet(controlled);
     return true;
   }
@@ -165,6 +166,7 @@ export class Simulation {
   private resolveHumanAttacks(): void {
     for (const human of this.entities) {
       if (human.species !== "human" || !human.alive || !human.armed || human.controlled) continue;
+      if (human.ammo <= 0) continue;
       if (human.shotCooldownSeconds > 0) continue;
       const target = this.nearestVisibleThreat(human, 8);
       if (!target) {
@@ -199,6 +201,7 @@ export class Simulation {
     const to = hit ? { x: hit.tile.x, y: hit.tile.y } : intendedTo;
     shooter.state = "shooting";
     shooter.shotCooldownSeconds = 1;
+    shooter.ammo = Math.max(0, shooter.ammo - 1);
     this.noises.push({
       id: `gunshot-${this.bulletId + 1}`,
       kind: "gunshot",

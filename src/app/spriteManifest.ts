@@ -1,12 +1,14 @@
 import type { Entity } from "../sim/types";
 
 export type SpriteAnimation = "walk" | "run" | "attack" | "shoot" | "feed" | "downed" | "skeleton" | "idle";
+export type SpriteDirection = "down" | "left" | "up" | "right";
 export type SpriteSheetKey = "human" | "armedHuman" | "dog" | "zombieHuman" | "zombieDog" | "corpse" | "skeleton";
 
 export interface SpriteFrame {
   animation: SpriteAnimation;
   frame: number;
   flipX: boolean;
+  direction: SpriteDirection;
 }
 
 export interface SpriteClip {
@@ -24,6 +26,7 @@ export interface SpriteSheetDefinition {
   columns: number;
   anchor: { x: number; y: number };
   scale: number;
+  supportedDirections: SpriteDirection[];
   clips: Record<SpriteAnimation, SpriteClip>;
 }
 
@@ -39,6 +42,7 @@ export interface SpriteDrawPlan {
   clip: SpriteClip;
   frame: number;
   flipX: boolean;
+  direction: SpriteDirection;
   sourceRect: SpriteRect;
   anchor: { x: number; y: number };
   destination: { width: number; height: number };
@@ -100,7 +104,8 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
   return {
     animation,
     frame,
-    flipX: Math.cos(entity.facing) < 0
+    flipX: spriteDirectionFor(entity.facing) === "left",
+    direction: spriteDirectionFor(entity.facing)
   };
 }
 
@@ -121,6 +126,7 @@ export function spriteDrawPlanFor(entity: Entity, timeSeconds: number): SpriteDr
     clip,
     frame: frameIndex,
     flipX: frame.flipX,
+    direction: frame.direction,
     sourceRect: spriteFrameRect({ ...sheet, row: clip.row }, frameIndex),
     anchor: sheet.anchor,
     destination: {
@@ -128,6 +134,20 @@ export function spriteDrawPlanFor(entity: Entity, timeSeconds: number): SpriteDr
       height: Math.round(sheet.frameHeight * sheet.scale)
     }
   };
+}
+
+export function spriteDirectionFor(facing: number): SpriteDirection {
+  const x = Math.cos(facing) - Math.sin(facing);
+  const y = Math.cos(facing) + Math.sin(facing);
+  const screenAngle = Math.atan2(y, x);
+  if (screenAngle >= Math.PI / 4 && screenAngle < (3 * Math.PI) / 4) return "down";
+  if (screenAngle >= (3 * Math.PI) / 4 || screenAngle < (-3 * Math.PI) / 4) return "left";
+  if (screenAngle >= (-3 * Math.PI) / 4 && screenAngle < -Math.PI / 4) return "up";
+  return "right";
+}
+
+export function spriteSheetSupportsFacing(sheetId: SpriteSheetKey, direction: SpriteDirection): boolean {
+  return SPRITE_SHEETS[sheetId].supportedDirections.includes(direction);
 }
 
 export function spriteFrameRect(
@@ -157,6 +177,7 @@ function spriteSheet(
     columns: SPRITE_SHEET_COLUMNS,
     anchor: { ...SPRITE_ANCHOR },
     scale,
+    supportedDirections: id === "armedHuman" ? ["left", "right"] : ["down", "left", "up", "right"],
     clips: clipsByAnimation
   };
 }

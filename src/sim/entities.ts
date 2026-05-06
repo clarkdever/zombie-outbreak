@@ -12,6 +12,7 @@ interface InitialWorldOptions {
 }
 
 const groupColors = ["#e95d4f", "#62b6cb", "#f2cc8f", "#81b29a", "#c77dff", "#f28482"];
+export const GLOCK_19_WITH_SPARE_MAG_AMMO = 31;
 
 export function createInitialWorld(options: InitialWorldOptions): WorldState {
   const random = new Random(options.seed);
@@ -93,6 +94,7 @@ function createEntity(input: {
     hp: maxHp,
     maxHp,
     armed: input.armed ?? false,
+    ammo: input.armed ? GLOCK_19_WITH_SPARE_MAG_AMMO : 0,
     shotCooldownSeconds: 0,
     infected: zombie,
     infectionSeconds: 0,

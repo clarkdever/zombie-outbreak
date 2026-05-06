@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createInitialWorld } from "../../src/sim/entities";
+import { GLOCK_19_WITH_SPARE_MAG_AMMO, createInitialWorld } from "../../src/sim/entities";
 import { Random } from "../../src/sim/random";
 
 describe("entity creation", () => {
@@ -30,6 +30,12 @@ describe("entity creation", () => {
     const owner = world.entities.find((entity) => entity.id === dog?.ownerId);
 
     expect(dog?.affiliation).toBe(owner?.name);
+  });
+
+  it("gives armed humans a Glock 19 plus one spare magazine worth of ammunition", () => {
+    const world = createInitialWorld({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 12 });
+
+    expect(world.entities.filter((entity) => entity.species === "human").every((entity) => entity.ammo === GLOCK_19_WITH_SPARE_MAG_AMMO)).toBe(true);
   });
 
   it("records human home tiles and spawns dogs near their owners", () => {

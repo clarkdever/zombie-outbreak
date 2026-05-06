@@ -6,6 +6,8 @@ The current in-game sprites are a bridge implementation: they prove animation ti
 
 Sprite sheets live in `public/assets/sprites/generated/` and are discovered through `manifest.json`. The first test sheet is `armed-human.png`, because weapon stance, muzzle flash, and scale are easy to judge in-game.
 
+Direction is part of the contract. A complete character set needs front/down, back/up, and side views. Side views may be mirrored for left/right, but front and back need authored frames so entities do not appear to aim or walk in the wrong screen direction. Until a sheet supports all four directions, the renderer should only use it for the supported directions and fall back to the code-native sprite for the rest.
+
 Each sheet uses a higher-detail source size so the art can look SNES-or-better while still rendering at board scale:
 
 - Frame size: `96x96`
