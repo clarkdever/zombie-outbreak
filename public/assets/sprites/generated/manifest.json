@@ -8,6 +8,12 @@
     },
     {
       "id": "armedHuman",
+      "direction": "down",
+      "animation": "run",
+      "src": "/assets/sprites/generated/armed-human-down-run.png"
+    },
+    {
+      "id": "armedHuman",
       "direction": "left",
       "animation": "walk",
       "src": "/assets/sprites/generated/armed-human-left-walk.png"
