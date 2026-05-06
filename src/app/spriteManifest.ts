@@ -1,6 +1,18 @@
 import type { Entity } from "../sim/types";
 
-export type SpriteAnimation = "walk" | "run" | "attack" | "shoot" | "feed" | "downed" | "skeleton" | "idle";
+export type SpriteAnimation =
+  | "walk"
+  | "run"
+  | "attack"
+  | "attackHuman"
+  | "attackDog"
+  | "shoot"
+  | "feed"
+  | "feedHuman"
+  | "feedDog"
+  | "downed"
+  | "skeleton"
+  | "idle";
 export type SpriteDirection = "down" | "left" | "up" | "right";
 export type SpriteSheetKey = "human" | "armedHuman" | "dog" | "zombieHuman" | "zombieDog" | "corpse" | "skeleton";
 
@@ -58,8 +70,12 @@ const HUMANOID_CLIPS = clips({
   walk: [1, 4, 4],
   run: [2, 4, 7],
   attack: [3, 3, 8],
+  attackHuman: [3, 3, 8],
+  attackDog: [3, 3, 8],
   shoot: [4, 2, 12],
   feed: [5, 3, 5],
+  feedHuman: [5, 3, 5],
+  feedDog: [5, 3, 5],
   downed: [6, 1, 1],
   skeleton: [7, 1, 1]
 });
@@ -69,8 +85,12 @@ const DOG_CLIPS = clips({
   walk: [1, 4, 5],
   run: [2, 4, 8],
   attack: [3, 3, 8],
+  attackHuman: [3, 3, 8],
+  attackDog: [3, 3, 8],
   shoot: [0, 2, 2],
   feed: [4, 3, 5],
+  feedHuman: [4, 3, 5],
+  feedDog: [4, 3, 5],
   downed: [5, 1, 1],
   skeleton: [6, 1, 1]
 });
@@ -89,7 +109,11 @@ export function spriteAnimationFor(entity: Entity): SpriteAnimation {
   if (entity.skeleton) return "skeleton";
   if (!entity.alive && !entity.species.includes("zombie")) return "downed";
   if (entity.state === "shooting") return "shoot";
+  if (entity.state === "feeding" && entity.grappleVictimSpecies === "human") return "feedHuman";
+  if (entity.state === "feeding" && entity.grappleVictimSpecies === "dog") return "feedDog";
   if (entity.state === "feeding") return "feed";
+  if (entity.state === "attacking" && entity.grappleVictimSpecies === "human") return "attackHuman";
+  if (entity.state === "attacking" && entity.grappleVictimSpecies === "dog") return "attackDog";
   if (entity.state === "attacking") return "attack";
   if (entity.state === "fleeing" || entity.state === "alerted") return "run";
   if (entity.state === "calm" || entity.state === "investigating") return "walk";

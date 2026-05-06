@@ -43,7 +43,11 @@ describe("sprite animation state", () => {
     expect(spriteAnimationFor(entity({ state: "calm" }))).toBe("walk");
     expect(spriteAnimationFor(entity({ state: "fleeing" }))).toBe("run");
     expect(spriteAnimationFor(entity({ state: "shooting", armed: true }))).toBe("shoot");
+    expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "attacking", grappleVictimSpecies: "human" }))).toBe("attackHuman");
+    expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "attacking", grappleVictimSpecies: "dog" }))).toBe("attackDog");
     expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "feeding", alive: false }))).toBe("feed");
+    expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "feeding", grappleVictimSpecies: "human" }))).toBe("feedHuman");
+    expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "feeding", grappleVictimSpecies: "dog" }))).toBe("feedDog");
     expect(spriteAnimationFor(entity({ alive: false, state: "turning" }))).toBe("downed");
     expect(spriteAnimationFor(entity({ skeleton: true, alive: false }))).toBe("skeleton");
   });

@@ -68,6 +68,9 @@ export interface Entity {
   hearsStimulus?: boolean;
   stimulusMemorySeconds: number;
   targetTile?: TilePos;
+  grappleTargetId?: string;
+  grappledById?: string;
+  grappleVictimSpecies?: "human" | "dog";
   meatEatenByBody: Record<string, number>;
   totalMeatEaten: number;
   humansAlerted: number;

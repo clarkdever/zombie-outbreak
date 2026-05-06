@@ -301,6 +301,37 @@ describe("Simulation", () => {
     expect(human.infected).toBe(true);
   });
 
+  it("marks grapple pairs so the renderer can show one combined zombie-victim sprite", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12, grappleEscapePercent: 0 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 5, y: 5 };
+    zombie.tile = { x: 6, y: 5 };
+
+    sim.tick(1);
+
+    expect(zombie.grappleTargetId).toBe(human.id);
+    expect(zombie.grappleVictimSpecies).toBe("human");
+    expect(human.grappledById).toBe(zombie.id);
+  });
+
+  it("clears grapple pair marks when the victim escapes", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12, grappleEscapePercent: 100 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.grappledById = zombie.id;
+    zombie.grappleTargetId = human.id;
+    zombie.grappleVictimSpecies = "human";
+    human.tile = { x: 5, y: 5 };
+    zombie.tile = { x: 6, y: 5 };
+
+    sim.tick(1);
+
+    expect(zombie.grappleTargetId).toBeUndefined();
+    expect(zombie.grappleVictimSpecies).toBeUndefined();
+    expect(human.grappledById).toBeUndefined();
+  });
+
   it("blocks possessed movement out of an active grapple", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 27, grappleEscapePercent: 0 });
     const human = sim.entities.find((entity) => entity.species === "human")!;

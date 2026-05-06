@@ -33,7 +33,7 @@ describe("sprite atlas keys", () => {
       )
     );
     const directions = ["down", "left", "up", "right"] as const;
-    const animations = ["idle", "walk", "run", "attack", "feed"] as const;
+    const animations = ["idle", "walk", "run", "attack", "feed", "attackHuman", "feedHuman", "attackDog", "feedDog"] as const;
 
     for (const direction of directions) {
       for (const animation of animations) {

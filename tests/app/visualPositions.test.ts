@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { VisualPositionStore, interpolateTilePosition } from "../../src/app/visualPositions";
+import { VisualPositionStore, interpolateTilePosition, visibleEntitiesForRendering } from "../../src/app/visualPositions";
 
 describe("visual positions", () => {
   it("interpolates between two tile positions", () => {
@@ -36,5 +36,12 @@ describe("visual positions", () => {
     entity.tile = { x: 29, y: 0 };
 
     expect(store.update([entity], 0.1)[0].renderTile).toEqual({ x: 29, y: 0 });
+  });
+
+  it("hides victims while a zombie owns the grapple tableau", () => {
+    const zombie = { id: "z", tile: { x: 5, y: 5 } };
+    const victim = { id: "h", tile: { x: 5, y: 5 }, grappledById: "z" };
+
+    expect(visibleEntitiesForRendering([zombie, victim])).toEqual([zombie]);
   });
 });

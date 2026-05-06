@@ -265,6 +265,11 @@ export class Simulation {
 
   private resolveCloseInteractions(): Set<string> {
     const immobilizedIds = new Set<string>();
+    for (const entity of this.entities) {
+      entity.grappleTargetId = undefined;
+      entity.grappledById = undefined;
+      entity.grappleVictimSpecies = undefined;
+    }
     const bodies = this.entities.filter((entity) => !entity.alive && !entity.skeleton && entity.meat > 0 && !this.zombies.includes(entity));
     for (const zombie of this.zombies) {
       let fedThisTick = false;
@@ -280,6 +285,9 @@ export class Simulation {
         }
         immobilizedIds.add(zombie.id);
         immobilizedIds.add(livingTarget.id);
+        zombie.grappleTargetId = livingTarget.id;
+        zombie.grappleVictimSpecies = livingTarget.species === "dog" ? "dog" : "human";
+        livingTarget.grappledById = zombie.id;
         applyBite(zombie, livingTarget, 12, this.stats);
         if (!livingTarget.alive) {
           livingTarget.turnSeconds = 10;

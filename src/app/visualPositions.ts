@@ -3,6 +3,7 @@ import type { TilePos } from "../sim/types";
 type TileEntity = {
   id: string;
   tile: TilePos;
+  grappledById?: string;
 };
 
 export type VisualEntity<T extends TileEntity> = T & {
@@ -30,7 +31,7 @@ export class VisualPositionStore {
     const seenIds = new Set<string>();
     const progress = this.tilesPerSecond * Math.max(0, dtSeconds);
 
-    const visualEntities = entities.map((entity) => {
+    const visualEntities = visibleEntitiesForRendering(entities).map((entity) => {
       seenIds.add(entity.id);
       const previous = this.positions.get(entity.id) ?? entity.tile;
       const next = interpolateTilePosition(previous, entity.tile, progress);
@@ -53,6 +54,10 @@ export class VisualPositionStore {
 
     return visualEntities;
   }
+}
+
+export function visibleEntitiesForRendering<T extends TileEntity>(entities: readonly T[]): T[] {
+  return entities.filter((entity) => !entity.grappledById);
 }
 
 function distance(a: TilePos, b: TilePos): number {
