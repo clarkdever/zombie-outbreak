@@ -2,6 +2,12 @@
   "sheets": [
     {
       "id": "armedHuman",
+      "direction": "down",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/armed-human-down-walk.png"
+    },
+    {
+      "id": "armedHuman",
       "direction": "left",
       "animation": "walk",
       "src": "/assets/sprites/generated/armed-human-left-walk.png"
