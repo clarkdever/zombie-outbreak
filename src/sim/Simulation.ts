@@ -1,6 +1,7 @@
 import { tickSimpleAi } from "./ai";
 import { applyBite, feedOnBody, tickInfectionAndBodies } from "./combat";
 import { createInitialWorld } from "./entities";
+import { warnNearbyHumans } from "./groups";
 import { createNeighborhoodMap, tileBlocksMovement, tileBlocksSight, wrapTile } from "./map";
 import { canSee } from "./perception";
 import { Random } from "./random";
@@ -73,6 +74,7 @@ export class Simulation {
 
   private stepActions(): void {
     this.updateStimulusFlags();
+    this.warnHumansFromWitnesses();
     this.alertHumansByContact();
     this.resolveHumanAttacks();
     const immobilizedIds = this.resolveCloseInteractions();
@@ -158,9 +160,16 @@ export class Simulation {
         entity.hearsStimulus ||= distance <= hearingRange(entity);
         entity.seesStimulus ||= canSee(this.map, entity, target.tile);
       }
-      if (entity.seesStimulus && entity.species === "human") {
+      if (entity.seesStimulus && (entity.species === "human" || entity.species === "dog")) {
         entity.seenZombie = true;
       }
+    }
+  }
+
+  private warnHumansFromWitnesses(): void {
+    for (const entity of this.entities) {
+      if (entity.species === "dog") warnNearbyHumans(entity, this.entities, 8);
+      if (entity.species === "human") warnNearbyHumans(entity, this.entities, 2);
     }
   }
 
@@ -271,7 +280,7 @@ export class Simulation {
         }
         immobilizedIds.add(zombie.id);
         immobilizedIds.add(livingTarget.id);
-        applyBite(zombie, livingTarget, 12);
+        applyBite(zombie, livingTarget, 12, this.stats);
         if (!livingTarget.alive) {
           livingTarget.turnSeconds = 10;
           feedOnBody(zombie, livingTarget, 3);

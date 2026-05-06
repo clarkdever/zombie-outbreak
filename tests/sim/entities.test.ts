@@ -18,6 +18,19 @@ describe("entity creation", () => {
     expect(world.entities.every((entity) => entity.name.length > 0)).toBe(true);
   });
 
+  it("names the first generated zombie Patient Zero", () => {
+    const world = createInitialWorld({ humans: 2, dogs: 0, zombies: 2, armedPercent: 0, seed: 7 });
+
+    expect(world.entities.find((entity) => entity.id === "zombie-1")?.name).toBe("Patient Zero");
+  });
+
+  it("assigns unique human names across larger simulations", () => {
+    const world = createInitialWorld({ humans: 40, dogs: 0, zombies: 0, armedPercent: 0, seed: 7 });
+    const names = world.entities.filter((entity) => entity.species === "human").map((entity) => entity.name);
+
+    expect(new Set(names).size).toBe(names.length);
+  });
+
   it("uses owner names as dog affiliation labels", () => {
     const world = createInitialWorld({
       humans: 2,

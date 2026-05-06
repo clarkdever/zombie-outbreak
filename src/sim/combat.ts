@@ -5,11 +5,15 @@ export interface BodyTickConfig {
   turningDelaySeconds: number;
 }
 
-export function applyBite(attacker: Entity, target: Entity, damage: number): void {
+export function applyBite(attacker: Entity, target: Entity, damage: number, stats?: SimStats): void {
   if (!target.alive || target.skeleton) return;
   const integerDamage = Math.max(0, Math.round(damage));
+  const newlyInfected = !target.infected;
   target.hp = Math.max(0, target.hp - integerDamage);
   target.infected = true;
+  if (newlyInfected && stats && !stats.firstInfectedName && (target.species === "human" || target.species === "dog")) {
+    stats.firstInfectedName = target.name;
+  }
   target.state = target.hp <= 0 ? "turning" : "infected";
   if (target.hp <= 0) {
     target.alive = false;

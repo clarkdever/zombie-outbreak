@@ -153,6 +153,27 @@ describe("Simulation", () => {
     expect(dog.tile.x).toBeGreaterThan(6);
   });
 
+  it("credits dogs when they alert nearby humans after spotting zombies", () => {
+    const sim = new Simulation({ humans: 1, dogs: 1, zombies: 1, armedPercent: 0, seed: 33 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const dog = sim.entities.find((entity) => entity.species === "dog")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    for (const row of sim.map.tiles) {
+      for (const tile of row) tile.kind = "grass";
+    }
+    dog.tile = { x: 10, y: 10 };
+    dog.facing = 0;
+    zombie.tile = { x: 11, y: 10 };
+    human.tile = { x: 10, y: 18 };
+    human.facing = Math.PI;
+
+    sim.tick(1);
+
+    expect(dog.seenZombie).toBe(true);
+    expect(dog.humansAlerted).toBe(1);
+    expect(human.state).toBe("alerted");
+  });
+
   it("marks visible and audible stimuli for overlay feedback", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
@@ -359,6 +380,7 @@ describe("Simulation", () => {
     sim.movePossessed({ x: 0, y: -1 });
     sim.tick(1);
     expect(human.infected).toBe(true);
+    expect(sim.stats.firstInfectedName).toBe(human.name);
     expect(human.hp).toBeLessThan(100);
   });
 

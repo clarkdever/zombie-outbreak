@@ -1,5 +1,5 @@
 import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
-import { dogName, groupName, humanName } from "./names";
+import { dogName, groupName, humanName, uniqueHumanName } from "./names";
 import { Random } from "./random";
 import type { Entity, GameMap, HumanGroup, Species, TilePos, WorldState } from "./types";
 
@@ -18,6 +18,7 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
   const random = new Random(options.seed);
   const map = createNeighborhoodMap();
   const entities: Entity[] = [];
+  const usedNames = new Set<string>();
   const groups: HumanGroup[] = [{
     id: "group-1",
     name: groupName(random),
@@ -26,9 +27,11 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
   }];
 
   for (let index = 0; index < options.humans; index += 1) {
+    const name = uniqueHumanName(index, usedNames);
+    usedNames.add(name);
     const human = createEntity({
       id: `human-${index + 1}`,
-      name: humanName(index),
+      name,
       affiliation: groups[0].name,
       species: "human",
       tile: randomOpenTile(map, random),
@@ -55,7 +58,7 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
     const former = humanName(options.humans + index);
     entities.push(createEntity({
       id: `zombie-${index + 1}`,
-      name: `Undead ${former}`,
+      name: index === 0 ? "Patient Zero" : `Undead ${former}`,
       affiliation: "The Horde",
       species: "zombieHuman",
       tile: randomOpenTile(map, random)
