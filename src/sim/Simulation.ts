@@ -309,9 +309,9 @@ export class Simulation {
         zombie.grappleTargetId = livingTarget.id;
         zombie.grappleVictimSpecies = livingTarget.species === "dog" ? "dog" : "human";
         livingTarget.grappledById = zombie.id;
-        if (livingTarget.species === "dog") {
+        if (livingTarget.species === "dog" || livingTarget.species === "human") {
           livingTarget.seenZombie = true;
-          warnNearbyHumans(livingTarget, this.entities, 8);
+          warnNearbyHumans(livingTarget, this.entities, livingTarget.species === "dog" ? 8 : 6);
         }
         applyBite(zombie, livingTarget, 12, this.stats);
         if (!livingTarget.alive) {

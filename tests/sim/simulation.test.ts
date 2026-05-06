@@ -216,6 +216,27 @@ describe("Simulation", () => {
     expect(human.state).toBe("alerted");
   });
 
+  it("credits grappled humans for screaming to alert nearby humans", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 1, armedPercent: 0, seed: 43, grappleEscapePercent: 0 });
+    const victim = sim.entities.find((entity) => entity.id === "human-1")!;
+    const witness = sim.entities.find((entity) => entity.id === "human-2")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    victim.tile = { x: 10, y: 10 };
+    victim.facing = Math.PI;
+    zombie.tile = { x: 11, y: 10 };
+    witness.tile = { x: 10, y: 15 };
+    witness.facing = Math.PI / 2;
+    witness.seenZombie = false;
+    witness.state = "calm";
+
+    sim.tick(1);
+
+    expect(victim.grappledById).toBe(zombie.id);
+    expect(victim.seenZombie).toBe(true);
+    expect(victim.humansAlerted).toBe(1);
+    expect(witness.state).toBe("alerted");
+  });
+
   it("marks visible and audible stimuli for overlay feedback", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
