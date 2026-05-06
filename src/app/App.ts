@@ -2,6 +2,7 @@ import { InputController } from "./InputController";
 import { Renderer, type Camera } from "./Renderer";
 import { createHud, updateHud } from "./ui";
 import { resolveScenarioOptions } from "./presets";
+import { VisualPositionStore } from "./visualPositions";
 import { Simulation } from "../sim/Simulation";
 
 export class App {
@@ -11,6 +12,7 @@ export class App {
   private readonly hud: HTMLElement;
   private sim = new Simulation({ humans: 10, dogs: 2, zombies: 3, armedPercent: 25, seed: 42 });
   private readonly camera: Camera = { x: 0, y: 0, zoom: 1 };
+  private visualPositions = new VisualPositionStore();
   private selectedId: string | undefined;
   private debug = false;
   private speed = 1;
@@ -34,6 +36,7 @@ export class App {
       },
       onStart: (preset, overrides) => {
         this.sim = new Simulation(resolveScenarioOptions(preset, overrides, Date.now()));
+        this.visualPositions = new VisualPositionStore();
         this.selectedId = this.sim.entities[0]?.id;
       }
     });
@@ -53,14 +56,6 @@ export class App {
     const simDt = realDt * this.speed;
     this.lastTime = time;
     const input = this.input.update();
-    if (input.clicked) {
-      const hit = this.renderer.pickEntity(this.sim.entities, this.camera, input.clicked);
-      if (hit) {
-        this.selectedId = hit.id;
-        this.sim.possess(hit.id);
-        this.hud.classList.add("hud--possessing");
-      }
-    }
     if (input.turn !== 0) {
       this.sim.turnPossessed(input.turn * 2.5 * realDt);
     }
@@ -79,8 +74,17 @@ export class App {
     this.camera.x += input.edgeX * 320 * realDt;
     this.camera.y += input.edgeY * 320 * realDt;
     if (!this.sim.endState) this.sim.tick(simDt);
+    const visualEntities = this.visualPositions.update(this.sim.entities, realDt);
+    if (input.clicked) {
+      const hit = this.renderer.pickEntity(visualEntities, this.camera, input.clicked);
+      if (hit) {
+        this.selectedId = hit.id;
+        this.sim.possess(hit.id);
+        this.hud.classList.add("hud--possessing");
+      }
+    }
     this.selectedId ??= this.sim.entities[0]?.id;
-    this.renderer.render(this.sim.map, this.sim.entities, this.sim.bullets, this.camera, this.selectedId, this.debug);
+    this.renderer.render(this.sim.map, visualEntities, this.sim.bullets, this.camera, this.selectedId, this.debug);
     updateHud(this.hud, this.sim, this.speed, this.selectedId);
     requestAnimationFrame((nextTime) => this.frame(nextTime));
   }
