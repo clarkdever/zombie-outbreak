@@ -1,10 +1,11 @@
 import { entityRingColor } from "./entityPresentation";
 import { createBrowserSpriteAtlas, type SpriteAtlas } from "./spriteAtlas";
 import { drawEntitySprite } from "./sprites";
+import { TERRAIN_ATLAS_SRC, TERRAIN_FRAME_HEIGHT, TERRAIN_FRAME_WIDTH, terrainFrameFor } from "./terrainSprites";
 import type { VisualEntity } from "./visualPositions";
 import { visionRadiansFor, visionRangeFor } from "../sim/perception";
 import type { Entity, GameMap, TilePos, Vec2 } from "../sim/types";
-import type { BulletTrace } from "../sim/types";
+import type { BulletTrace, TileKind } from "../sim/types";
 
 export interface Camera {
   x: number;
@@ -19,6 +20,7 @@ type RenderableEntity = Entity | VisualEntity<Entity>;
 export class Renderer {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly spriteAtlas: SpriteAtlas;
+  private terrainAtlas?: HTMLImageElement;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -27,6 +29,7 @@ export class Renderer {
     }
     this.ctx = ctx;
     this.spriteAtlas = createBrowserSpriteAtlas();
+    this.loadTerrainAtlas();
   }
 
   render(
@@ -62,13 +65,18 @@ export class Renderer {
     });
   }
 
-  private drawTile(x: number, y: number, kind: string, camera: Camera): void {
+  private drawTile(x: number, y: number, kind: TileKind, camera: Camera): void {
     const p = isoToScreen(x, y, camera, this.canvas);
-    const colors: Record<string, string> = {
+    const colors: Record<TileKind, string> = {
       grass: "#4c7a45",
       road: "#3b3d3c",
+      crosswalk: "#6f746e",
       sidewalk: "#85877e",
       house: "#9d5c45",
+      houseFloor: "#8f7355",
+      carpet: "#7c4464",
+      houseWall: "#9d5c45",
+      furniture: "#70513a",
       fence: "#b58b53",
       tree: "#2f6636",
       car: "#476aa8",
@@ -84,6 +92,20 @@ export class Renderer {
     this.ctx.fill();
     this.ctx.strokeStyle = "rgba(0,0,0,0.22)";
     this.ctx.stroke();
+    if (this.terrainAtlas?.complete && this.terrainAtlas.naturalWidth > 0) {
+      const frame = terrainFrameFor(kind, x, y);
+      this.ctx.drawImage(
+        this.terrainAtlas,
+        frame.column * TERRAIN_FRAME_WIDTH,
+        frame.row * TERRAIN_FRAME_HEIGHT,
+        TERRAIN_FRAME_WIDTH,
+        TERRAIN_FRAME_HEIGHT,
+        Math.round(p.x - TERRAIN_FRAME_WIDTH / 2),
+        Math.round(p.y - TERRAIN_FRAME_HEIGHT / 2 - 10),
+        TERRAIN_FRAME_WIDTH,
+        TERRAIN_FRAME_HEIGHT
+      );
+    }
   }
 
   private drawEntity(entity: RenderableEntity, camera: Camera, selected: boolean, debug: boolean, timeSeconds: number): void {
@@ -128,6 +150,14 @@ export class Renderer {
     this.ctx.lineTo(to.x, to.y - 14);
     this.ctx.stroke();
     this.ctx.restore();
+  }
+
+  private loadTerrainAtlas(): void {
+    const image = new Image();
+    image.onload = () => {
+      this.terrainAtlas = image;
+    };
+    image.src = TERRAIN_ATLAS_SRC;
   }
 }
 

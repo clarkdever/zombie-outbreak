@@ -5,8 +5,13 @@ const SIZE = 30;
 const tileDefaults: Record<TileKind, Tile> = {
   grass: { kind: "grass", moveCost: 1, blocksMovement: false, blocksSight: false },
   road: { kind: "road", moveCost: 0.75, blocksMovement: false, blocksSight: false },
+  crosswalk: { kind: "crosswalk", moveCost: 0.8, blocksMovement: false, blocksSight: false },
   sidewalk: { kind: "sidewalk", moveCost: 0.9, blocksMovement: false, blocksSight: false },
   house: { kind: "house", moveCost: Infinity, blocksMovement: true, blocksSight: true },
+  houseFloor: { kind: "houseFloor", moveCost: 1, blocksMovement: false, blocksSight: false },
+  carpet: { kind: "carpet", moveCost: 1.05, blocksMovement: false, blocksSight: false },
+  houseWall: { kind: "houseWall", moveCost: Infinity, blocksMovement: true, blocksSight: false },
+  furniture: { kind: "furniture", moveCost: Infinity, blocksMovement: true, blocksSight: false },
   fence: { kind: "fence", moveCost: Infinity, blocksMovement: true, blocksSight: true },
   tree: { kind: "tree", moveCost: 1.4, blocksMovement: false, blocksSight: true },
   car: { kind: "car", moveCost: Infinity, blocksMovement: true, blocksSight: true },
@@ -24,6 +29,10 @@ export function createNeighborhoodMap(): GameMap {
   paintRect(tiles, "sidewalk", 0, 18, SIZE, 1);
   paintRect(tiles, "sidewalk", 12, 0, 1, SIZE);
   paintRect(tiles, "sidewalk", 17, 0, 1, SIZE);
+  paintRect(tiles, "crosswalk", 13, 14, 4, 1);
+  paintRect(tiles, "crosswalk", 13, 17, 4, 1);
+  paintRect(tiles, "crosswalk", 13, 14, 1, 4);
+  paintRect(tiles, "crosswalk", 16, 14, 1, 4);
 
   paintHouseLot(tiles, 3, 3);
   paintHouseLot(tiles, 20, 3);
@@ -47,7 +56,11 @@ function paintHouseLot(tiles: Tile[][], x: number, y: number): void {
   paintRect(tiles, "fence", x + 6, y - 1, 1, 8);
   paintRect(tiles, "yard", x - 1, y + 1, 1, 1);
   paintRect(tiles, "yard", x + 2, y + 6, 2, 1);
-  paintRect(tiles, "house", x + 1, y + 1, 4, 3);
+  paintRect(tiles, "houseFloor", x + 1, y + 1, 4, 3);
+  paintRect(tiles, "houseWall", x + 1, y + 1, 4, 1);
+  paintRect(tiles, "houseWall", x + 1, y + 1, 1, 3);
+  paintRect(tiles, "carpet", x + 2, y + 2, 2, 1);
+  paintRect(tiles, "furniture", x + 4, y + 2, 1, 1);
 }
 
 function paintRect(tiles: Tile[][], kind: TileKind, x: number, y: number, width: number, height: number): void {

@@ -10,10 +10,14 @@ describe("map wrapping and tile metadata", () => {
     expect(wrapTile(map, { x: 7, y: 30 })).toEqual({ x: 7, y: 0 });
   });
 
-  it("marks houses as blocking movement and sight", () => {
+  it("marks house half-walls as blocking movement with visible interiors", () => {
     const map = createNeighborhoodMap();
     expect(tileBlocksMovement(map, { x: 4, y: 4 })).toBe(true);
-    expect(tileBlocksSight(map, { x: 4, y: 4 })).toBe(true);
+    expect(tileBlocksSight(map, { x: 4, y: 4 })).toBe(false);
+    expect(map.tiles[5][5].kind).toBe("carpet");
+    expect(tileBlocksMovement(map, { x: 5, y: 5 })).toBe(false);
+    expect(map.tiles[5][7].kind).toBe("furniture");
+    expect(tileBlocksMovement(map, { x: 7, y: 5 })).toBe(true);
   });
 
   it("marks roads as faster non-blocking tiles", () => {
@@ -22,5 +26,11 @@ describe("map wrapping and tile metadata", () => {
     expect(road.kind).toBe("road");
     expect(road.moveCost).toBeLessThan(1);
     expect(tileBlocksMovement(map, { x: 4, y: 15 })).toBe(false);
+  });
+
+  it("paints crosswalks as non-blocking street tiles", () => {
+    const map = createNeighborhoodMap();
+    expect(map.tiles[14][14].kind).toBe("crosswalk");
+    expect(tileBlocksMovement(map, { x: 14, y: 14 })).toBe(false);
   });
 });

@@ -55,10 +55,10 @@ describe("perception", () => {
 
   it("uses directional vision cones and blockers", () => {
     const map = createNeighborhoodMap();
-    const viewer = entity({ tile: { x: 1, y: 4 }, facing: 0 });
-    expect(canSee(map, viewer, { x: 3, y: 4 })).toBe(true);
-    expect(canSee(map, viewer, { x: 0, y: 4 })).toBe(false);
-    expect(canSee(map, viewer, { x: 5, y: 4 })).toBe(false);
+    const viewer = entity({ tile: { x: 8, y: 15 }, facing: 0 });
+    expect(canSee(map, viewer, { x: 9, y: 15 })).toBe(true);
+    expect(canSee(map, viewer, { x: 7, y: 15 })).toBe(false);
+    expect(canSee(map, viewer, { x: 12, y: 15 })).toBe(false);
   });
 
   it("uses wider species-specific visual fields", () => {

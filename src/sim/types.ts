@@ -2,7 +2,20 @@ export type Species = "human" | "dog" | "zombieHuman" | "zombieDog";
 export type DogIdlePose = "sit" | "sleep";
 export type HumanIdlePose = "stand" | "sit" | "kneel";
 export const SKELETON_VARIANT_COUNT = 4;
-export type TileKind = "grass" | "road" | "sidewalk" | "house" | "fence" | "tree" | "car" | "yard";
+export type TileKind =
+  | "grass"
+  | "road"
+  | "crosswalk"
+  | "sidewalk"
+  | "house"
+  | "houseFloor"
+  | "carpet"
+  | "houseWall"
+  | "furniture"
+  | "fence"
+  | "tree"
+  | "car"
+  | "yard";
 export type EntityState =
   | "calm"
   | "alerted"

@@ -59,3 +59,23 @@ Current proof of the shard workflow:
 - `armed-human-left-run.png`
 - `armed-human-right-shoot.png`
 - `armed-human-left-shoot.png`
+
+## Terrain Atlas
+
+The terrain sheet is `terrain-atlas.png`. It uses `96x64` isometric frames in 4 columns by 20 rows.
+
+Terrain rows are assigned in `src/app/terrainSprites.ts`:
+
+- rows 0-2: grass and yard variants
+- rows 3-4: sidewalk variants
+- rows 5-6: street variants
+- row 7: crosswalk variants
+- rows 8-9: car variants
+- rows 10-11: house flooring variants
+- rows 12-13: carpet variants
+- rows 14-15: furniture variants
+- rows 16-17: house half-wall variants
+- row 18: fence variants
+- row 19: tree variants
+
+Tile variants are chosen deterministically from tile coordinates so the map has texture without flickering between renders.
