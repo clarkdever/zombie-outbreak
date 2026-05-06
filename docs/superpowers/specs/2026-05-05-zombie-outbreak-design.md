@@ -269,7 +269,7 @@ Later generate:
 - Cars, trees, houses, gates, and props
 - Bullet and muzzle-flash effect sprite sheet, including tracer/projectile frames, impact puffs, and hit sparks.
 
-Current bridge implementation: code-native pixel sprites already exercise the animation states and anchors before final generated sheets. The renderer now has an asset-manifest path that can load generated `64x64` transparent PNG sprite sheets from `public/assets/sprites/generated/` while falling back to the bridge sprites for any missing sheets.
+Current bridge implementation: code-native pixel sprites already exercise the animation states and anchors before final generated sheets. The renderer now has an asset-manifest path that can load generated `96x96` transparent PNG sprite sheets from `public/assets/sprites/generated/` while falling back to the bridge sprites for any missing sheets. The larger source frames preserve SNES-or-better detail; renderer scale keeps characters readable against the current board.
 
 Use palette swaps to create variety in humans and zombies. Keep animation sheets consistent in camera angle, scale, frame count, anchor point, and lighting. Bullet and muzzle-flash sprites should be authored at the same isometric camera angle as the characters, with a documented pixel-to-tile scale so projectile traces read clearly without overpowering character silhouettes.
 

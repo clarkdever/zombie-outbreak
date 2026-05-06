@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { spriteDrawPlanFor, spriteFrameRect, spriteSheetKeyFor } from "../../src/app/spriteManifest";
+import {
+  SPRITE_ANCHOR,
+  SPRITE_FRAME_SIZE,
+  spriteDrawPlanFor,
+  spriteFrameRect,
+  spriteSheetKeyFor
+} from "../../src/app/spriteManifest";
 import type { Entity } from "../../src/sim/types";
 
 function entity(overrides: Partial<Entity>): Entity {
@@ -49,11 +55,11 @@ describe("sprite manifest contract", () => {
   });
 
   it("calculates source rectangles by animation row and frame column", () => {
-    expect(spriteFrameRect({ frameWidth: 64, frameHeight: 64, columns: 4, row: 3 }, 2)).toEqual({
-      x: 128,
-      y: 192,
-      width: 64,
-      height: 64
+    expect(spriteFrameRect({ frameWidth: SPRITE_FRAME_SIZE, frameHeight: SPRITE_FRAME_SIZE, columns: 4, row: 3 }, 2)).toEqual({
+      x: 192,
+      y: 288,
+      width: 96,
+      height: 96
     });
   });
 
@@ -62,10 +68,10 @@ describe("sprite manifest contract", () => {
 
     expect(plan.sheet.id).toBe("armedHuman");
     expect(plan.clip.animation).toBe("shoot");
-    expect(plan.sourceRect.width).toBe(64);
-    expect(plan.sourceRect.height).toBe(64);
-    expect(plan.destination.width).toBeGreaterThan(20);
-    expect(plan.destination.height).toBeGreaterThan(20);
-    expect(plan.anchor).toEqual({ x: 32, y: 48 });
+    expect(plan.sourceRect.width).toBe(96);
+    expect(plan.sourceRect.height).toBe(96);
+    expect(plan.destination.width).toBe(63);
+    expect(plan.destination.height).toBe(63);
+    expect(plan.anchor).toEqual(SPRITE_ANCHOR);
   });
 });

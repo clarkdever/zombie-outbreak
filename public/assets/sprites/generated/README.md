@@ -1,6 +1,6 @@
 # Generated Sprite Sheets
 
-Drop final generated sprite sheets here with this naming:
+Drop generated sprite sheets here with this naming:
 
 - `human.png`
 - `armed-human.png`
@@ -10,12 +10,14 @@ Drop final generated sprite sheets here with this naming:
 - `corpse.png`
 - `skeleton.png`
 
+Each sheet should be `384x768`, with `96x96` frames arranged in 4 columns and 8 rows. Start with one sheet in the manifest so we can judge scale and art direction before generating the full set.
+
 When at least one sheet is ready, add `manifest.json` next to the images:
 
 ```json
 {
   "sheets": [
-    { "id": "human", "src": "/assets/sprites/generated/human.png" }
+    { "id": "armedHuman", "src": "/assets/sprites/generated/armed-human.png" }
   ]
 }
 ```

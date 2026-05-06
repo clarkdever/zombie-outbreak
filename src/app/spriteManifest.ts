@@ -44,6 +44,11 @@ export interface SpriteDrawPlan {
   destination: { width: number; height: number };
 }
 
+export const SPRITE_FRAME_SIZE = 96;
+export const SPRITE_SHEET_COLUMNS = 4;
+export const SPRITE_ANIMATION_ROWS = 8;
+export const SPRITE_ANCHOR = { x: 48, y: 76 } as const;
+
 const HUMANOID_CLIPS = clips({
   idle: [0, 2, 2],
   walk: [1, 4, 4],
@@ -67,13 +72,13 @@ const DOG_CLIPS = clips({
 });
 
 export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
-  human: spriteSheet("human", "human.png", HUMANOID_CLIPS, 0.72),
-  armedHuman: spriteSheet("armedHuman", "armed-human.png", HUMANOID_CLIPS, 0.72),
-  dog: spriteSheet("dog", "dog.png", DOG_CLIPS, 0.62),
-  zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.72),
-  zombieDog: spriteSheet("zombieDog", "zombie-dog.png", DOG_CLIPS, 0.62),
-  corpse: spriteSheet("corpse", "corpse.png", HUMANOID_CLIPS, 0.72),
-  skeleton: spriteSheet("skeleton", "skeleton.png", HUMANOID_CLIPS, 0.72)
+  human: spriteSheet("human", "human.png", HUMANOID_CLIPS, 0.66),
+  armedHuman: spriteSheet("armedHuman", "armed-human.png", HUMANOID_CLIPS, 0.66),
+  dog: spriteSheet("dog", "dog.png", DOG_CLIPS, 0.52),
+  zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.66),
+  zombieDog: spriteSheet("zombieDog", "zombie-dog.png", DOG_CLIPS, 0.52),
+  corpse: spriteSheet("corpse", "corpse.png", HUMANOID_CLIPS, 0.66),
+  skeleton: spriteSheet("skeleton", "skeleton.png", HUMANOID_CLIPS, 0.66)
 };
 
 export function spriteAnimationFor(entity: Entity): SpriteAnimation {
@@ -147,10 +152,10 @@ function spriteSheet(
   return {
     id,
     src: `/assets/sprites/generated/${fileName}`,
-    frameWidth: 64,
-    frameHeight: 64,
-    columns: 4,
-    anchor: { x: 32, y: 48 },
+    frameWidth: SPRITE_FRAME_SIZE,
+    frameHeight: SPRITE_FRAME_SIZE,
+    columns: SPRITE_SHEET_COLUMNS,
+    anchor: { ...SPRITE_ANCHOR },
     scale,
     clips: clipsByAnimation
   };

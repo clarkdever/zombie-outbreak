@@ -1,16 +1,18 @@
 # Sprite Pipeline
 
-The current in-game sprites are a bridge implementation: they prove animation timing, facing, anchors, and state mapping before final art lands.
+The current in-game sprites are a bridge implementation: they prove animation timing, facing, anchors, and state mapping before final art lands. Generate and test one entity sheet at a time before expanding the full set.
 
 ## Runtime Contract
 
-Sprite sheets live in `public/assets/sprites/generated/` and are discovered through `manifest.json`.
+Sprite sheets live in `public/assets/sprites/generated/` and are discovered through `manifest.json`. The first test sheet is `armed-human.png`, because weapon stance, muzzle flash, and scale are easy to judge in-game.
 
-Each sheet uses:
+Each sheet uses a higher-detail source size so the art can look SNES-or-better while still rendering at board scale:
 
-- Frame size: `64x64`
+- Frame size: `96x96`
+- Sheet size: `384x768`
 - Columns: `4`
-- Anchor: `32,48`
+- Rows: `8`
+- Anchor: `48,76`
 - Camera: isometric three-quarter view
 - Background: transparent
 - Output format: PNG
@@ -34,7 +36,7 @@ Humans, armed humans, zombies, corpses, and skeletons use the full row contract.
 
 Use the native image generation tool for each sheet. Keep the prompt direct:
 
-> Create a transparent PNG sprite sheet for a retro 16-bit isometric arcade horror game. Sheet size is 256x512. Each frame is 64x64 pixels, arranged 4 columns by 8 rows. Keep the character centered on the same anchor point at pixel 32,48 in every frame. Camera angle is isometric three-quarter top-down, matching a 48x24 isometric tile grid. Use chunky dark outlines, readable silhouettes, limited palette, crisp pixel-art edges, no text, no labels, no background.
+> Create a transparent PNG sprite sheet for a retro 16-bit isometric arcade horror game. Sheet size is 384x768. Each frame is 96x96 pixels, arranged 4 columns by 8 rows. Keep the character centered on the same anchor point at pixel 48,76 in every frame. Camera angle is isometric three-quarter top-down, matching a 48x24 isometric tile grid. Use SNES-or-better pixel-art detail, chunky dark outlines, readable silhouettes, limited palette, crisp pixel-art edges, no text, no labels, no background.
 
 Then append the entity-specific line:
 
