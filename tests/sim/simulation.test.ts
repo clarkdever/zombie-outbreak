@@ -398,6 +398,8 @@ describe("Simulation", () => {
 
     for (let tick = 0; tick < 10; tick += 1) four.tick(1);
     expect(fourBody.skeleton).toBe(true);
+    expect(fourBody.skeletonVariant).toBeGreaterThanOrEqual(0);
+    expect(fourBody.skeletonVariant).toBeLessThan(4);
   });
 
   it("lets controlled zombies infect humans by contact", () => {

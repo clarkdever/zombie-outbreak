@@ -14,7 +14,15 @@ export type SpriteAnimation =
   | "skeleton"
   | "idle";
 export type SpriteDirection = "down" | "left" | "up" | "right";
-export type SpriteSheetKey = "human" | "armedHuman" | "dog" | "zombieHuman" | "zombieDog" | "corpse" | "skeleton";
+export type SpriteSheetKey =
+  | "human"
+  | "armedHuman"
+  | "dog"
+  | "zombieHuman"
+  | "zombieDog"
+  | "corpse"
+  | "skeletonHuman"
+  | "skeletonDog";
 
 export interface SpriteFrame {
   animation: SpriteAnimation;
@@ -102,7 +110,8 @@ export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
   zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.66),
   zombieDog: spriteSheet("zombieDog", "zombie-dog.png", DOG_CLIPS, 0.52),
   corpse: spriteSheet("corpse", "corpse.png", HUMANOID_CLIPS, 0.66),
-  skeleton: spriteSheet("skeleton", "skeleton.png", HUMANOID_CLIPS, 0.66)
+  skeletonHuman: spriteSheet("skeletonHuman", "skeleton-human.png", HUMANOID_CLIPS, 0.66),
+  skeletonDog: spriteSheet("skeletonDog", "skeleton-dog.png", DOG_CLIPS, 0.52)
 };
 
 export function spriteAnimationFor(entity: Entity): SpriteAnimation {
@@ -124,7 +133,12 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
   const animation = spriteAnimationFor(entity);
   const sheet = SPRITE_SHEETS[spriteSheetKeyFor(entity)];
   const clip = sheet.clips[animation];
-  const frame = clip.frames === 1 ? 0 : Math.floor(timeSeconds * clip.fps) % clip.frames;
+  const frame =
+    animation === "skeleton"
+      ? Math.max(0, Math.min(sheet.columns - 1, entity.skeletonVariant ?? 0))
+      : clip.frames === 1
+        ? 0
+        : Math.floor(timeSeconds * clip.fps) % clip.frames;
   return {
     animation,
     frame,
@@ -134,7 +148,7 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
 }
 
 export function spriteSheetKeyFor(entity: Entity): SpriteSheetKey {
-  if (entity.skeleton) return "skeleton";
+  if (entity.skeleton) return entity.species === "dog" || entity.species === "zombieDog" ? "skeletonDog" : "skeletonHuman";
   if (!entity.alive && !entity.species.includes("zombie")) return "corpse";
   if (entity.species === "human") return entity.armed ? "armedHuman" : "human";
   return entity.species;
@@ -144,7 +158,7 @@ export function spriteDrawPlanFor(entity: Entity, timeSeconds: number): SpriteDr
   const sheet = SPRITE_SHEETS[spriteSheetKeyFor(entity)];
   const frame = spriteFrameFor(entity, timeSeconds);
   const clip = sheet.clips[frame.animation] ?? sheet.clips.idle;
-  const frameIndex = Math.min(frame.frame, clip.frames - 1);
+  const frameIndex = frame.animation === "skeleton" ? frame.frame : Math.min(frame.frame, clip.frames - 1);
   return {
     sheet,
     clip,

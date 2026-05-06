@@ -25,6 +25,7 @@ export class BrowserSpriteAtlas implements SpriteAtlas {
   get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation): LoadedSpriteSheet | undefined {
     return (
       this.sheets.get(spriteAtlasKey(sheetId, direction, animation)) ??
+      this.sheets.get(spriteAtlasKey(sheetId, undefined, animation)) ??
       this.sheets.get(spriteAtlasKey(sheetId, direction)) ??
       this.sheets.get(spriteAtlasKey(sheetId))
     );

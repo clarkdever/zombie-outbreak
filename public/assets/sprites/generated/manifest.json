@@ -321,6 +321,16 @@
       "direction": "right",
       "animation": "feedDog",
       "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "skeletonHuman",
+      "animation": "skeleton",
+      "src": "/assets/sprites/generated/skeleton-human.png"
+    },
+    {
+      "id": "skeletonDog",
+      "animation": "skeleton",
+      "src": "/assets/sprites/generated/skeleton-dog.png"
     }
   ]
 }

@@ -6,7 +6,7 @@ import { createNeighborhoodMap, tileBlocksMovement, tileBlocksSight, wrapTile } 
 import { canSee } from "./perception";
 import { Random } from "./random";
 import { createStats } from "./stats";
-import type { BulletTrace, EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats, Vec2 } from "./types";
+import { SKELETON_VARIANT_COUNT, type BulletTrace, type EndFact, type Entity, type GameMap, type HumanGroup, type NoiseEvent, type SimStats, type Vec2 } from "./types";
 
 export interface SimulationOptions {
   humans: number;
@@ -66,6 +66,7 @@ export class Simulation {
       .map((bullet) => ({ ...bullet, ageSeconds: bullet.ageSeconds + dt }))
       .filter((bullet) => bullet.ageSeconds < 0.22);
     tickInfectionAndBodies(this.entities, dt, { infectionDamagePerSecond: 1, turningDelaySeconds: 10 }, this.stats);
+    this.assignSkeletonVariants();
     if (Math.floor(this.stats.elapsedSeconds) !== Math.floor(previousElapsedSeconds)) {
       this.stats.zombiePopulationSamples.push(this.zombies.length);
     }
@@ -144,6 +145,14 @@ export class Simulation {
 
   private get zombies(): Entity[] {
     return this.entities.filter((entity) => isZombie(entity) && !entity.skeleton);
+  }
+
+  private assignSkeletonVariants(): void {
+    for (const entity of this.entities) {
+      if (entity.skeleton && entity.skeletonVariant === undefined) {
+        entity.skeletonVariant = this.random.int(SKELETON_VARIANT_COUNT);
+      }
+    }
   }
 
   private updateStimulusFlags(): void {

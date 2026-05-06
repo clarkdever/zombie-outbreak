@@ -1,4 +1,5 @@
 export type Species = "human" | "dog" | "zombieHuman" | "zombieDog";
+export const SKELETON_VARIANT_COUNT = 4;
 export type TileKind = "grass" | "road" | "sidewalk" | "house" | "fence" | "tree" | "car" | "yard";
 export type EntityState =
   | "calm"
@@ -63,6 +64,7 @@ export interface Entity {
   controlled: boolean;
   alive: boolean;
   skeleton: boolean;
+  skeletonVariant?: number;
   seenZombie: boolean;
   seesStimulus?: boolean;
   hearsStimulus?: boolean;

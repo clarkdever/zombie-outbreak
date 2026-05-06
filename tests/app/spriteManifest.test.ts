@@ -54,7 +54,8 @@ describe("sprite manifest contract", () => {
     expect(spriteSheetKeyFor(entity({ species: "zombieHuman" }))).toBe("zombieHuman");
     expect(spriteSheetKeyFor(entity({ species: "zombieDog" }))).toBe("zombieDog");
     expect(spriteSheetKeyFor(entity({ alive: false, skeleton: false }))).toBe("corpse");
-    expect(spriteSheetKeyFor(entity({ alive: false, skeleton: true }))).toBe("skeleton");
+    expect(spriteSheetKeyFor(entity({ species: "human", alive: false, skeleton: true }))).toBe("skeletonHuman");
+    expect(spriteSheetKeyFor(entity({ species: "dog", alive: false, skeleton: true }))).toBe("skeletonDog");
   });
 
   it("calculates source rectangles by animation row and frame column", () => {
@@ -76,6 +77,14 @@ describe("sprite manifest contract", () => {
     expect(plan.destination.width).toBe(63);
     expect(plan.destination.height).toBe(63);
     expect(plan.anchor).toEqual(SPRITE_ANCHOR);
+  });
+
+  it("uses the assigned skeleton variant as the static frame", () => {
+    const plan = spriteDrawPlanFor(entity({ species: "dog", alive: false, skeleton: true, skeletonVariant: 3 }), 20);
+
+    expect(plan.sheet.id).toBe("skeletonDog");
+    expect(plan.clip.animation).toBe("skeleton");
+    expect(plan.frame).toBe(3);
   });
 
   it("maps world facing to screen-facing sprite directions", () => {

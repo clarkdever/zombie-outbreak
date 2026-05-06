@@ -111,6 +111,7 @@ function createEntity(input: {
     controlled: false,
     alive: !zombie,
     skeleton: false,
+    skeletonVariant: undefined,
     seenZombie: zombie,
     seesStimulus: false,
     hearsStimulus: false,

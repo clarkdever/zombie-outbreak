@@ -7,6 +7,7 @@ describe("sprite atlas keys", () => {
   it("separates generated sheets by entity, direction, and animation", () => {
     expect(spriteAtlasKey("armedHuman", "left")).toBe("armedHuman:left");
     expect(spriteAtlasKey("armedHuman", "right", "shoot")).toBe("armedHuman:right:shoot");
+    expect(spriteAtlasKey("skeletonHuman", undefined, "skeleton")).toBe("skeletonHuman:skeleton");
     expect(spriteAtlasKey("armedHuman")).toBe("armedHuman");
   });
 
@@ -40,5 +41,16 @@ describe("sprite atlas keys", () => {
         expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, animation));
       }
     }
+  });
+
+  it("publishes human and dog skeleton variant sheets", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+
+    expect(keys).toContain(spriteAtlasKey("skeletonHuman", undefined, "skeleton"));
+    expect(keys).toContain(spriteAtlasKey("skeletonDog", undefined, "skeleton"));
   });
 });
