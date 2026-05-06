@@ -199,4 +199,84 @@ describe("Simulation", () => {
     expect(bystander.hp).toBeLessThan(100);
     expect(shooter.state).toBe("shooting");
   });
+
+  it("prevents controlled armed humans from firing while shot cooldown is active", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 21 });
+    const shooter = sim.entities[0];
+    const target = sim.entities[1];
+    shooter.tile = { x: 5, y: 10 };
+    shooter.facing = 0;
+    target.tile = { x: 8, y: 12 };
+    sim.possess(shooter.id);
+
+    expect(sim.shootPossessed()).toBe(true);
+    expect(sim.shootPossessed()).toBe(false);
+    expect(sim.bullets).toHaveLength(1);
+
+    sim.tick(1);
+    expect(sim.shootPossessed()).toBe(true);
+  });
+
+  it("ages bullet traces out while shot cooldown recovers", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 22 });
+    const shooter = sim.entities[0];
+    const target = sim.entities[1];
+    shooter.tile = { x: 5, y: 10 };
+    shooter.facing = 0;
+    target.tile = { x: 8, y: 10 };
+    sim.possess(shooter.id);
+
+    sim.shootPossessed();
+    expect(sim.bullets).toHaveLength(1);
+    sim.tick(0.25);
+    expect(sim.bullets).toHaveLength(0);
+    expect(shooter.shotCooldownSeconds).toBeLessThan(1);
+  });
+
+  it("keeps autonomous shot cooldown consistent for large ticks", () => {
+    const once = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 23 });
+    const onceHuman = once.entities.find((entity) => entity.species === "human")!;
+    const onceZombie = once.entities.find((entity) => entity.species === "zombieHuman")!;
+    onceHuman.tile = { x: 5, y: 15 };
+    onceHuman.facing = 0;
+    onceZombie.tile = { x: 8, y: 15 };
+    onceZombie.hp = 200;
+
+    const split = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 23 });
+    const splitHuman = split.entities.find((entity) => entity.species === "human")!;
+    const splitZombie = split.entities.find((entity) => entity.species === "zombieHuman")!;
+    splitHuman.tile = { x: 5, y: 15 };
+    splitHuman.facing = 0;
+    splitZombie.tile = { x: 8, y: 15 };
+    splitZombie.hp = 200;
+
+    once.tick(3);
+    split.tick(1);
+    split.tick(1);
+    split.tick(1);
+
+    expect(onceZombie.hp).toBe(splitZombie.hp);
+    expect(once.stats.zombiesKilled).toBe(split.stats.zombiesKilled);
+    expect(once.bullets.length).toBe(split.bullets.length);
+  });
+
+  it("recovers shot cooldown only by elapsed sub-second time", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 1, armedPercent: 100, seed: 24 });
+    const shooter = sim.entities[0];
+    const target = sim.entities[1];
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    shooter.tile = { x: 5, y: 10 };
+    shooter.facing = 0;
+    target.tile = { x: 5, y: 13 };
+    zombie.tile = { x: 20, y: 20 };
+    zombie.hp = 200;
+    sim.possess(shooter.id);
+
+    sim.shootPossessed();
+    sim.tick(0.25);
+    sim.tick(0.25);
+    expect(shooter.shotCooldownSeconds).toBeCloseTo(0.5);
+    sim.tick(0);
+    expect(shooter.shotCooldownSeconds).toBeCloseTo(0.5);
+  });
 });

@@ -15,6 +15,7 @@ function entity(overrides: Partial<Entity>): Entity {
     hp: 75,
     maxHp: 100,
     armed: false,
+    shotCooldownSeconds: 0,
     infected: false,
     infectionSeconds: 0,
     turnSeconds: 0,

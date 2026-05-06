@@ -42,10 +42,17 @@ export class Simulation {
     if (this.endState) return;
     const previousElapsedSeconds = this.stats.elapsedSeconds;
     this.stats.elapsedSeconds += dt;
-    this.actionAccumulatorSeconds += dt;
-    while (this.actionAccumulatorSeconds >= 1 && !this.endState) {
-      this.stepActions();
-      this.actionAccumulatorSeconds -= 1;
+    let remainingSeconds = dt;
+    while (remainingSeconds > 0 && !this.endState) {
+      const secondsUntilAction = 1 - this.actionAccumulatorSeconds;
+      const elapsedSeconds = Math.min(remainingSeconds, secondsUntilAction);
+      this.recoverShotCooldowns(elapsedSeconds);
+      this.actionAccumulatorSeconds += elapsedSeconds;
+      remainingSeconds -= elapsedSeconds;
+      if (this.actionAccumulatorSeconds >= 1) {
+        this.actionAccumulatorSeconds = 0;
+        this.stepActions();
+      }
     }
     this.bullets = this.bullets
       .map((bullet) => ({ ...bullet, ageSeconds: bullet.ageSeconds + dt }))
@@ -97,6 +104,7 @@ export class Simulation {
   shootPossessed(): boolean {
     const controlled = this.entities.find((entity) => entity.controlled);
     if (!controlled || controlled.species !== "human" || !controlled.alive || !controlled.armed) return false;
+    if (controlled.shotCooldownSeconds > 0) return false;
     this.fireBullet(controlled);
     return true;
   }
@@ -148,6 +156,7 @@ export class Simulation {
   private resolveHumanAttacks(): void {
     for (const human of this.entities) {
       if (human.species !== "human" || !human.alive || !human.armed || human.controlled) continue;
+      if (human.shotCooldownSeconds > 0) continue;
       const target = this.zombies.find((zombie) =>
         Math.hypot(zombie.tile.x - human.tile.x, zombie.tile.y - human.tile.y) <= 6 && canSee(this.map, human, zombie.tile)
       );
@@ -167,6 +176,7 @@ export class Simulation {
     const hit = this.findBulletHit(shooter, from, intendedTo);
     const to = hit ? { x: hit.tile.x, y: hit.tile.y } : intendedTo;
     shooter.state = "shooting";
+    shooter.shotCooldownSeconds = 1;
     this.noises.push({
       id: `gunshot-${this.bulletId + 1}`,
       kind: "gunshot",
@@ -184,6 +194,12 @@ export class Simulation {
     });
     this.bulletId += 1;
     if (hit) this.applyBulletDamage(shooter, hit, 35);
+  }
+
+  private recoverShotCooldowns(dt: number): void {
+    for (const entity of this.entities) {
+      entity.shotCooldownSeconds = Math.max(0, entity.shotCooldownSeconds - dt);
+    }
   }
 
   private findBulletHit(shooter: Entity, from: Vec2, to: Vec2): Entity | undefined {

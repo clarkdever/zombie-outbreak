@@ -92,6 +92,7 @@ function createEntity(input: {
     hp: maxHp,
     maxHp,
     armed: input.armed ?? false,
+    shotCooldownSeconds: 0,
     infected: zombie,
     infectionSeconds: 0,
     turnSeconds: 0,
