@@ -35,6 +35,27 @@ describe("Simulation", () => {
     expect(facts.some((fact) => fact.label === "Bestest doggo" && fact.value.includes(dog.name))).toBe(true);
   });
 
+  it("credits zombies for dog meat in end facts even after the zombie is killed", () => {
+    const sim = new Simulation({ humans: 1, dogs: 1, zombies: 1, armedPercent: 0, seed: 41 });
+    const dog = sim.entities.find((entity) => entity.species === "dog")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    dog.alive = false;
+    dog.infected = true;
+    dog.state = "turning";
+    dog.meat = 60;
+    dog.tile = { x: 10, y: 10 };
+    dog.facing = Math.PI;
+    zombie.tile = { x: 11, y: 10 };
+
+    sim.tick(1);
+    zombie.skeleton = true;
+    zombie.state = "downed";
+
+    const hungriest = sim.getEndFacts().find((fact) => fact.label === "Hungriest zombie");
+    expect(hungriest?.value).toContain(zombie.name);
+    expect(hungriest?.value).toContain("3 meat");
+  });
+
   it("moves possessed entities forward relative to their facing", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 11 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
@@ -170,6 +191,26 @@ describe("Simulation", () => {
 
     sim.tick(1);
 
+    expect(dog.seenZombie).toBe(true);
+    expect(dog.humansAlerted).toBe(1);
+    expect(human.state).toBe("alerted");
+  });
+
+  it("credits grappled dogs for alerting nearby humans", () => {
+    const sim = new Simulation({ humans: 1, dogs: 1, zombies: 1, armedPercent: 0, seed: 42, grappleEscapePercent: 0 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const dog = sim.entities.find((entity) => entity.species === "dog")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    dog.tile = { x: 10, y: 10 };
+    dog.facing = Math.PI;
+    zombie.tile = { x: 11, y: 10 };
+    human.tile = { x: 10, y: 17 };
+    human.seenZombie = false;
+    human.state = "calm";
+
+    sim.tick(1);
+
+    expect(dog.grappledById).toBe(zombie.id);
     expect(dog.seenZombie).toBe(true);
     expect(dog.humansAlerted).toBe(1);
     expect(human.state).toBe("alerted");

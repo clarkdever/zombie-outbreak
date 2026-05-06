@@ -136,7 +136,9 @@ export class Simulation {
   getEndFacts(): EndFact[] {
     const humans = this.entities.filter((entity) => entity.species === "human");
     const dogs = this.entities.filter((entity) => entity.species === "dog");
-    const hungriest = [...this.zombies].sort((a, b) => b.totalMeatEaten - a.totalMeatEaten)[0];
+    const hungriest = this.entities
+      .filter((entity) => isZombie(entity) || entity.totalMeatEaten > 0)
+      .sort((a, b) => b.totalMeatEaten - a.totalMeatEaten)[0];
     const bestDog = [...dogs].sort((a, b) => (b.humansAlerted + b.zombieDamageDealt) - (a.humansAlerted + a.zombieDamageDealt))[0];
     const bestShot = [...humans].sort((a, b) => b.zombieKills - a.zombieKills)[0];
     return [
@@ -307,6 +309,10 @@ export class Simulation {
         zombie.grappleTargetId = livingTarget.id;
         zombie.grappleVictimSpecies = livingTarget.species === "dog" ? "dog" : "human";
         livingTarget.grappledById = zombie.id;
+        if (livingTarget.species === "dog") {
+          livingTarget.seenZombie = true;
+          warnNearbyHumans(livingTarget, this.entities, 8);
+        }
         applyBite(zombie, livingTarget, 12, this.stats);
         if (!livingTarget.alive) {
           livingTarget.turnSeconds = 10;
