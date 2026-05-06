@@ -41,7 +41,9 @@ function entity(overrides: Partial<Entity>): Entity {
 describe("sprite animation state", () => {
   it("maps entity states to animation clips", () => {
     expect(spriteAnimationFor(entity({ state: "calm" }))).toBe("walk");
+    expect(spriteAnimationFor(entity({ species: "dog", state: "calm" }))).toBe("idle");
     expect(spriteAnimationFor(entity({ state: "fleeing" }))).toBe("run");
+    expect(spriteAnimationFor(entity({ species: "dog", state: "alerted", seesStimulus: true }))).toBe("bark");
     expect(spriteAnimationFor(entity({ state: "shooting", armed: true }))).toBe("shoot");
     expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "attacking", grappleVictimSpecies: "human" }))).toBe("attackHuman");
     expect(spriteAnimationFor(entity({ species: "zombieHuman", state: "attacking", grappleVictimSpecies: "dog" }))).toBe("attackDog");
@@ -58,5 +60,12 @@ describe("sprite animation state", () => {
     expect(spriteFrameFor(walker, 0).frame).toBe(0);
     expect(spriteFrameFor(walker, 0.3).frame).toBeGreaterThan(0);
     expect(spriteFrameFor(entity({ facing: Math.PI / 2 }), 0).flipX).toBe(true);
+  });
+
+  it("keeps dog idle poses within their assigned sitting or sleeping frames", () => {
+    expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sit" }), 0).frame).toBe(0);
+    expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sit" }), 0.6).frame).toBe(1);
+    expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sleep" }), 0).frame).toBe(2);
+    expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sleep" }), 0.6).frame).toBe(3);
   });
 });

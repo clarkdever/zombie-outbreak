@@ -67,6 +67,7 @@ describe("entity creation", () => {
     for (const dog of world.entities.filter((entity) => entity.species === "dog")) {
       const owner = world.entities.find((entity) => entity.id === dog.ownerId)!;
       expect(wrappedDistance(dog.tile, owner.tile)).toBeLessThanOrEqual(2);
+      expect(["sit", "sleep"]).toContain(dog.dogIdlePose);
     }
   });
 

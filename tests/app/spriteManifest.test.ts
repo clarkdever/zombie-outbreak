@@ -51,6 +51,7 @@ describe("sprite manifest contract", () => {
     expect(spriteSheetKeyFor(entity({ species: "human", armed: false }))).toBe("human");
     expect(spriteSheetKeyFor(entity({ species: "human", armed: true }))).toBe("armedHuman");
     expect(spriteSheetKeyFor(entity({ species: "dog" }))).toBe("dog");
+    expect(spriteSheetKeyFor(entity({ species: "dog", alive: false, skeleton: false }))).toBe("dog");
     expect(spriteSheetKeyFor(entity({ species: "zombieHuman" }))).toBe("zombieHuman");
     expect(spriteSheetKeyFor(entity({ species: "zombieDog" }))).toBe("zombieDog");
     expect(spriteSheetKeyFor(entity({ alive: false, skeleton: false }))).toBe("corpse");

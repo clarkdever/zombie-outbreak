@@ -53,4 +53,17 @@ describe("sprite atlas keys", () => {
     expect(keys).toContain(spriteAtlasKey("skeletonHuman", undefined, "skeleton"));
     expect(keys).toContain(spriteAtlasKey("skeletonDog", undefined, "skeleton"));
   });
+
+  it("publishes generated dog direction sheets", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+
+    expect(keys).toContain(spriteAtlasKey("dog", "down"));
+    expect(keys).toContain(spriteAtlasKey("dog", "left"));
+    expect(keys).toContain(spriteAtlasKey("dog", "up"));
+    expect(keys).toContain(spriteAtlasKey("dog", "right"));
+  });
 });

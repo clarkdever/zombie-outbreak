@@ -50,7 +50,8 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
       affiliation: owner?.name ?? "No One",
       species: "dog",
       tile: owner ? nearbyOpenTile(map, owner.tile, random) : randomOpenTile(map, random),
-      ownerId: owner?.id
+      ownerId: owner?.id,
+      dogIdlePose: random.pick(["sit", "sleep"])
     }));
   }
 
@@ -80,6 +81,7 @@ function createEntity(input: {
   armed?: boolean;
   groupId?: string;
   ownerId?: string;
+  dogIdlePose?: "sit" | "sleep";
 }): Entity {
   const dog = input.species === "dog" || input.species === "zombieDog";
   const zombie = input.species === "zombieHuman" || input.species === "zombieDog";
@@ -112,6 +114,7 @@ function createEntity(input: {
     alive: !zombie,
     skeleton: false,
     skeletonVariant: undefined,
+    dogIdlePose: dog && !zombie ? input.dogIdlePose ?? "sit" : undefined,
     seenZombie: zombie,
     seesStimulus: false,
     hearsStimulus: false,

@@ -1,7 +1,7 @@
 import { tileBlocksMovement, wrapTile } from "./map";
 import { movementSpeedFor } from "./movement";
 import { canHear, canSee, createNoise } from "./perception";
-import type { Entity, GameMap, NoiseEvent, TilePos } from "./types";
+import type { DogIdlePose, Entity, GameMap, NoiseEvent, TilePos } from "./types";
 
 const CALM_HOME_RADIUS = 3;
 
@@ -10,7 +10,8 @@ export function tickSimpleAi(
   map: GameMap,
   entities: Entity[],
   noises: NoiseEvent[],
-  immobilizedIds = new Set<string>()
+  immobilizedIds = new Set<string>(),
+  chooseDogIdlePose: () => DogIdlePose = () => "sit"
 ): NoiseEvent[] {
   entity.speed = movementSpeedFor(entity);
   if (entity.controlled || entity.skeleton || immobilizedIds.has(entity.id)) return [];
@@ -19,7 +20,7 @@ export function tickSimpleAi(
     return tickZombie(entity, map, entities);
   }
   if (entity.species === "dog") {
-    return tickDog(entity, map, entities);
+    return tickDog(entity, map, entities, chooseDogIdlePose);
   }
   return tickHuman(entity, map, noises);
 }
@@ -40,7 +41,7 @@ function tickZombie(entity: Entity, map: GameMap, entities: Entity[]): NoiseEven
   return [];
 }
 
-function tickDog(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[] {
+function tickDog(entity: Entity, map: GameMap, entities: Entity[], chooseDogIdlePose: () => DogIdlePose): NoiseEvent[] {
   const zombie = entities.find((target) =>
     (target.species === "zombieHuman" || target.species === "zombieDog") && canSee(map, entity, target.tile)
   );
@@ -52,10 +53,12 @@ function tickDog(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[]
   if (owner) {
     const distanceToOwner = Math.hypot(shortestDelta(entity.tile.x, owner.tile.x, map.width), shortestDelta(entity.tile.y, owner.tile.y, map.height));
     if (distanceToOwner > 2) {
-      entity.state = owner.state === "alerted" ? "alerted" : "calm";
+      entity.state = owner.state === "alerted" ? "alerted" : "investigating";
       stepToward(entity, map, owner.tile);
     } else {
+      const wasIdle = entity.state === "calm";
       entity.state = owner.state === "alerted" ? "alerted" : "calm";
+      if (entity.state === "calm" && !wasIdle) entity.dogIdlePose = chooseDogIdlePose();
     }
   }
   return [];

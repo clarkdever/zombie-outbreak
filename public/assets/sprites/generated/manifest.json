@@ -107,6 +107,26 @@
       "src": "/assets/sprites/generated/armed-human.png"
     },
     {
+      "id": "dog",
+      "direction": "down",
+      "src": "/assets/sprites/generated/dog-down.png"
+    },
+    {
+      "id": "dog",
+      "direction": "left",
+      "src": "/assets/sprites/generated/dog-left.png"
+    },
+    {
+      "id": "dog",
+      "direction": "up",
+      "src": "/assets/sprites/generated/dog-up.png"
+    },
+    {
+      "id": "dog",
+      "direction": "right",
+      "src": "/assets/sprites/generated/dog-right.png"
+    },
+    {
       "id": "zombieHuman",
       "direction": "down",
       "animation": "idle",

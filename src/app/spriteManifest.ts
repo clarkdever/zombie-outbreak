@@ -6,6 +6,7 @@ export type SpriteAnimation =
   | "attack"
   | "attackHuman"
   | "attackDog"
+  | "bark"
   | "shoot"
   | "feed"
   | "feedHuman"
@@ -80,6 +81,7 @@ const HUMANOID_CLIPS = clips({
   attack: [3, 3, 8],
   attackHuman: [3, 3, 8],
   attackDog: [3, 3, 8],
+  bark: [3, 3, 8],
   shoot: [4, 2, 12],
   feed: [5, 3, 5],
   feedHuman: [5, 3, 5],
@@ -89,18 +91,19 @@ const HUMANOID_CLIPS = clips({
 });
 
 const DOG_CLIPS = clips({
-  idle: [0, 2, 2],
+  idle: [0, 4, 2],
   walk: [1, 4, 5],
   run: [2, 4, 8],
   attack: [3, 3, 8],
   attackHuman: [3, 3, 8],
   attackDog: [3, 3, 8],
+  bark: [5, 3, 7],
   shoot: [0, 2, 2],
   feed: [4, 3, 5],
   feedHuman: [4, 3, 5],
   feedDog: [4, 3, 5],
-  downed: [5, 1, 1],
-  skeleton: [6, 1, 1]
+  downed: [6, 1, 1],
+  skeleton: [7, 1, 1]
 });
 
 export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
@@ -124,6 +127,8 @@ export function spriteAnimationFor(entity: Entity): SpriteAnimation {
   if (entity.state === "attacking" && entity.grappleVictimSpecies === "human") return "attackHuman";
   if (entity.state === "attacking" && entity.grappleVictimSpecies === "dog") return "attackDog";
   if (entity.state === "attacking") return "attack";
+  if (entity.species === "dog" && entity.state === "alerted" && (entity.seesStimulus || entity.hearsStimulus)) return "bark";
+  if (entity.species === "dog" && entity.state === "calm") return "idle";
   if (entity.state === "fleeing" || entity.state === "alerted") return "run";
   if (entity.state === "calm" || entity.state === "investigating") return "walk";
   return "idle";
@@ -136,9 +141,11 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
   const frame =
     animation === "skeleton"
       ? Math.max(0, Math.min(sheet.columns - 1, entity.skeletonVariant ?? 0))
-      : clip.frames === 1
-        ? 0
-        : Math.floor(timeSeconds * clip.fps) % clip.frames;
+      : entity.species === "dog" && animation === "idle"
+        ? (entity.dogIdlePose === "sleep" ? 2 : 0) + Math.floor(timeSeconds * clip.fps) % 2
+        : clip.frames === 1
+          ? 0
+          : Math.floor(timeSeconds * clip.fps) % clip.frames;
   return {
     animation,
     frame,
@@ -149,6 +156,7 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
 
 export function spriteSheetKeyFor(entity: Entity): SpriteSheetKey {
   if (entity.skeleton) return entity.species === "dog" || entity.species === "zombieDog" ? "skeletonDog" : "skeletonHuman";
+  if (!entity.alive && entity.species === "dog") return "dog";
   if (!entity.alive && !entity.species.includes("zombie")) return "corpse";
   if (entity.species === "human") return entity.armed ? "armedHuman" : "human";
   return entity.species;
