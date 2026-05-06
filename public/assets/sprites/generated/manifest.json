@@ -3,6 +3,18 @@
     {
       "id": "armedHuman",
       "direction": "left",
+      "animation": "shoot",
+      "src": "/assets/sprites/generated/armed-human-left-shoot.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "right",
+      "animation": "shoot",
+      "src": "/assets/sprites/generated/armed-human-right-shoot.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "left",
       "src": "/assets/sprites/generated/armed-human.png"
     },
     {

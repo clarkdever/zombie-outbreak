@@ -177,7 +177,7 @@ function spriteSheet(
     columns: SPRITE_SHEET_COLUMNS,
     anchor: { ...SPRITE_ANCHOR },
     scale,
-    supportedDirections: id === "armedHuman" ? ["left", "right"] : ["down", "left", "up", "right"],
+    supportedDirections: ["down", "left", "up", "right"],
     clips: clipsByAnimation
   };
 }

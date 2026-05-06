@@ -8,7 +8,17 @@ Sprite sheets live in `public/assets/sprites/generated/` and are discovered thro
 
 Direction is part of the contract. A complete character set needs front/down, back/up, and side views. Side views may be mirrored for left/right, but front and back need authored frames so entities do not appear to aim or walk in the wrong screen direction. Until a sheet supports all four directions, the renderer should only use it for the supported directions and fall back to the code-native sprite for the rest.
 
-Generated manifests may provide one sheet per direction. Use `direction: "down"`, `"up"`, `"left"`, or `"right"` on each manifest entry. Left and right can point at the same side-view PNG because the renderer mirrors the left-facing draw plan.
+Generated manifests may provide one sheet per direction, or one sheet per direction and animation. Use `direction: "down"`, `"up"`, `"left"`, or `"right"` on each manifest entry. Add `animation` when a sheet contains only that animation row. Left and right can point at the same side-view PNG only when the sheet is not already authored for a specific direction.
+
+The preferred image-generation workflow is several smaller prompt sets per character:
+
+- Locomotion: `idle`, `walk`, and `run`
+- Combat: `attack` and `shoot`
+- Reactions: `panic/warn`, `downed`, `infected/turning/death`
+
+Generate those groups per direction rather than asking for the whole character state machine in one prompt. Smaller sheets reduce frame bleed, extra characters, and direction drift.
+
+Current proof strip: `armed-human-right-shoot.png` and its mirrored left-facing companion are animation-specific sheets generated from a single four-frame shooting prompt. They override only the `shoot` animation for side-facing armed humans.
 
 Each sheet uses a higher-detail source size so the art can look SNES-or-better while still rendering at board scale:
 

@@ -1,5 +1,5 @@
 import { entityColor } from "./entityPresentation";
-import { spriteDrawPlanFor, spriteFrameFor, spriteSheetSupportsFacing, type SpriteFrame } from "./spriteManifest";
+import { spriteDrawPlanFor, spriteFrameFor, spriteFrameRect, spriteSheetSupportsFacing, type SpriteFrame } from "./spriteManifest";
 import type { SpriteAtlas } from "./spriteAtlas";
 import type { Entity } from "../sim/types";
 
@@ -14,9 +14,9 @@ export function drawEntitySprite(
 ): void {
   const spriteTime = entity.lifetimeSeconds || timeSeconds;
   const plan = spriteDrawPlanFor(entity, spriteTime);
-  const sheet = atlas?.get(plan.sheet.id, plan.direction);
+  const sheet = atlas?.get(plan.sheet.id, plan.direction, plan.clip.animation);
   if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction)) {
-    drawSheetSprite(ctx, sheet.image, screen, plan);
+    drawSheetSprite(ctx, sheet.image, screen, sheet, plan);
     return;
   }
   const sprite = spriteFrameFor(entity, spriteTime);
@@ -43,22 +43,26 @@ function drawSheetSprite(
   ctx: CanvasRenderingContext2D,
   image: CanvasImageSource,
   screen: { x: number; y: number },
+  sheet: NonNullable<ReturnType<SpriteAtlas["get"]>>,
   plan: ReturnType<typeof spriteDrawPlanFor>
 ): void {
   const x = Math.round(screen.x);
   const y = Math.round(screen.y - 14);
   const scaleX = plan.destination.width / plan.sheet.frameWidth;
   const scaleY = plan.destination.height / plan.sheet.frameHeight;
+  const sourceRect = sheet.animation
+    ? spriteFrameRect({ frameWidth: plan.sheet.frameWidth, frameHeight: plan.sheet.frameHeight, columns: plan.sheet.columns, row: 0 }, plan.frame)
+    : plan.sourceRect;
   ctx.save();
   ctx.translate(x, y);
-  if (plan.flipX) ctx.scale(-1, 1);
+  if (!sheet.direction && plan.flipX) ctx.scale(-1, 1);
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(
     image,
-    plan.sourceRect.x,
-    plan.sourceRect.y,
-    plan.sourceRect.width,
-    plan.sourceRect.height,
+    sourceRect.x,
+    sourceRect.y,
+    sourceRect.width,
+    sourceRect.height,
     Math.round(-plan.anchor.x * scaleX),
     Math.round(-plan.anchor.y * scaleY),
     plan.destination.width,

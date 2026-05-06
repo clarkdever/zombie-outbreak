@@ -85,10 +85,10 @@ describe("sprite manifest contract", () => {
     expect(spriteDirectionFor(-Math.PI / 2)).toBe("right");
   });
 
-  it("uses the generated armed-human sheet only for directions it currently supports", () => {
+  it("allows armed-human sheets for every direction once manifest entries exist", () => {
     expect(spriteSheetSupportsFacing("armedHuman", "left")).toBe(true);
     expect(spriteSheetSupportsFacing("armedHuman", "right")).toBe(true);
-    expect(spriteSheetSupportsFacing("armedHuman", "up")).toBe(false);
-    expect(spriteSheetSupportsFacing("armedHuman", "down")).toBe(false);
+    expect(spriteSheetSupportsFacing("armedHuman", "up")).toBe(true);
+    expect(spriteSheetSupportsFacing("armedHuman", "down")).toBe(true);
   });
 });

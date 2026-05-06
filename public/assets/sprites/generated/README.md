@@ -37,4 +37,20 @@ Prefer direction-specific entries once generated sheets exist:
 }
 ```
 
+For smaller prompt sets, include both `direction` and `animation`. Animation-specific sheets should be one row tall with four frames:
+
+```json
+{
+  "sheets": [
+    { "id": "armedHuman", "direction": "down", "animation": "walk", "src": "/assets/sprites/generated/armed-human-down-walk.png" },
+    { "id": "armedHuman", "direction": "down", "animation": "shoot", "src": "/assets/sprites/generated/armed-human-down-shoot.png" }
+  ]
+}
+```
+
 The renderer loads this manifest at runtime. Missing sheets fall back to the code-native pixel sprites.
+
+Current proof of the shard workflow:
+
+- `armed-human-right-shoot.png`
+- `armed-human-left-shoot.png`

@@ -1,17 +1,20 @@
-import { SPRITE_SHEETS, type SpriteDirection, type SpriteSheetKey } from "./spriteManifest";
+import { SPRITE_SHEETS, type SpriteAnimation, type SpriteDirection, type SpriteSheetKey } from "./spriteManifest";
 
 export interface LoadedSpriteSheet {
   image: CanvasImageSource;
+  direction?: SpriteDirection;
+  animation?: SpriteAnimation;
 }
 
 export interface SpriteAtlas {
-  get(sheetId: SpriteSheetKey, direction: SpriteDirection): LoadedSpriteSheet | undefined;
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation): LoadedSpriteSheet | undefined;
 }
 
 interface GeneratedSpriteManifest {
   sheets: Array<{
     id: SpriteSheetKey;
     direction?: SpriteDirection;
+    animation?: SpriteAnimation;
     src: string;
   }>;
 }
@@ -19,25 +22,31 @@ interface GeneratedSpriteManifest {
 export class BrowserSpriteAtlas implements SpriteAtlas {
   private readonly sheets = new Map<string, LoadedSpriteSheet>();
 
-  get(sheetId: SpriteSheetKey, direction: SpriteDirection): LoadedSpriteSheet | undefined {
-    return this.sheets.get(spriteAtlasKey(sheetId, direction)) ?? this.sheets.get(spriteAtlasKey(sheetId));
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation): LoadedSpriteSheet | undefined {
+    return (
+      this.sheets.get(spriteAtlasKey(sheetId, direction, animation)) ??
+      this.sheets.get(spriteAtlasKey(sheetId, direction)) ??
+      this.sheets.get(spriteAtlasKey(sheetId))
+    );
   }
 
   async load(manifestUrl = "/assets/sprites/generated/manifest.json"): Promise<void> {
     const manifest = await fetchGeneratedManifest(manifestUrl);
     if (!manifest) return;
-    await Promise.all(manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src, sheet.direction).catch(() => undefined)));
+    await Promise.all(
+      manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src, sheet.direction, sheet.animation).catch(() => undefined))
+    );
   }
 
-  private async loadSheet(sheetId: SpriteSheetKey, src: string, direction?: SpriteDirection): Promise<void> {
+  private async loadSheet(sheetId: SpriteSheetKey, src: string, direction?: SpriteDirection, animation?: SpriteAnimation): Promise<void> {
     if (!SPRITE_SHEETS[sheetId]) return;
     const image = await loadImage(src);
-    this.sheets.set(spriteAtlasKey(sheetId, direction), { image });
+    this.sheets.set(spriteAtlasKey(sheetId, direction, animation), { image, direction, animation });
   }
 }
 
-export function spriteAtlasKey(sheetId: SpriteSheetKey, direction?: SpriteDirection): string {
-  return direction ? `${sheetId}:${direction}` : sheetId;
+export function spriteAtlasKey(sheetId: SpriteSheetKey, direction?: SpriteDirection, animation?: SpriteAnimation): string {
+  return [sheetId, direction, animation].filter(Boolean).join(":");
 }
 
 export function createBrowserSpriteAtlas(): SpriteAtlas {
