@@ -407,6 +407,23 @@ describe("Simulation", () => {
     expect(shooter.shotCooldownSeconds).toBeLessThan(1);
   });
 
+  it("returns controlled armed humans from shooting to an active state after cooldown", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 32 });
+    const shooter = sim.entities[0];
+    const target = sim.entities[1];
+    shooter.tile = { x: 5, y: 10 };
+    shooter.facing = 0;
+    target.tile = { x: 8, y: 10 };
+    sim.possess(shooter.id);
+
+    sim.shootPossessed();
+    expect(shooter.state).toBe("shooting");
+    sim.tick(1);
+
+    expect(shooter.shotCooldownSeconds).toBe(0);
+    expect(shooter.state).toBe("alerted");
+  });
+
   it("keeps autonomous shot cooldown consistent for large ticks", () => {
     const once = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 23 });
     const onceHuman = once.entities.find((entity) => entity.species === "human")!;

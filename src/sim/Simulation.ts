@@ -223,7 +223,11 @@ export class Simulation {
 
   private recoverShotCooldowns(dt: number): void {
     for (const entity of this.entities) {
+      const previousCooldown = entity.shotCooldownSeconds;
       entity.shotCooldownSeconds = Math.max(0, entity.shotCooldownSeconds - dt);
+      if (entity.state === "shooting" && previousCooldown > 0 && entity.shotCooldownSeconds === 0) {
+        entity.state = entity.infected ? "infected" : entity.controlled || entity.seenZombie || entity.targetTile ? "alerted" : "calm";
+      }
     }
   }
 
