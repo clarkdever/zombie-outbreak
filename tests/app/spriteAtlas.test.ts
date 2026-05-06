@@ -25,4 +25,20 @@ describe("sprite atlas keys", () => {
       }
     }
   });
+
+  it("publishes a complete zombie-human v1 animation set", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+    const directions = ["down", "left", "up", "right"] as const;
+    const animations = ["idle", "walk", "run", "attack", "feed"] as const;
+
+    for (const direction of directions) {
+      for (const animation of animations) {
+        expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, animation));
+      }
+    }
+  });
 });
