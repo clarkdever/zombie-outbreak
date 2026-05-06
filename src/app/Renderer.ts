@@ -66,7 +66,7 @@ export class Renderer {
 
   private drawEntity(entity: Entity, camera: Camera, selected: boolean, debug: boolean): void {
     const p = isoToScreen(entity.tile.x, entity.tile.y, camera, this.canvas);
-    const color = entity.skeleton ? "#e8e2bc" : entity.species.includes("zombie") ? "#8ccf6d" : entity.species === "dog" ? "#d0a15f" : entity.armed ? "#f2cc8f" : "#f1f4ea";
+    const color = entityColor(entity);
     if (selected || debug) {
       this.ctx.strokeStyle = senseStrokeColor(entity, "hearing");
       this.ctx.lineWidth = debug ? 2 : 1.5;
@@ -92,6 +92,15 @@ export class Renderer {
     this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 6 : 8, 0, Math.PI * 2);
     this.ctx.fill();
   }
+}
+
+function entityColor(entity: Entity): string {
+  if (entity.skeleton) return "#ffffff";
+  if (entity.species.includes("zombie")) return "#e63946";
+  if (entity.armed && entity.species === "human") return "#3a86ff";
+  if (entity.species === "human") return "#2fbf71";
+  if (entity.species === "dog") return "#d0a15f";
+  return "#f1f4ea";
 }
 
 export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCanvasElement): { x: number; y: number } {
