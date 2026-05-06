@@ -1,0 +1,94 @@
+import { tileBlocksMovement, wrapTile } from "./map";
+import { canHear, canSee, createNoise } from "./perception";
+import type { Entity, GameMap, NoiseEvent, TilePos } from "./types";
+
+export function tickSimpleAi(entity: Entity, map: GameMap, entities: Entity[], noises: NoiseEvent[]): NoiseEvent[] {
+  if (entity.controlled || entity.skeleton) return [];
+  if (entity.species === "zombieHuman" || entity.species === "zombieDog") {
+    return tickZombie(entity, map, entities);
+  }
+  if (entity.species === "dog") {
+    return tickDog(entity, map, entities);
+  }
+  return tickHuman(entity, map, noises);
+}
+
+function tickZombie(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[] {
+  if (entity.state === "feeding") return [];
+  const livingTarget = entities.find((target) => target.alive && (target.species === "human" || target.species === "dog"));
+  if (livingTarget) {
+    entity.state = "attacking";
+    entity.targetTile = livingTarget.tile;
+    entity.facing = Math.atan2(livingTarget.tile.y - entity.tile.y, livingTarget.tile.x - entity.tile.x);
+    stepToward(entity, map, livingTarget.tile);
+  } else {
+    entity.state = "investigating";
+    const candidate = wrapTile(map, { x: entity.tile.x + (entity.id.length % 2 === 0 ? 1 : -1), y: entity.tile.y });
+    if (!tileBlocksMovement(map, candidate)) entity.tile = candidate;
+  }
+  return [];
+}
+
+function tickDog(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[] {
+  const zombie = entities.find((target) =>
+    (target.species === "zombieHuman" || target.species === "zombieDog") && canSee(map, entity, target.tile)
+  );
+  if (zombie) {
+    entity.state = "alerted";
+    return [createNoise("bark", entity.tile, 8)];
+  }
+  return [];
+}
+
+function tickHuman(entity: Entity, map: GameMap, noises: NoiseEvent[]): NoiseEvent[] {
+  if (entity.infected) entity.state = "infected";
+  if (entity.seesStimulus || entity.hearsStimulus) {
+    entity.state = "alerted";
+  }
+  if (noises.some((noise) => (noise.kind === "gunshot" || noise.kind === "scream" || noise.kind === "bark") && canHear(entity, noise))) {
+    entity.state = "alerted";
+  }
+  if (entity.state === "calm" || entity.state === "alerted") {
+    stepWander(entity, map);
+  }
+  return [];
+}
+
+function stepWander(entity: Entity, map: GameMap): void {
+  const direction = entity.id.length % 2 === 0 ? 1 : -1;
+  const options = [
+    { x: direction, y: 0 },
+    { x: 0, y: direction },
+    { x: -direction, y: 0 },
+    { x: 0, y: -direction }
+  ];
+  for (const delta of options) {
+    const candidate = wrapTile(map, { x: entity.tile.x + delta.x, y: entity.tile.y + delta.y });
+    if (!tileBlocksMovement(map, candidate)) {
+      entity.tile = candidate;
+      entity.facing = Math.atan2(delta.y, delta.x);
+      return;
+    }
+  }
+}
+
+function stepToward(entity: Entity, map: GameMap, target: TilePos): void {
+  const dx = shortestDelta(entity.tile.x, target.x, map.width);
+  const dy = shortestDelta(entity.tile.y, target.y, map.height);
+  const primary = Math.abs(dx) >= Math.abs(dy) ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) };
+  const secondary = primary.x === 0 ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) };
+  for (const delta of [primary, secondary]) {
+    if (delta.x === 0 && delta.y === 0) continue;
+    const candidate = wrapTile(map, { x: entity.tile.x + delta.x, y: entity.tile.y + delta.y });
+    if (!tileBlocksMovement(map, candidate)) {
+      entity.tile = candidate;
+      return;
+    }
+  }
+}
+
+function shortestDelta(from: number, to: number, size: number): number {
+  const direct = to - from;
+  const wrapped = direct > 0 ? direct - size : direct + size;
+  return Math.abs(direct) <= Math.abs(wrapped) ? direct : wrapped;
+}

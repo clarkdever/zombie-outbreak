@@ -2,7 +2,7 @@
 
 An isometric small-town zombie outbreak simulation where the interesting stories come from simple rules colliding: hearing circles, vision cones, panic, dogs barking at exactly the wrong time, humans forming shaky survivor groups, and zombies drifting into hordes because every loud mistake is dinner bell-shaped.
 
-This repo is currently in **design and implementation-planning stage**. The first playable target is a graybox MVP focused on simulation feel before final sprite art.
+This repo now has a **playable graybox MVP** focused on simulation feel before final sprite art.
 
 ## The Pitch
 
@@ -10,7 +10,7 @@ You start with a quiet neighborhood: streets, fenced yards, trees, cars, houses,
 
 Then the rules take over.
 
-- Humans see zombies, panic, warn each other, group up, flee, or shoot.
+- Humans wander, see zombies, panic, warn each other, group up, flee, or shoot if armed.
 - Dogs follow their owners, bark at threats, and sometimes save people by making everything worse.
 - Zombies hear noise, see living targets, bite, feed, wander when unstimulated, and naturally cluster into hordes.
 - Downed infected bodies race between reanimation and being eaten down to skeletons.
@@ -18,22 +18,31 @@ Then the rules take over.
 
 The vibe target is **retro 16-bit isometric arcade horror**, with a Metal Slug-like influence planned for later sprite sheets.
 
-## MVP Priorities
+## Current Features
 
-The first build is intentionally graybox:
+The first build is intentionally graybox and includes:
 
 - 30x30 handcrafted isometric neighborhood
-- Tile-based simulation with smooth visual movement
+- Tile-based simulation with Canvas 2D isometric rendering
 - Humans, dogs, human zombies, dog zombies, bodies, and skeletons
 - Circular hearing and cone-based sight
 - Species-specific senses
-- Noise events for guns, screams, barking, growling, feeding, speech, and struggle
+- Noise and stimulus feedback through hearing circles and vision cones
 - HP, guaranteed bite infection, infection decline, turning delay, meat meters
 - Zombie feeding capped per body
-- Human warning, loose groups, armed leadership, and group outlines
-- Dog ownership, owner-name affiliation, and post-owner-death behavior
-- Possession, edge-scroll camera, follow-selected mode, time controls
+- Human groups, armed leaders, and basic armed-human attacks
+- Dog ownership and barking behavior
+- Possession, edge-scroll camera, Q/E turning, and time controls
+- Debug overlays for selected or all entities
 - End modal with name-based facts and a zombie-over-time histogram
+
+Entity colors:
+
+- Armed humans: blue
+- Unarmed humans: green
+- Zombies: red
+- Dogs: tan
+- Skeletons: white
 
 ## Development Docs
 
@@ -42,7 +51,7 @@ The project is being built from written specs so the simulation stays coherent a
 - [MVP design spec](docs/superpowers/specs/2026-05-05-zombie-outbreak-design.md)
 - [Implementation plan](docs/superpowers/plans/2026-05-05-zombie-outbreak-implementation.md)
 
-## Planned Stack
+## Stack
 
 - TypeScript
 - Vite
@@ -52,28 +61,57 @@ The project is being built from written specs so the simulation stays coherent a
 
 The simulation code should stay pure and testable under `src/sim/*`. Browser input, rendering, and UI live under `src/app/*`.
 
-## Local Development
+## Build And Run
 
-Once implementation starts:
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-Expected checks:
+Open the local URL Vite prints, usually:
+
+```text
+http://127.0.0.1:5173/
+```
+
+Production build:
 
 ```bash
-npm test
 npm run build
 ```
 
-## Current Status
+Run tests:
+
+```bash
+npm test
+```
+
+## How To Play
+
+1. Choose a scenario preset.
+2. Optionally open Advanced and adjust human, dog, zombie, and armed-human counts.
+3. Press Start.
+4. Watch the outbreak unfold on the isometric map.
+5. Move the mouse to screen edges to pan the camera.
+6. Click a human, dog, or zombie to possess it.
+7. Use WASD to move the possessed entity.
+8. Use Q/E to turn and look around.
+9. Use Play/Pause and 1x/2x/4x to control time.
+10. Toggle Debug to show all hearing circles, vision cones, and state rings.
+
+## Project Status
 
 - Design spec: complete
 - Implementation plan: complete
-- App scaffold: not started
-- Sprite generation: deferred until graybox simulation is playable
+- Graybox MVP: playable
+- Sprite generation: deferred until the simulation feels good
 
 ## Later Fun
 

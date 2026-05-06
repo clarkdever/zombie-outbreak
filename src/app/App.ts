@@ -1,0 +1,89 @@
+import { InputController } from "./InputController";
+import { Renderer, type Camera } from "./Renderer";
+import { createHud, updateHud } from "./ui";
+import { resolveScenarioOptions } from "./presets";
+import { Simulation } from "../sim/Simulation";
+
+export class App {
+  private readonly canvas: HTMLCanvasElement;
+  private readonly renderer: Renderer;
+  private readonly input: InputController;
+  private readonly hud: HTMLElement;
+  private sim = new Simulation({ humans: 10, dogs: 2, zombies: 3, armedPercent: 25, seed: 42 });
+  private readonly camera: Camera = { x: 0, y: 0, zoom: 1 };
+  private selectedId: string | undefined;
+  private debug = false;
+  private speed = 1;
+  private lastNonZeroSpeed = 1;
+  private lastTime = performance.now();
+  private controlledMoveAccumulator = 0.18;
+
+  constructor(private readonly root: HTMLElement) {
+    this.root.innerHTML = "";
+    this.canvas = document.createElement("canvas");
+    this.canvas.className = "game-canvas";
+    this.hud = createHud({
+      onDebug: (enabled) => (this.debug = enabled),
+      onSpeed: (speed) => {
+        this.speed = speed;
+        if (speed > 0) this.lastNonZeroSpeed = speed;
+      },
+      onPlayToggle: () => {
+        this.speed = this.speed === 0 ? this.lastNonZeroSpeed : 0;
+        return this.speed;
+      },
+      onStart: (preset, overrides) => {
+        this.sim = new Simulation(resolveScenarioOptions(preset, overrides, Date.now()));
+        this.selectedId = this.sim.entities[0]?.id;
+      }
+    });
+    this.root.append(this.canvas, this.hud);
+    this.renderer = new Renderer(this.canvas);
+    this.input = new InputController(this.canvas);
+  }
+
+  start(): void {
+    this.resize();
+    window.addEventListener("resize", () => this.resize());
+    requestAnimationFrame((time) => this.frame(time));
+  }
+
+  private frame(time: number): void {
+    const realDt = Math.min(0.1, (time - this.lastTime) / 1000);
+    const simDt = realDt * this.speed;
+    this.lastTime = time;
+    const input = this.input.update();
+    if (input.clicked) {
+      const hit = this.renderer.pickEntity(this.sim.entities, this.camera, input.clicked);
+      if (hit) {
+        this.selectedId = hit.id;
+        this.sim.possess(hit.id);
+        this.hud.classList.add("hud--possessing");
+      }
+    }
+    if (input.turn !== 0) {
+      this.sim.turnPossessed(input.turn * 2.5 * realDt);
+    }
+    if (input.move.x !== 0 || input.move.y !== 0) {
+      this.controlledMoveAccumulator += realDt;
+    } else {
+      this.controlledMoveAccumulator = 0.18;
+    }
+    if ((input.move.x !== 0 || input.move.y !== 0) && this.controlledMoveAccumulator >= 0.18) {
+      this.sim.movePossessed(input.move);
+      this.controlledMoveAccumulator = 0;
+    }
+    this.camera.x += input.edgeX * 320 * realDt;
+    this.camera.y += input.edgeY * 320 * realDt;
+    if (!this.sim.endState) this.sim.tick(simDt);
+    this.selectedId ??= this.sim.entities[0]?.id;
+    this.renderer.render(this.sim.map, this.sim.entities, this.camera, this.selectedId, this.debug);
+    updateHud(this.hud, this.sim, this.speed, this.selectedId);
+    requestAnimationFrame((nextTime) => this.frame(nextTime));
+  }
+
+  private resize(): void {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
+}
