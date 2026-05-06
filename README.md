@@ -123,6 +123,8 @@ The backlog is full of good trouble:
 - Carcassonne-style procedural neighborhood macro-tiles
 - Seamless edge wrapping
 - Individual bravery, panic, accuracy, hearing, speed, and dog temperament
+- Home-aware civilian routines: house/yard humans should wander around their own property, while street-spawned humans should follow roads and choose plausible turns at intersections.
+- Owner-aware dog routines: dogs should spawn near their human, stay in the same house/yard for home humans, and road-walk with street humans while favoring road tiles and believable intersection choices.
 - Partially eaten zombie sprites and movement penalties
 - Barricading, sheltering, ammo, alarms, car horns, day/night, and extraction goals
 

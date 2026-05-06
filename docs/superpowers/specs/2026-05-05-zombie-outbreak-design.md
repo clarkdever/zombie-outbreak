@@ -286,6 +286,8 @@ Animation requirements:
 - Carcassonne-style procedural macro-tile map generation with typed matching edges.
 - Seamless wrap rendering with duplicated edge bands.
 - Individual traits: bravery, panic, accuracy, hearing, speed, dog temperament.
+- Home-aware civilian routines: house and yard humans should treat their property as their normal activity area, while street-spawned humans should walk along roads and pick plausible road branches at intersections.
+- Owner-aware dog routines: dogs should spawn near their human, remain around the same house/yard for home humans, and road-walk with street humans while favoring roads and believable intersection choices.
 - Partially eaten zombie sprites and movement penalties.
 - Full house interiors.
 - Barricading and sheltering.
