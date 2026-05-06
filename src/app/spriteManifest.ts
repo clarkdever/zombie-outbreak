@@ -1,0 +1,166 @@
+import type { Entity } from "../sim/types";
+
+export type SpriteAnimation = "walk" | "run" | "attack" | "shoot" | "feed" | "downed" | "skeleton" | "idle";
+export type SpriteSheetKey = "human" | "armedHuman" | "dog" | "zombieHuman" | "zombieDog" | "corpse" | "skeleton";
+
+export interface SpriteFrame {
+  animation: SpriteAnimation;
+  frame: number;
+  flipX: boolean;
+}
+
+export interface SpriteClip {
+  animation: SpriteAnimation;
+  row: number;
+  frames: number;
+  fps: number;
+}
+
+export interface SpriteSheetDefinition {
+  id: SpriteSheetKey;
+  src: string;
+  frameWidth: number;
+  frameHeight: number;
+  columns: number;
+  anchor: { x: number; y: number };
+  scale: number;
+  clips: Record<SpriteAnimation, SpriteClip>;
+}
+
+export interface SpriteRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface SpriteDrawPlan {
+  sheet: SpriteSheetDefinition;
+  clip: SpriteClip;
+  frame: number;
+  flipX: boolean;
+  sourceRect: SpriteRect;
+  anchor: { x: number; y: number };
+  destination: { width: number; height: number };
+}
+
+const HUMANOID_CLIPS = clips({
+  idle: [0, 2, 2],
+  walk: [1, 4, 4],
+  run: [2, 4, 7],
+  attack: [3, 3, 8],
+  shoot: [4, 2, 12],
+  feed: [5, 3, 5],
+  downed: [6, 1, 1],
+  skeleton: [7, 1, 1]
+});
+
+const DOG_CLIPS = clips({
+  idle: [0, 2, 2],
+  walk: [1, 4, 5],
+  run: [2, 4, 8],
+  attack: [3, 3, 8],
+  shoot: [0, 2, 2],
+  feed: [4, 3, 5],
+  downed: [5, 1, 1],
+  skeleton: [6, 1, 1]
+});
+
+export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
+  human: spriteSheet("human", "human.png", HUMANOID_CLIPS, 0.72),
+  armedHuman: spriteSheet("armedHuman", "armed-human.png", HUMANOID_CLIPS, 0.72),
+  dog: spriteSheet("dog", "dog.png", DOG_CLIPS, 0.62),
+  zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.72),
+  zombieDog: spriteSheet("zombieDog", "zombie-dog.png", DOG_CLIPS, 0.62),
+  corpse: spriteSheet("corpse", "corpse.png", HUMANOID_CLIPS, 0.72),
+  skeleton: spriteSheet("skeleton", "skeleton.png", HUMANOID_CLIPS, 0.72)
+};
+
+export function spriteAnimationFor(entity: Entity): SpriteAnimation {
+  if (entity.skeleton) return "skeleton";
+  if (!entity.alive && !entity.species.includes("zombie")) return "downed";
+  if (entity.state === "shooting") return "shoot";
+  if (entity.state === "feeding") return "feed";
+  if (entity.state === "attacking") return "attack";
+  if (entity.state === "fleeing" || entity.state === "alerted") return "run";
+  if (entity.state === "calm" || entity.state === "investigating") return "walk";
+  return "idle";
+}
+
+export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame {
+  const animation = spriteAnimationFor(entity);
+  const sheet = SPRITE_SHEETS[spriteSheetKeyFor(entity)];
+  const clip = sheet.clips[animation];
+  const frame = clip.frames === 1 ? 0 : Math.floor(timeSeconds * clip.fps) % clip.frames;
+  return {
+    animation,
+    frame,
+    flipX: Math.cos(entity.facing) < 0
+  };
+}
+
+export function spriteSheetKeyFor(entity: Entity): SpriteSheetKey {
+  if (entity.skeleton) return "skeleton";
+  if (!entity.alive && !entity.species.includes("zombie")) return "corpse";
+  if (entity.species === "human") return entity.armed ? "armedHuman" : "human";
+  return entity.species;
+}
+
+export function spriteDrawPlanFor(entity: Entity, timeSeconds: number): SpriteDrawPlan {
+  const sheet = SPRITE_SHEETS[spriteSheetKeyFor(entity)];
+  const frame = spriteFrameFor(entity, timeSeconds);
+  const clip = sheet.clips[frame.animation] ?? sheet.clips.idle;
+  const frameIndex = Math.min(frame.frame, clip.frames - 1);
+  return {
+    sheet,
+    clip,
+    frame: frameIndex,
+    flipX: frame.flipX,
+    sourceRect: spriteFrameRect({ ...sheet, row: clip.row }, frameIndex),
+    anchor: sheet.anchor,
+    destination: {
+      width: Math.round(sheet.frameWidth * sheet.scale),
+      height: Math.round(sheet.frameHeight * sheet.scale)
+    }
+  };
+}
+
+export function spriteFrameRect(
+  sheet: Pick<SpriteSheetDefinition, "frameWidth" | "frameHeight" | "columns"> & { row: number },
+  frame: number
+): SpriteRect {
+  const column = frame % sheet.columns;
+  return {
+    x: column * sheet.frameWidth,
+    y: sheet.row * sheet.frameHeight,
+    width: sheet.frameWidth,
+    height: sheet.frameHeight
+  };
+}
+
+function spriteSheet(
+  id: SpriteSheetKey,
+  fileName: string,
+  clipsByAnimation: Record<SpriteAnimation, SpriteClip>,
+  scale: number
+): SpriteSheetDefinition {
+  return {
+    id,
+    src: `/assets/sprites/generated/${fileName}`,
+    frameWidth: 64,
+    frameHeight: 64,
+    columns: 4,
+    anchor: { x: 32, y: 48 },
+    scale,
+    clips: clipsByAnimation
+  };
+}
+
+function clips(source: Record<SpriteAnimation, [row: number, frames: number, fps: number]>): Record<SpriteAnimation, SpriteClip> {
+  return Object.fromEntries(
+    Object.entries(source).map(([animation, [row, frames, fps]]) => [
+      animation,
+      { animation: animation as SpriteAnimation, row, frames, fps }
+    ])
+  ) as Record<SpriteAnimation, SpriteClip>;
+}

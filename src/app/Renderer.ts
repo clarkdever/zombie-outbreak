@@ -1,4 +1,5 @@
 import { entityRingColor } from "./entityPresentation";
+import { createBrowserSpriteAtlas, type SpriteAtlas } from "./spriteAtlas";
 import { drawEntitySprite } from "./sprites";
 import type { VisualEntity } from "./visualPositions";
 import { visionRadiansFor, visionRangeFor } from "../sim/perception";
@@ -17,6 +18,7 @@ type RenderableEntity = Entity | VisualEntity<Entity>;
 
 export class Renderer {
   private readonly ctx: CanvasRenderingContext2D;
+  private readonly spriteAtlas: SpriteAtlas;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -24,6 +26,7 @@ export class Renderer {
       throw new Error("Canvas 2D context is unavailable");
     }
     this.ctx = ctx;
+    this.spriteAtlas = createBrowserSpriteAtlas();
   }
 
   render(
@@ -108,7 +111,7 @@ export class Renderer {
       this.ctx.arc(p.x, p.y - 14, 13, 0, Math.PI * 2);
       this.ctx.stroke();
     }
-    drawEntitySprite(this.ctx, entity, p, timeSeconds);
+    drawEntitySprite(this.ctx, entity, p, timeSeconds, this.spriteAtlas);
   }
 
   private drawBullet(bullet: BulletTrace, camera: Camera): void {

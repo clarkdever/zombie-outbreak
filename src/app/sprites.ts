@@ -1,63 +1,25 @@
 import { entityColor } from "./entityPresentation";
+import { spriteDrawPlanFor, spriteFrameFor, type SpriteFrame } from "./spriteManifest";
+import type { SpriteAtlas } from "./spriteAtlas";
 import type { Entity } from "../sim/types";
 
-export type SpriteAnimation = "walk" | "run" | "attack" | "shoot" | "feed" | "downed" | "skeleton" | "idle";
-
-export interface SpriteFrame {
-  animation: SpriteAnimation;
-  frame: number;
-  flipX: boolean;
-}
-
-export function spriteAnimationFor(entity: Entity): SpriteAnimation {
-  if (entity.skeleton) return "skeleton";
-  if (!entity.alive && !entity.species.includes("zombie")) return "downed";
-  if (entity.state === "shooting") return "shoot";
-  if (entity.state === "feeding") return "feed";
-  if (entity.state === "attacking") return "attack";
-  if (entity.state === "fleeing" || entity.state === "alerted") return "run";
-  if (entity.state === "calm" || entity.state === "investigating") return "walk";
-  return "idle";
-}
-
-export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame {
-  const animation = spriteAnimationFor(entity);
-  const frameCounts: Record<SpriteAnimation, number> = {
-    walk: 4,
-    run: 4,
-    attack: 3,
-    shoot: 2,
-    feed: 3,
-    downed: 1,
-    skeleton: 1,
-    idle: 2
-  };
-  const rates: Record<SpriteAnimation, number> = {
-    walk: 4,
-    run: 7,
-    attack: 8,
-    shoot: 12,
-    feed: 5,
-    downed: 1,
-    skeleton: 1,
-    idle: 2
-  };
-  const count = frameCounts[animation];
-  const frame = count === 1 ? 0 : Math.floor(timeSeconds * rates[animation]) % count;
-  return {
-    animation,
-    frame,
-    flipX: Math.cos(entity.facing) < 0
-  };
-}
+export { spriteAnimationFor, spriteFrameFor, type SpriteAnimation, type SpriteFrame } from "./spriteManifest";
 
 export function drawEntitySprite(
   ctx: CanvasRenderingContext2D,
   entity: Entity,
   screen: { x: number; y: number },
-  timeSeconds: number
+  timeSeconds: number,
+  atlas?: SpriteAtlas
 ): void {
-  const sprite = spriteFrameFor(entity, entity.lifetimeSeconds || timeSeconds);
+  const spriteTime = entity.lifetimeSeconds || timeSeconds;
+  const plan = spriteDrawPlanFor(entity, spriteTime);
+  const sheet = atlas?.get(plan.sheet.id);
+  if (sheet) {
+    drawSheetSprite(ctx, sheet.image, screen, plan);
+    return;
+  }
+  const sprite = spriteFrameFor(entity, spriteTime);
   const scale = entity.species === "dog" || entity.species === "zombieDog" ? 2 : 2.35;
   const x = Math.round(screen.x);
   const y = Math.round(screen.y - 14);
@@ -74,6 +36,34 @@ export function drawEntitySprite(
   } else {
     drawHumanoid(ctx, entity, sprite, scale);
   }
+  ctx.restore();
+}
+
+function drawSheetSprite(
+  ctx: CanvasRenderingContext2D,
+  image: CanvasImageSource,
+  screen: { x: number; y: number },
+  plan: ReturnType<typeof spriteDrawPlanFor>
+): void {
+  const x = Math.round(screen.x);
+  const y = Math.round(screen.y - 14);
+  const scaleX = plan.destination.width / plan.sheet.frameWidth;
+  const scaleY = plan.destination.height / plan.sheet.frameHeight;
+  ctx.save();
+  ctx.translate(x, y);
+  if (plan.flipX) ctx.scale(-1, 1);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(
+    image,
+    plan.sourceRect.x,
+    plan.sourceRect.y,
+    plan.sourceRect.width,
+    plan.sourceRect.height,
+    Math.round(-plan.anchor.x * scaleX),
+    Math.round(-plan.anchor.y * scaleY),
+    plan.destination.width,
+    plan.destination.height
+  );
   ctx.restore();
 }
 
