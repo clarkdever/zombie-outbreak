@@ -40,7 +40,7 @@ function entity(overrides: Partial<Entity>): Entity {
 
 describe("sprite animation state", () => {
   it("maps entity states to animation clips", () => {
-    expect(spriteAnimationFor(entity({ state: "calm" }))).toBe("walk");
+    expect(spriteAnimationFor(entity({ state: "calm" }))).toBe("idle");
     expect(spriteAnimationFor(entity({ species: "dog", state: "calm" }))).toBe("idle");
     expect(spriteAnimationFor(entity({ state: "fleeing" }))).toBe("run");
     expect(spriteAnimationFor(entity({ species: "dog", state: "alerted", seesStimulus: true }))).toBe("bark");
@@ -55,7 +55,7 @@ describe("sprite animation state", () => {
   });
 
   it("advances animated frame indices over time", () => {
-    const walker = entity({ state: "calm" });
+    const walker = entity({ state: "alerted" });
 
     expect(spriteFrameFor(walker, 0).frame).toBe(0);
     expect(spriteFrameFor(walker, 0.3).frame).toBeGreaterThan(0);

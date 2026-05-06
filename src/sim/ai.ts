@@ -1,9 +1,7 @@
 import { tileBlocksMovement, wrapTile } from "./map";
 import { movementSpeedFor } from "./movement";
 import { canHear, canSee, createNoise } from "./perception";
-import type { DogIdlePose, Entity, GameMap, NoiseEvent, TilePos } from "./types";
-
-const CALM_HOME_RADIUS = 3;
+import type { DogIdlePose, Entity, GameMap, HumanIdlePose, NoiseEvent, TilePos } from "./types";
 
 export function tickSimpleAi(
   entity: Entity,
@@ -11,7 +9,8 @@ export function tickSimpleAi(
   entities: Entity[],
   noises: NoiseEvent[],
   immobilizedIds = new Set<string>(),
-  chooseDogIdlePose: () => DogIdlePose = () => "sit"
+  chooseDogIdlePose: () => DogIdlePose = () => "sit",
+  chooseHumanIdlePose: () => HumanIdlePose = () => "stand"
 ): NoiseEvent[] {
   entity.speed = movementSpeedFor(entity);
   if (entity.controlled || entity.skeleton || immobilizedIds.has(entity.id)) return [];
@@ -22,7 +21,7 @@ export function tickSimpleAi(
   if (entity.species === "dog") {
     return tickDog(entity, map, entities, chooseDogIdlePose);
   }
-  return tickHuman(entity, map, noises);
+  return tickHuman(entity, map, noises, chooseHumanIdlePose);
 }
 
 function tickZombie(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[] {
@@ -64,7 +63,8 @@ function tickDog(entity: Entity, map: GameMap, entities: Entity[], chooseDogIdle
   return [];
 }
 
-function tickHuman(entity: Entity, map: GameMap, noises: NoiseEvent[]): NoiseEvent[] {
+function tickHuman(entity: Entity, map: GameMap, noises: NoiseEvent[], chooseHumanIdlePose: () => HumanIdlePose): NoiseEvent[] {
+  const wasIdle = entity.state === "calm";
   if (entity.armed && (entity.state === "shooting" || entity.targetTile)) return [];
   if (entity.infected) entity.state = "infected";
   if (entity.seesStimulus || entity.hearsStimulus) {
@@ -74,36 +74,11 @@ function tickHuman(entity: Entity, map: GameMap, noises: NoiseEvent[]): NoiseEve
     entity.state = "alerted";
   }
   if (entity.state === "calm") {
-    stepWanderNearHome(entity, map);
+    if (!wasIdle) entity.humanIdlePose = chooseHumanIdlePose();
   } else if (entity.state === "alerted") {
     stepWander(entity, map);
   }
   return [];
-}
-
-function stepWanderNearHome(entity: Entity, map: GameMap): void {
-  const home = entity.homeTile ?? entity.tile;
-  const distanceFromHome = Math.hypot(entity.tile.x - home.x, entity.tile.y - home.y);
-  if (distanceFromHome >= CALM_HOME_RADIUS) {
-    stepToward(entity, map, home);
-    return;
-  }
-
-  const direction = entity.id.length % 2 === 0 ? 1 : -1;
-  const options = [
-    { x: direction, y: 0 },
-    { x: 0, y: direction },
-    { x: -direction, y: 0 },
-    { x: 0, y: -direction }
-  ];
-  for (const delta of options) {
-    const candidate = wrapTile(map, { x: entity.tile.x + delta.x, y: entity.tile.y + delta.y });
-    if (tileBlocksMovement(map, candidate)) continue;
-    if (Math.hypot(candidate.x - home.x, candidate.y - home.y) > CALM_HOME_RADIUS) continue;
-    entity.tile = candidate;
-    entity.facing = Math.atan2(delta.y, delta.x);
-    return;
-  }
 }
 
 function stepWander(entity: Entity, map: GameMap): void {

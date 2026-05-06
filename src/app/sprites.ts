@@ -15,7 +15,8 @@ export function drawEntitySprite(
   const spriteTime = entity.lifetimeSeconds || timeSeconds;
   const plan = spriteDrawPlanFor(entity, spriteTime);
   const sheet = atlas?.get(plan.sheet.id, plan.direction, plan.clip.animation);
-  if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction)) {
+  const needsPoseFallback = entity.species === "human" && plan.clip.animation === "idle" && entity.humanIdlePose !== "stand";
+  if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction) && !needsPoseFallback) {
     drawSheetSprite(ctx, sheet.image, screen, sheet, plan);
     return;
   }
@@ -74,6 +75,14 @@ function drawSheetSprite(
 function drawHumanoid(ctx: CanvasRenderingContext2D, entity: Entity, sprite: SpriteFrame, scale: number): void {
   const base = entityColor(entity);
   const zombie = entity.species === "zombieHuman";
+  if (!zombie && sprite.animation === "idle" && entity.humanIdlePose === "sit") {
+    drawSittingHuman(ctx, entity, scale);
+    return;
+  }
+  if (!zombie && sprite.animation === "idle" && entity.humanIdlePose === "kneel") {
+    drawKneelingHuman(ctx, entity, scale);
+    return;
+  }
   const skin = zombie ? "#9ab17f" : "#f2c59b";
   const outline = "#101410";
   const shade = zombie ? "#6d8a5d" : "#1d2b24";
@@ -99,6 +108,32 @@ function drawHumanoid(ctx: CanvasRenderingContext2D, entity: Entity, sprite: Spr
     rect(ctx, -5 - lunge, -8 + bob, 3, 2, "#d94f45", scale);
     rect(ctx, 3 + lunge, -8 + bob, 3, 2, "#d94f45", scale);
   }
+}
+
+function drawSittingHuman(ctx: CanvasRenderingContext2D, entity: Entity, scale: number): void {
+  const base = entityColor(entity);
+  const skin = "#f2c59b";
+  const outline = "#101410";
+  rect(ctx, -6, -8, 12, 8, outline, scale);
+  rect(ctx, -5, -7, 10, 6, base, scale);
+  rect(ctx, -3, -13, 6, 5, outline, scale);
+  rect(ctx, -2, -12, 4, 4, skin, scale);
+  rect(ctx, -7, -2, 5, 3, outline, scale);
+  rect(ctx, 2, -2, 5, 3, outline, scale);
+  if (entity.armed) rect(ctx, 5, -7, 5, 2, "#202020", scale);
+}
+
+function drawKneelingHuman(ctx: CanvasRenderingContext2D, entity: Entity, scale: number): void {
+  const base = entityColor(entity);
+  const skin = "#f2c59b";
+  const outline = "#101410";
+  rect(ctx, -4, -12, 8, 10, outline, scale);
+  rect(ctx, -3, -11, 6, 8, base, scale);
+  rect(ctx, -2, -16, 5, 5, outline, scale);
+  rect(ctx, -1, -15, 3, 4, skin, scale);
+  rect(ctx, -5, -3, 4, 5, outline, scale);
+  rect(ctx, 1, -2, 7, 3, outline, scale);
+  if (entity.armed) rect(ctx, 5, -9, 5, 2, "#202020", scale);
 }
 
 function drawDog(ctx: CanvasRenderingContext2D, entity: Entity, sprite: SpriteFrame, scale: number): void {

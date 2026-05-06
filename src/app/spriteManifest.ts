@@ -128,7 +128,7 @@ export function spriteAnimationFor(entity: Entity): SpriteAnimation {
   if (entity.state === "attacking" && entity.grappleVictimSpecies === "dog") return "attackDog";
   if (entity.state === "attacking") return "attack";
   if (entity.species === "dog" && entity.state === "alerted" && (entity.seesStimulus || entity.hearsStimulus)) return "bark";
-  if (entity.species === "dog" && entity.state === "calm") return "idle";
+  if ((entity.species === "human" || entity.species === "dog") && entity.state === "calm") return "idle";
   if (entity.state === "fleeing" || entity.state === "alerted") return "run";
   if (entity.state === "calm" || entity.state === "investigating") return "walk";
   return "idle";

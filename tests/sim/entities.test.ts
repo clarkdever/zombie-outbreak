@@ -62,6 +62,7 @@ describe("entity creation", () => {
 
     for (const human of world.entities.filter((entity) => entity.species === "human")) {
       expect(human.homeTile).toEqual(human.tile);
+      expect(["stand", "sit", "kneel"]).toContain(human.humanIdlePose);
     }
 
     for (const dog of world.entities.filter((entity) => entity.species === "dog")) {

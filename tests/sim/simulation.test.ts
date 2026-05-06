@@ -116,15 +116,15 @@ describe("Simulation", () => {
     expect(zombie.tile.x).toBe(6);
   });
 
-  it("moves calm humans instead of leaving them static", () => {
+  it("keeps calm humans static", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 0, armedPercent: 0, seed: 13 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     human.tile = { x: 10, y: 10 };
     sim.tick(1);
-    expect(human.tile).not.toEqual({ x: 10, y: 10 });
+    expect(human.tile).toEqual({ x: 10, y: 10 });
   });
 
-  it("keeps calm humans wandering near their spawn area", () => {
+  it("keeps calm humans idle at their spawn area", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
@@ -135,7 +135,8 @@ describe("Simulation", () => {
 
     for (let tick = 0; tick < 12; tick += 1) sim.tick(1);
 
-    expect(Math.hypot(human.tile.x - human.homeTile.x, human.tile.y - human.homeTile.y)).toBeLessThanOrEqual(3);
+    expect(human.tile).toEqual(human.homeTile);
+    expect(["stand", "sit", "kneel"]).toContain(human.humanIdlePose);
   });
 
   it("lets dogs follow their living owners", () => {

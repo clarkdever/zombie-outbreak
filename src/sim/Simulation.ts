@@ -81,7 +81,17 @@ export class Simulation {
     const immobilizedIds = this.resolveCloseInteractions();
     const newNoises: NoiseEvent[] = [];
     for (const entity of this.entities) {
-      newNoises.push(...tickSimpleAi(entity, this.map, this.entities, this.noises, immobilizedIds, () => this.random.pick(["sit", "sleep"])));
+      newNoises.push(
+        ...tickSimpleAi(
+          entity,
+          this.map,
+          this.entities,
+          this.noises,
+          immobilizedIds,
+          () => this.random.pick(["sit", "sleep"]),
+          () => this.random.pick(["stand", "sit", "kneel"])
+        )
+      );
     }
     this.noises = [...this.noises, ...newNoises]
       .map((noise) => ({ ...noise, ageSeconds: noise.ageSeconds + 1 }))
