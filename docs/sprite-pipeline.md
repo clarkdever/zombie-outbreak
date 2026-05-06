@@ -18,7 +18,7 @@ The preferred image-generation workflow is several smaller prompt sets per chara
 
 Generate those groups per direction rather than asking for the whole character state machine in one prompt. Smaller sheets reduce frame bleed, extra characters, and direction drift.
 
-Current proof strip: `armed-human-right-shoot.png` and its mirrored left-facing companion are animation-specific sheets generated from a single four-frame shooting prompt. They override only the `shoot` animation for side-facing armed humans.
+Current proof strips: side-facing `walk`, `run`, and `shoot` strips for `armedHuman`. They override only those animations for side-facing armed humans while the older generated side sheet or code-native sprites cover the rest.
 
 Each sheet uses a higher-detail source size so the art can look SNES-or-better while still rendering at board scale:
 

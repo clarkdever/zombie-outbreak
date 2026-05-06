@@ -52,5 +52,9 @@ The renderer loads this manifest at runtime. Missing sheets fall back to the cod
 
 Current proof of the shard workflow:
 
+- `armed-human-right-walk.png`
+- `armed-human-left-walk.png`
+- `armed-human-right-run.png`
+- `armed-human-left-run.png`
 - `armed-human-right-shoot.png`
 - `armed-human-left-shoot.png`

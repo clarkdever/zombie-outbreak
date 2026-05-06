@@ -3,6 +3,30 @@
     {
       "id": "armedHuman",
       "direction": "left",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/armed-human-left-walk.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "right",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/armed-human-right-walk.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "left",
+      "animation": "run",
+      "src": "/assets/sprites/generated/armed-human-left-run.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "right",
+      "animation": "run",
+      "src": "/assets/sprites/generated/armed-human-right-run.png"
+    },
+    {
+      "id": "armedHuman",
+      "direction": "left",
       "animation": "shoot",
       "src": "/assets/sprites/generated/armed-human-left-shoot.png"
     },
