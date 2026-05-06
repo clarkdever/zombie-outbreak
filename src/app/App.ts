@@ -14,7 +14,9 @@ export class App {
   private selectedId: string | undefined;
   private debug = false;
   private speed = 1;
+  private lastNonZeroSpeed = 1;
   private lastTime = performance.now();
+  private controlledMoveAccumulator = 0.18;
 
   constructor(private readonly root: HTMLElement) {
     this.root.innerHTML = "";
@@ -22,7 +24,14 @@ export class App {
     this.canvas.className = "game-canvas";
     this.hud = createHud({
       onDebug: (enabled) => (this.debug = enabled),
-      onSpeed: (speed) => (this.speed = speed),
+      onSpeed: (speed) => {
+        this.speed = speed;
+        if (speed > 0) this.lastNonZeroSpeed = speed;
+      },
+      onPlayToggle: () => {
+        this.speed = this.speed === 0 ? this.lastNonZeroSpeed : 0;
+        return this.speed;
+      },
       onStart: (preset, overrides) => {
         this.sim = new Simulation(resolveScenarioOptions(preset, overrides, Date.now()));
         this.selectedId = this.sim.entities[0]?.id;
@@ -40,7 +49,8 @@ export class App {
   }
 
   private frame(time: number): void {
-    const dt = Math.min(0.1, (time - this.lastTime) / 1000) * this.speed;
+    const realDt = Math.min(0.1, (time - this.lastTime) / 1000);
+    const simDt = realDt * this.speed;
     this.lastTime = time;
     const input = this.input.update();
     if (input.clicked) {
@@ -48,17 +58,27 @@ export class App {
       if (hit) {
         this.selectedId = hit.id;
         this.sim.possess(hit.id);
+        this.hud.classList.add("hud--possessing");
       }
     }
-    if (input.move.x !== 0 || input.move.y !== 0) {
-      this.sim.movePossessed(input.move);
+    if (input.turn !== 0) {
+      this.sim.turnPossessed(input.turn * 2.5 * realDt);
     }
-    this.camera.x += input.edgeX * 320 * dt;
-    this.camera.y += input.edgeY * 320 * dt;
-    if (!this.sim.endState) this.sim.tick(dt);
+    if (input.move.x !== 0 || input.move.y !== 0) {
+      this.controlledMoveAccumulator += realDt;
+    } else {
+      this.controlledMoveAccumulator = 0.18;
+    }
+    if ((input.move.x !== 0 || input.move.y !== 0) && this.controlledMoveAccumulator >= 0.18) {
+      this.sim.movePossessed(input.move);
+      this.controlledMoveAccumulator = 0;
+    }
+    this.camera.x += input.edgeX * 320 * realDt;
+    this.camera.y += input.edgeY * 320 * realDt;
+    if (!this.sim.endState) this.sim.tick(simDt);
     this.selectedId ??= this.sim.entities[0]?.id;
     this.renderer.render(this.sim.map, this.sim.entities, this.camera, this.selectedId, this.debug);
-    updateHud(this.hud, this.sim, this.selectedId);
+    updateHud(this.hud, this.sim, this.speed, this.selectedId);
     requestAnimationFrame((nextTime) => this.frame(nextTime));
   }
 

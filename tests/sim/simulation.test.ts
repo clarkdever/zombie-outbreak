@@ -46,6 +46,27 @@ describe("Simulation", () => {
     expect(human.tile.x).toBe(start.x + 1);
   });
 
+  it("turns possessed entities without moving them", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 0, armedPercent: 0, seed: 11 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const start = { ...human.tile };
+    sim.possess(human.id);
+    sim.turnPossessed(1);
+    expect(human.facing).toBe(1);
+    expect(human.tile).toEqual(start);
+  });
+
+  it("keeps autonomous creatures moving while another entity is possessed", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    zombie.tile = { x: 5, y: 10 };
+    sim.possess(human.id);
+    sim.tick(1);
+    expect(zombie.tile.x).toBe(6);
+  });
+
   it("possessed zombies can be moved by the player", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 11 });
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
@@ -76,6 +97,26 @@ describe("Simulation", () => {
     zombie.tile = { x: 5, y: 10 };
     sim.tick(1);
     expect(zombie.tile.x).toBe(6);
+  });
+
+  it("moves calm humans instead of leaving them static", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 0, armedPercent: 0, seed: 13 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    human.tile = { x: 10, y: 10 };
+    sim.tick(1);
+    expect(human.tile).not.toEqual({ x: 10, y: 10 });
+  });
+
+  it("marks visible and audible stimuli for overlay feedback", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 13 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 4, y: 15 };
+    human.facing = 0;
+    zombie.tile = { x: 6, y: 15 };
+    sim.tick(1);
+    expect(human.seesStimulus).toBe(true);
+    expect(human.hearsStimulus).toBe(true);
   });
 
   it("does not move zombies faster when ticks are split into small frames", () => {

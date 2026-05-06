@@ -58,6 +58,8 @@ export interface Entity {
   alive: boolean;
   skeleton: boolean;
   seenZombie: boolean;
+  seesStimulus?: boolean;
+  hearsStimulus?: boolean;
   stimulusMemorySeconds: number;
   targetTile?: TilePos;
   meatEatenByBody: Record<string, number>;

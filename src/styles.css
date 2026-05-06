@@ -24,7 +24,9 @@ body,
 
 .hud--setup .title-block,
 .hud--setup .control-row,
-.hud--setup .legend {
+.hud--setup .legend,
+.hud--setup .control-hint,
+.hud:not(.hud--possessing) .control-hint {
   display: none;
 }
 
@@ -60,6 +62,32 @@ body,
   background: rgba(18, 22, 18, 0.86);
   color: #f1f4ea;
   font: inherit;
+}
+
+.control-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: min(560px, calc(100vw - 32px));
+  margin-top: 10px;
+  pointer-events: none;
+}
+
+.control-hint strong,
+.control-hint span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 5px 8px;
+  border: 1px solid rgba(241, 244, 234, 0.18);
+  border-radius: 6px;
+  background: rgba(18, 22, 18, 0.78);
+  color: #d9dfd2;
+  font-size: 13px;
+}
+
+.control-hint strong {
+  color: #f1f4ea;
 }
 
 .legend {

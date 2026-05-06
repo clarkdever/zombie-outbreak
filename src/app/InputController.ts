@@ -4,6 +4,7 @@ export interface InputState {
   edgeY: number;
   clicked?: { x: number; y: number };
   move: { x: number; y: number };
+  turn: number;
 }
 
 export class InputController {
@@ -32,6 +33,7 @@ export class InputController {
       x: (this.keys.has("d") ? 1 : 0) - (this.keys.has("a") ? 1 : 0),
       y: (this.keys.has("s") ? 1 : 0) - (this.keys.has("w") ? 1 : 0)
     };
-    return { keys: new Set(this.keys), edgeX, edgeY, clicked, move };
+    const turn = (this.keys.has("e") ? 1 : 0) - (this.keys.has("q") ? 1 : 0);
+    return { keys: new Set(this.keys), edgeX, edgeY, clicked, move, turn };
   }
 }

@@ -2,6 +2,7 @@ import { tickSimpleAi } from "./ai";
 import { applyBite, feedOnBody, tickInfectionAndBodies } from "./combat";
 import { createInitialWorld } from "./entities";
 import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
+import { canSee } from "./perception";
 import { createStats } from "./stats";
 import type { EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats } from "./types";
 
@@ -52,6 +53,7 @@ export class Simulation {
   }
 
   private stepActions(): void {
+    this.updateStimulusFlags();
     this.resolveHumanAttacks();
     this.resolveCloseInteractions();
     const newNoises: NoiseEvent[] = [];
@@ -81,6 +83,12 @@ export class Simulation {
     }
   }
 
+  turnPossessed(deltaRadians: number): void {
+    const controlled = this.entities.find((entity) => entity.controlled);
+    if (!controlled || controlled.skeleton || (!controlled.alive && !isZombie(controlled))) return;
+    controlled.facing = normalizeRadians(controlled.facing + deltaRadians);
+  }
+
   getEndFacts(): EndFact[] {
     const humans = this.entities.filter((entity) => entity.species === "human");
     const dogs = this.entities.filter((entity) => entity.species === "dog");
@@ -103,6 +111,26 @@ export class Simulation {
 
   private get zombies(): Entity[] {
     return this.entities.filter((entity) => isZombie(entity) && !entity.skeleton);
+  }
+
+  private updateStimulusFlags(): void {
+    for (const entity of this.entities) {
+      entity.seesStimulus = false;
+      entity.hearsStimulus = false;
+      if (entity.skeleton) continue;
+      for (const target of this.entities) {
+        if (target.id === entity.id || target.skeleton) continue;
+        const interesting =
+          isZombie(entity) ? target.alive && (target.species === "human" || target.species === "dog") : isZombie(target);
+        if (!interesting) continue;
+        const distance = Math.hypot(target.tile.x - entity.tile.x, target.tile.y - entity.tile.y);
+        entity.hearsStimulus ||= distance <= hearingRange(entity);
+        entity.seesStimulus ||= canSee(this.map, entity, target.tile);
+      }
+      if (entity.seesStimulus && entity.species === "human") {
+        entity.seenZombie = true;
+      }
+    }
   }
 
   private resolveHumanAttacks(): void {
@@ -161,4 +189,15 @@ export class Simulation {
 
 function isZombie(entity: Entity): boolean {
   return entity.species === "zombieHuman" || entity.species === "zombieDog";
+}
+
+function hearingRange(entity: Entity): number {
+  if (entity.species === "dog") return 8;
+  if (entity.species === "zombieDog") return 6;
+  if (entity.species === "zombieHuman") return 4;
+  return 6;
+}
+
+function normalizeRadians(value: number): number {
+  return Math.atan2(Math.sin(value), Math.cos(value));
 }

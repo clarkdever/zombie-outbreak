@@ -103,6 +103,8 @@ function createEntity(input: {
     alive: !zombie,
     skeleton: false,
     seenZombie: zombie,
+    seesStimulus: false,
+    hearsStimulus: false,
     stimulusMemorySeconds: 0,
     meatEatenByBody: {},
     totalMeatEaten: 0,

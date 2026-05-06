@@ -4,6 +4,7 @@ import type { Simulation } from "../sim/Simulation";
 interface HudOptions {
   onDebug: (enabled: boolean) => void;
   onSpeed: (speed: number) => void;
+  onPlayToggle: () => number;
   onStart: (preset: string, overrides: ScenarioOverrides) => void;
 }
 
@@ -33,11 +34,17 @@ export function createHud(options: HudOptions): HTMLElement {
       <span data-state></span>
     </div>
     <div class="control-row">
-      <button data-speed="0">Pause</button>
+      <button data-play-toggle>Pause</button>
       <button data-speed="1">1x</button>
       <button data-speed="2">2x</button>
       <button data-speed="4">4x</button>
       <label><input type="checkbox" data-debug /> Debug</label>
+    </div>
+    <div class="control-hint" data-control-hint>
+      <strong>Possessing</strong>
+      <span>WASD move</span>
+      <span>Q/E turn and look</span>
+      <span>Click another entity to switch</span>
     </div>
     <div class="legend" aria-label="Entity key">
       <span><i class="legend-swatch legend-swatch--human"></i> Human</span>
@@ -53,6 +60,10 @@ export function createHud(options: HudOptions): HTMLElement {
   });
   hud.querySelector<HTMLInputElement>("[data-debug]")?.addEventListener("change", (event) => {
     options.onDebug((event.target as HTMLInputElement).checked);
+  });
+  hud.querySelector<HTMLButtonElement>("[data-play-toggle]")?.addEventListener("click", () => {
+    const speed = options.onPlayToggle();
+    updatePlayToggleLabel(hud, speed);
   });
   const changedAdvanced = new Set<string>();
   hud.querySelectorAll<HTMLInputElement>("[data-advanced]").forEach((input) => {
@@ -75,11 +86,13 @@ export function createHud(options: HudOptions): HTMLElement {
   return hud;
 }
 
-export function updateHud(hud: HTMLElement, sim: Simulation, selectedId?: string): void {
+export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, selectedId?: string): void {
   const selected = sim.entities.find((entity) => entity.id === selectedId);
   hud.querySelector("[data-name]")!.textContent = selected?.name ?? "No selection";
   hud.querySelector("[data-affiliation]")!.textContent = selected?.affiliation ?? "";
   hud.querySelector("[data-state]")!.textContent = selected ? `${selected.species} / ${selected.state}` : "";
+  updatePlayToggleLabel(hud, speed);
+  hud.classList.toggle("hud--possessing", Boolean(selected?.controlled));
   const end = hud.querySelector<HTMLElement>("[data-end]")!;
   if (sim.endState) {
     const max = Math.max(1, ...sim.stats.zombiePopulationSamples);
@@ -108,4 +121,9 @@ export function updateHud(hud: HTMLElement, sim: Simulation, selectedId?: string
     }
     end.append(title, reason, list, histogram);
   }
+}
+
+function updatePlayToggleLabel(hud: HTMLElement, speed: number): void {
+  const button = hud.querySelector<HTMLButtonElement>("[data-play-toggle]");
+  if (button) button.textContent = speed === 0 ? "Play" : "Pause";
 }

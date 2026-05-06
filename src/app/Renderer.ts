@@ -68,11 +68,12 @@ export class Renderer {
     const p = isoToScreen(entity.tile.x, entity.tile.y, camera, this.canvas);
     const color = entity.skeleton ? "#e8e2bc" : entity.species.includes("zombie") ? "#8ccf6d" : entity.species === "dog" ? "#d0a15f" : entity.armed ? "#f2cc8f" : "#f1f4ea";
     if (selected || debug) {
-      this.ctx.strokeStyle = selected ? "rgba(255,255,255,0.34)" : "rgba(98,182,203,0.18)";
-      this.ctx.lineWidth = 1;
+      this.ctx.strokeStyle = senseStrokeColor(entity, "hearing");
+      this.ctx.lineWidth = debug ? 2 : 1.5;
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 72 : 48, 0, Math.PI * 2);
       this.ctx.stroke();
+      this.ctx.strokeStyle = senseStrokeColor(entity, "vision");
       this.ctx.beginPath();
       this.ctx.moveTo(p.x, p.y - 14);
       this.ctx.lineTo(p.x + Math.cos(entity.facing - 0.45) * 90, p.y - 14 + Math.sin(entity.facing - 0.45) * 90);
@@ -80,8 +81,8 @@ export class Renderer {
       this.ctx.closePath();
       this.ctx.stroke();
 
-      this.ctx.strokeStyle = selected ? "#ffffff" : "#62b6cb";
-      this.ctx.lineWidth = selected ? 3 : 1;
+      this.ctx.strokeStyle = stateStrokeColor(entity, selected);
+      this.ctx.lineWidth = selected ? 3 : debug ? 2 : 1;
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y - 14, 13, 0, Math.PI * 2);
       this.ctx.stroke();
@@ -98,4 +99,18 @@ export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCa
     x: (x - y) * (TILE_W / 2) * camera.zoom + canvas.width / 2 - camera.x,
     y: (x + y) * (TILE_H / 2) * camera.zoom + 80 - camera.y
   };
+}
+
+function stateStrokeColor(entity: Entity, selected: boolean): string {
+  if (entity.state === "fleeing" || entity.state === "alerted") return "#f4d35e";
+  if (entity.state === "infected" || entity.state === "turning") return "#ef476f";
+  if (entity.state === "attacking" || entity.state === "feeding") return "#ff7a59";
+  if (selected) return "#ffffff";
+  return "#62b6cb";
+}
+
+function senseStrokeColor(entity: Entity, sense: "hearing" | "vision"): string {
+  if (sense === "hearing" && entity.hearsStimulus) return "rgba(244, 211, 94, 0.9)";
+  if (sense === "vision" && entity.seesStimulus) return "rgba(239, 71, 111, 0.9)";
+  return sense === "hearing" ? "rgba(98, 182, 203, 0.34)" : "rgba(255, 255, 255, 0.28)";
 }

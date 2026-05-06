@@ -10,7 +10,7 @@ export function tickSimpleAi(entity: Entity, map: GameMap, entities: Entity[], n
   if (entity.species === "dog") {
     return tickDog(entity, map, entities);
   }
-  return tickHuman(entity, noises);
+  return tickHuman(entity, map, noises);
 }
 
 function tickZombie(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[] {
@@ -40,12 +40,36 @@ function tickDog(entity: Entity, map: GameMap, entities: Entity[]): NoiseEvent[]
   return [];
 }
 
-function tickHuman(entity: Entity, noises: NoiseEvent[]): NoiseEvent[] {
+function tickHuman(entity: Entity, map: GameMap, noises: NoiseEvent[]): NoiseEvent[] {
   if (entity.infected) entity.state = "infected";
+  if (entity.seesStimulus || entity.hearsStimulus) {
+    entity.state = "alerted";
+  }
   if (noises.some((noise) => (noise.kind === "gunshot" || noise.kind === "scream" || noise.kind === "bark") && canHear(entity, noise))) {
     entity.state = "alerted";
   }
+  if (entity.state === "calm" || entity.state === "alerted") {
+    stepWander(entity, map);
+  }
   return [];
+}
+
+function stepWander(entity: Entity, map: GameMap): void {
+  const direction = entity.id.length % 2 === 0 ? 1 : -1;
+  const options = [
+    { x: direction, y: 0 },
+    { x: 0, y: direction },
+    { x: -direction, y: 0 },
+    { x: 0, y: -direction }
+  ];
+  for (const delta of options) {
+    const candidate = wrapTile(map, { x: entity.tile.x + delta.x, y: entity.tile.y + delta.y });
+    if (!tileBlocksMovement(map, candidate)) {
+      entity.tile = candidate;
+      entity.facing = Math.atan2(delta.y, delta.x);
+      return;
+    }
+  }
 }
 
 function stepToward(entity: Entity, map: GameMap, target: TilePos): void {
