@@ -48,8 +48,8 @@ export function createHud(options: HudOptions): HTMLElement {
       <span>Click another entity to switch</span>
     </div>
     <div class="legend" aria-label="Entity key">
-      <span><i class="legend-swatch legend-swatch--human"></i> Human</span>
-      <span><i class="legend-swatch legend-swatch--armed"></i> Armed</span>
+      <span><i class="legend-swatch legend-swatch--human"></i> Unarmed human</span>
+      <span><i class="legend-swatch legend-swatch--armed"></i> Armed human</span>
       <span><i class="legend-swatch legend-swatch--dog"></i> Dog</span>
       <span><i class="legend-swatch legend-swatch--zombie"></i> Zombie</span>
       <span><i class="legend-swatch legend-swatch--skeleton"></i> Skeleton</span>
