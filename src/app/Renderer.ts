@@ -57,7 +57,8 @@ export class Renderer {
     return [...entities].reverse().find((entity) => {
       const tile = renderTileFor(entity);
       const p = isoToScreen(tile.x, tile.y, camera, this.canvas);
-      return Math.hypot(point.x - p.x, point.y - (p.y - 14)) < 16;
+      const bounds = entityPickBounds(entity.species, p);
+      return point.x >= bounds.left && point.x <= bounds.right && point.y >= bounds.top && point.y <= bounds.bottom;
     });
   }
 
@@ -134,6 +135,24 @@ export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCa
   return {
     x: (x - y) * (TILE_W / 2) * camera.zoom + canvas.width / 2 - camera.x,
     y: (x + y) * (TILE_H / 2) * camera.zoom + 80 - camera.y
+  };
+}
+
+export function entityPickBounds(species: Entity["species"], screen: { x: number; y: number }): {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+} {
+  const dog = species === "dog" || species === "zombieDog";
+  const halfWidth = dog ? 28 : 34;
+  const topOffset = dog ? 44 : 64;
+  const bottomOffset = dog ? 8 : 6;
+  return {
+    left: screen.x - halfWidth,
+    right: screen.x + halfWidth,
+    top: screen.y - topOffset,
+    bottom: screen.y + bottomOffset
   };
 }
 

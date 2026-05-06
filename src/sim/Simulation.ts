@@ -95,9 +95,10 @@ export class Simulation {
     const controlled = this.entities.find((entity) => entity.controlled);
     if (!controlled || controlled.skeleton || (!controlled.alive && !isZombie(controlled))) return;
     if (this.isGrappled(controlled)) return;
+    const worldDelta = localMoveToWorldDelta(delta, controlled.facing);
     const candidate = wrapTile(this.map, {
-      x: controlled.tile.x + Math.sign(delta.x),
-      y: controlled.tile.y + Math.sign(delta.y)
+      x: controlled.tile.x + worldDelta.x,
+      y: controlled.tile.y + worldDelta.y
     });
     if (!tileBlocksMovement(this.map, candidate)) {
       controlled.tile = candidate;
@@ -336,6 +337,17 @@ function hearingRange(entity: Entity): number {
 
 function normalizeRadians(value: number): number {
   return Math.atan2(Math.sin(value), Math.cos(value));
+}
+
+export function localMoveToWorldDelta(delta: { x: number; y: number }, facing: number): { x: number; y: number } {
+  const forward = -Math.sign(delta.y);
+  const strafeRight = Math.sign(delta.x);
+  const x = Math.cos(facing) * forward + Math.sin(facing) * strafeRight;
+  const y = Math.sin(facing) * forward - Math.cos(facing) * strafeRight;
+  return {
+    x: Math.sign(Math.round(x)),
+    y: Math.sign(Math.round(y))
+  };
 }
 
 function angleDelta(target: number, current: number): number {

@@ -35,15 +35,29 @@ describe("Simulation", () => {
     expect(facts.some((fact) => fact.label === "Bestest doggo" && fact.value.includes(dog.name))).toBe(true);
   });
 
-  it("possessed entities accept movement intent without autonomous ai", () => {
+  it("moves possessed entities forward relative to their facing", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 11 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 10, y: 10 };
+    zombie.tile = { x: 25, y: 25 };
     const start = { ...human.tile };
+    human.facing = Math.PI / 2;
     sim.possess(human.id);
-    sim.movePossessed({ x: 1, y: 0 });
+    sim.movePossessed({ x: 0, y: -1 });
     sim.tick(1);
     expect(human.controlled).toBe(true);
-    expect(human.tile.x).toBe(start.x + 1);
+    expect(human.tile).toEqual({ x: start.x, y: start.y + 1 });
+  });
+
+  it("strafes possessed entities relative to their facing", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 0, armedPercent: 0, seed: 11 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    human.tile = { x: 10, y: 10 };
+    human.facing = 0;
+    sim.possess(human.id);
+    sim.movePossessed({ x: 1, y: 0 });
+    expect(human.tile).toEqual({ x: 10, y: 9 });
   });
 
   it("turns possessed entities without moving them", () => {
@@ -71,8 +85,9 @@ describe("Simulation", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 11 });
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     zombie.tile = { x: 5, y: 10 };
+    zombie.facing = 0;
     sim.possess(zombie.id);
-    sim.movePossessed({ x: 1, y: 0 });
+    sim.movePossessed({ x: 0, y: -1 });
     expect(zombie.tile).toEqual({ x: 6, y: 10 });
   });
 
@@ -81,11 +96,13 @@ describe("Simulation", () => {
     const human = sim.entities.find((entity) => entity.species === "human")!;
     sim.possess(human.id);
     human.tile = { x: 29, y: 10 };
-    sim.movePossessed({ x: 1, y: 0 });
+    human.facing = 0;
+    sim.movePossessed({ x: 0, y: -1 });
     expect(human.tile).toEqual({ x: 0, y: 10 });
 
     human.tile = { x: 3, y: 4 };
-    sim.movePossessed({ x: 1, y: 0 });
+    human.facing = 0;
+    sim.movePossessed({ x: 0, y: -1 });
     expect(human.tile).toEqual({ x: 3, y: 4 });
   });
 
@@ -337,8 +354,9 @@ describe("Simulation", () => {
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     human.tile = { x: 6, y: 10 };
     zombie.tile = { x: 5, y: 10 };
+    zombie.facing = 0;
     sim.possess(zombie.id);
-    sim.movePossessed({ x: 1, y: 0 });
+    sim.movePossessed({ x: 0, y: -1 });
     sim.tick(1);
     expect(human.infected).toBe(true);
     expect(human.hp).toBeLessThan(100);
