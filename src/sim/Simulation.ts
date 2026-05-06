@@ -149,7 +149,7 @@ export class Simulation {
       { label: "Dogs turned", value: String(this.stats.dogsTurned) },
       { label: "Skeletons created", value: String(this.stats.skeletonsCreated) },
       { label: "First infected", value: this.stats.firstInfectedName ?? "No one" },
-      { label: "Hungriest zombie", value: hungriest ? `${hungriest.name} ate ${Math.round(hungriest.totalMeatEaten)} meat` : "No zombies fed" },
+      { label: "Hungriest zombie", value: hungriest ? `${hungriest.name} ate ${Math.round(hungriest.totalMeatEaten)} bites` : "No zombies fed" },
       { label: "Bestest doggo", value: bestDog ? `${bestDog.name} alerted ${bestDog.humansAlerted} humans` : "No dogs joined the story" },
       { label: "Best shot", value: bestShot && bestShot.zombieKills > 0 ? `${bestShot.name} killed ${bestShot.zombieKills} zombies` : "No confirmed zombie kills" }
     ];

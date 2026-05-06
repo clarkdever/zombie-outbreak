@@ -53,7 +53,8 @@ describe("Simulation", () => {
 
     const hungriest = sim.getEndFacts().find((fact) => fact.label === "Hungriest zombie");
     expect(hungriest?.value).toContain(zombie.name);
-    expect(hungriest?.value).toContain("3 meat");
+    expect(hungriest?.value).toContain("3 bites");
+    expect(hungriest?.value).not.toContain("meat");
   });
 
   it("moves possessed entities forward relative to their facing", () => {
