@@ -9,7 +9,7 @@ interface HudOptions {
 
 export function createHud(options: HudOptions): HTMLElement {
   const hud = document.createElement("div");
-  hud.className = "hud";
+  hud.className = "hud hud--setup";
   hud.innerHTML = `
     <div class="start-modal" data-start>
       <h1>Zombie Outbreak</h1>
@@ -39,6 +39,13 @@ export function createHud(options: HudOptions): HTMLElement {
       <button data-speed="4">4x</button>
       <label><input type="checkbox" data-debug /> Debug</label>
     </div>
+    <div class="legend" aria-label="Entity key">
+      <span><i class="legend-swatch legend-swatch--human"></i> Human</span>
+      <span><i class="legend-swatch legend-swatch--armed"></i> Armed</span>
+      <span><i class="legend-swatch legend-swatch--dog"></i> Dog</span>
+      <span><i class="legend-swatch legend-swatch--zombie"></i> Zombie</span>
+      <span><i class="legend-swatch legend-swatch--skeleton"></i> Skeleton</span>
+    </div>
     <div class="end-modal" data-end hidden></div>
   `;
   hud.querySelectorAll<HTMLButtonElement>("[data-speed]").forEach((button) => {
@@ -61,6 +68,8 @@ export function createHud(options: HudOptions): HTMLElement {
         .map((input) => [input.dataset.advanced!, Number(input.value)])
     ) as ScenarioOverrides;
     hud.querySelector<HTMLElement>("[data-start]")!.hidden = true;
+    hud.classList.remove("hud--setup");
+    hud.classList.add("hud--running");
     options.onStart(preset, overrides);
   });
   return hud;
