@@ -44,6 +44,7 @@ export function createHud(options: HudOptions): HTMLElement {
       <strong>Possessing</strong>
       <span>WASD move</span>
       <span>Q/E turn and look</span>
+      <span>Space shoot if armed</span>
       <span>Click another entity to switch</span>
     </div>
     <div class="legend" aria-label="Entity key">

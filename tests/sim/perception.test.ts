@@ -55,7 +55,16 @@ describe("perception", () => {
     const map = createNeighborhoodMap();
     const viewer = entity({ tile: { x: 1, y: 4 }, facing: 0 });
     expect(canSee(map, viewer, { x: 3, y: 4 })).toBe(true);
-    expect(canSee(map, viewer, { x: 1, y: 8 })).toBe(false);
+    expect(canSee(map, viewer, { x: 0, y: 4 })).toBe(false);
     expect(canSee(map, viewer, { x: 5, y: 4 })).toBe(false);
+  });
+
+  it("uses wider species-specific visual fields", () => {
+    const map = createNeighborhoodMap();
+    const human = entity({ species: "human", tile: { x: 10, y: 15 }, facing: 0 });
+    const dog = entity({ species: "dog", tile: { x: 10, y: 15 }, facing: 0 });
+
+    expect(canSee(map, human, { x: 9, y: 17 })).toBe(false);
+    expect(canSee(map, dog, { x: 9, y: 17 })).toBe(true);
   });
 });

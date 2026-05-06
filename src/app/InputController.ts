@@ -5,15 +5,20 @@ export interface InputState {
   clicked?: { x: number; y: number };
   move: { x: number; y: number };
   turn: number;
+  shoot: boolean;
 }
 
 export class InputController {
   private readonly keys = new Set<string>();
+  private shootQueued = false;
   private pointer = { x: 0, y: 0 };
   private clicked: { x: number; y: number } | undefined;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     window.addEventListener("keydown", (event) => this.keys.add(event.key.toLowerCase()));
+    window.addEventListener("keydown", (event) => {
+      if (event.code === "Space") this.shootQueued = true;
+    });
     window.addEventListener("keyup", (event) => this.keys.delete(event.key.toLowerCase()));
     window.addEventListener("mousemove", (event) => {
       this.pointer = { x: event.clientX, y: event.clientY };
@@ -34,6 +39,8 @@ export class InputController {
       y: (this.keys.has("s") ? 1 : 0) - (this.keys.has("w") ? 1 : 0)
     };
     const turn = (this.keys.has("e") ? 1 : 0) - (this.keys.has("q") ? 1 : 0);
-    return { keys: new Set(this.keys), edgeX, edgeY, clicked, move, turn };
+    const shoot = this.shootQueued;
+    this.shootQueued = false;
+    return { keys: new Set(this.keys), edgeX, edgeY, clicked, move, turn, shoot };
   }
 }

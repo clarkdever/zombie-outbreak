@@ -32,7 +32,8 @@ The first build is intentionally graybox and includes:
 - Zombie feeding capped per body
 - Human groups, armed leaders, and basic armed-human attacks
 - Dog ownership and barking behavior
-- Possession, edge-scroll camera, Q/E turning, and time controls
+- Possession, edge-scroll camera, Q/E turning, Space-to-shoot controls, and time controls
+- Visible bullet traces with collision damage for zombies, humans, and dogs
 - Debug overlays for selected or all entities
 - End modal with name-based facts and a zombie-over-time histogram
 
@@ -103,8 +104,9 @@ npm test
 6. Click a human, dog, or zombie to possess it.
 7. Use WASD to move the possessed entity.
 8. Use Q/E to turn and look around.
-9. Use Play/Pause and 1x/2x/4x to control time.
-10. Toggle Debug to show all hearing circles, vision cones, and state rings.
+9. If possessing an armed human, press Space to shoot.
+10. Use Play/Pause and 1x/2x/4x to control time.
+11. Toggle Debug to show all hearing circles, vision cones, and state rings.
 
 ## Project Status
 

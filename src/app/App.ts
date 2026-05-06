@@ -64,6 +64,9 @@ export class App {
     if (input.turn !== 0) {
       this.sim.turnPossessed(input.turn * 2.5 * realDt);
     }
+    if (input.shoot) {
+      this.sim.shootPossessed();
+    }
     if (input.move.x !== 0 || input.move.y !== 0) {
       this.controlledMoveAccumulator += realDt;
     } else {
@@ -77,7 +80,7 @@ export class App {
     this.camera.y += input.edgeY * 320 * realDt;
     if (!this.sim.endState) this.sim.tick(simDt);
     this.selectedId ??= this.sim.entities[0]?.id;
-    this.renderer.render(this.sim.map, this.sim.entities, this.camera, this.selectedId, this.debug);
+    this.renderer.render(this.sim.map, this.sim.entities, this.sim.bullets, this.camera, this.selectedId, this.debug);
     updateHud(this.hud, this.sim, this.speed, this.selectedId);
     requestAnimationFrame((nextTime) => this.frame(nextTime));
   }

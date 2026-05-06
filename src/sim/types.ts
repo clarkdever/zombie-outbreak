@@ -6,6 +6,7 @@ export type EntityState =
   | "investigating"
   | "fleeing"
   | "attacking"
+  | "shooting"
   | "infected"
   | "downed"
   | "turning"
@@ -90,6 +91,15 @@ export interface NoiseEvent {
   kind: NoiseKind;
   tile: TilePos;
   radius: number;
+  ageSeconds: number;
+}
+
+export interface BulletTrace {
+  id: string;
+  from: Vec2;
+  to: Vec2;
+  shooterId: string;
+  hitEntityId?: string;
   ageSeconds: number;
 }
 

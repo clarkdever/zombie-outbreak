@@ -135,8 +135,9 @@ describe("Simulation", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 15 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
-    human.tile = { x: 5, y: 5 };
-    zombie.tile = { x: 7, y: 5 };
+    human.tile = { x: 5, y: 15 };
+    zombie.tile = { x: 7, y: 15 };
+    zombie.hp = 35;
     sim.tick(1);
     expect(zombie.skeleton).toBe(true);
     expect(human.zombieKills).toBe(1);
@@ -168,5 +169,34 @@ describe("Simulation", () => {
     expect(human.alive).toBe(false);
     sim.tick(1);
     expect(zombie.state).toBe("feeding");
+  });
+
+  it("lets controlled zombies infect humans by contact", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 16 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 6, y: 10 };
+    zombie.tile = { x: 5, y: 10 };
+    sim.possess(zombie.id);
+    sim.movePossessed({ x: 1, y: 0 });
+    sim.tick(1);
+    expect(human.infected).toBe(true);
+    expect(human.hp).toBeLessThan(100);
+  });
+
+  it("lets controlled armed humans fire visible bullets that damage the first living target", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 100, seed: 17 });
+    const shooter = sim.entities[0];
+    const bystander = sim.entities[1];
+    shooter.tile = { x: 5, y: 10 };
+    shooter.facing = 0;
+    bystander.tile = { x: 8, y: 10 };
+    sim.possess(shooter.id);
+
+    expect(sim.shootPossessed()).toBe(true);
+    expect(sim.bullets).toHaveLength(1);
+    expect(sim.bullets[0].hitEntityId).toBe(bystander.id);
+    expect(bystander.hp).toBeLessThan(100);
+    expect(shooter.state).toBe("shooting");
   });
 });

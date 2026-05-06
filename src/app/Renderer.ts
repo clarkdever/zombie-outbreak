@@ -1,4 +1,6 @@
+import { visionRadiansFor } from "../sim/perception";
 import type { Entity, GameMap } from "../sim/types";
+import type { BulletTrace } from "../sim/types";
 
 export interface Camera {
   x: number;
@@ -20,7 +22,7 @@ export class Renderer {
     this.ctx = ctx;
   }
 
-  render(map: GameMap, entities: Entity[], camera: Camera, selectedId?: string, debug = false): void {
+  render(map: GameMap, entities: Entity[], bullets: BulletTrace[], camera: Camera, selectedId?: string, debug = false): void {
     this.ctx.fillStyle = "#151815";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (let y = 0; y < map.height; y += 1) {
@@ -30,6 +32,9 @@ export class Renderer {
     }
     for (const entity of entities) {
       this.drawEntity(entity, camera, entity.id === selectedId, debug);
+    }
+    for (const bullet of bullets) {
+      this.drawBullet(bullet, camera);
     }
   }
 
@@ -74,10 +79,11 @@ export class Renderer {
       this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 72 : 48, 0, Math.PI * 2);
       this.ctx.stroke();
       this.ctx.strokeStyle = senseStrokeColor(entity, "vision");
+      const halfVision = visionRadiansFor(entity) / 2;
       this.ctx.beginPath();
       this.ctx.moveTo(p.x, p.y - 14);
-      this.ctx.lineTo(p.x + Math.cos(entity.facing - 0.45) * 90, p.y - 14 + Math.sin(entity.facing - 0.45) * 90);
-      this.ctx.lineTo(p.x + Math.cos(entity.facing + 0.45) * 90, p.y - 14 + Math.sin(entity.facing + 0.45) * 90);
+      this.ctx.lineTo(p.x + Math.cos(entity.facing - halfVision) * 90, p.y - 14 + Math.sin(entity.facing - halfVision) * 90);
+      this.ctx.lineTo(p.x + Math.cos(entity.facing + halfVision) * 90, p.y - 14 + Math.sin(entity.facing + halfVision) * 90);
       this.ctx.closePath();
       this.ctx.stroke();
 
@@ -91,6 +97,21 @@ export class Renderer {
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y - 14, entity.species === "dog" ? 6 : 8, 0, Math.PI * 2);
     this.ctx.fill();
+  }
+
+  private drawBullet(bullet: BulletTrace, camera: Camera): void {
+    const from = isoToScreen(bullet.from.x, bullet.from.y, camera, this.canvas);
+    const to = isoToScreen(bullet.to.x, bullet.to.y, camera, this.canvas);
+    const alpha = Math.max(0, 1 - bullet.ageSeconds / 0.22);
+    this.ctx.save();
+    this.ctx.globalAlpha = alpha;
+    this.ctx.strokeStyle = bullet.hitEntityId ? "#ffef9f" : "#f8f7f2";
+    this.ctx.lineWidth = bullet.hitEntityId ? 3 : 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(from.x, from.y - 14);
+    this.ctx.lineTo(to.x, to.y - 14);
+    this.ctx.stroke();
+    this.ctx.restore();
   }
 }
 
@@ -111,6 +132,7 @@ export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCa
 }
 
 function stateStrokeColor(entity: Entity, selected: boolean): string {
+  if (entity.state === "shooting") return "#3a86ff";
   if (entity.state === "fleeing" || entity.state === "alerted") return "#f4d35e";
   if (entity.state === "infected" || entity.state === "turning") return "#ef476f";
   if (entity.state === "attacking" || entity.state === "feeding") return "#ff7a59";

@@ -119,11 +119,11 @@ body,
 }
 
 .legend-swatch--human {
-  background: #f1f4ea;
+  background: #2fbf71;
 }
 
 .legend-swatch--armed {
-  background: #f2cc8f;
+  background: #3a86ff;
 }
 
 .legend-swatch--dog {
@@ -131,11 +131,11 @@ body,
 }
 
 .legend-swatch--zombie {
-  background: #8ccf6d;
+  background: #e63946;
 }
 
 .legend-swatch--skeleton {
-  background: #e8e2bc;
+  background: #ffffff;
 }
 
 .start-modal,

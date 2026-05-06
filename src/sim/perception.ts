@@ -4,10 +4,10 @@ import type { Entity, GameMap, NoiseEvent, NoiseKind, TilePos } from "./types";
 let noiseId = 0;
 
 const senses = {
-  human: { hearing: 1, visionRange: 8, visionRadians: Math.PI / 2.7 },
-  dog: { hearing: 1.6, visionRange: 7, visionRadians: Math.PI / 1.8 },
-  zombieHuman: { hearing: 0.7, visionRange: 5, visionRadians: Math.PI / 3.2 },
-  zombieDog: { hearing: 1.1, visionRange: 5.5, visionRadians: Math.PI / 2.4 }
+  human: { hearing: 1, visionRange: 8, visionRadians: degreesToRadians(190) },
+  dog: { hearing: 1.6, visionRange: 7, visionRadians: degreesToRadians(250) },
+  zombieHuman: { hearing: 0.7, visionRange: 5, visionRadians: degreesToRadians(140) },
+  zombieDog: { hearing: 1.1, visionRange: 5.5, visionRadians: degreesToRadians(190) }
 } as const;
 
 export function createNoise(kind: NoiseKind, tile: TilePos, radius: number): NoiseEvent {
@@ -36,6 +36,10 @@ export function canSee(map: GameMap, viewer: Entity, target: TilePos): boolean {
   return hasLineOfSight(map, viewer.tile, target);
 }
 
+export function visionRadiansFor(entity: Entity): number {
+  return senses[entity.species].visionRadians;
+}
+
 function hasLineOfSight(map: GameMap, from: TilePos, to: TilePos): boolean {
   const steps = Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
   if (steps <= 1) return true;
@@ -45,4 +49,8 @@ function hasLineOfSight(map: GameMap, from: TilePos, to: TilePos): boolean {
     if (tileBlocksSight(map, { x, y })) return false;
   }
   return true;
+}
+
+function degreesToRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180;
 }

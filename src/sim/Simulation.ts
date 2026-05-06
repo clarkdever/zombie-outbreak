@@ -4,7 +4,7 @@ import { createInitialWorld } from "./entities";
 import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
 import { canSee } from "./perception";
 import { createStats } from "./stats";
-import type { EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats } from "./types";
+import type { BulletTrace, EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats, Vec2 } from "./types";
 
 export interface SimulationOptions {
   humans: number;
@@ -25,8 +25,10 @@ export class Simulation {
   readonly groups: HumanGroup[];
   readonly stats: SimStats;
   noises: NoiseEvent[] = [];
+  bullets: BulletTrace[] = [];
   endState?: EndState;
   private actionAccumulatorSeconds = 0;
+  private bulletId = 0;
 
   constructor(options: SimulationOptions) {
     this.map = createNeighborhoodMap();
@@ -45,6 +47,9 @@ export class Simulation {
       this.stepActions();
       this.actionAccumulatorSeconds -= 1;
     }
+    this.bullets = this.bullets
+      .map((bullet) => ({ ...bullet, ageSeconds: bullet.ageSeconds + dt }))
+      .filter((bullet) => bullet.ageSeconds < 0.22);
     tickInfectionAndBodies(this.entities, dt, { infectionDamagePerSecond: 1, turningDelaySeconds: 8 }, this.stats);
     if (Math.floor(this.stats.elapsedSeconds) !== Math.floor(previousElapsedSeconds)) {
       this.stats.zombiePopulationSamples.push(this.zombies.length);
@@ -87,6 +92,13 @@ export class Simulation {
     const controlled = this.entities.find((entity) => entity.controlled);
     if (!controlled || controlled.skeleton || (!controlled.alive && !isZombie(controlled))) return;
     controlled.facing = normalizeRadians(controlled.facing + deltaRadians);
+  }
+
+  shootPossessed(): boolean {
+    const controlled = this.entities.find((entity) => entity.controlled);
+    if (!controlled || controlled.species !== "human" || !controlled.alive || !controlled.armed) return false;
+    this.fireBullet(controlled);
+    return true;
   }
 
   getEndFacts(): EndFact[] {
@@ -135,14 +147,63 @@ export class Simulation {
 
   private resolveHumanAttacks(): void {
     for (const human of this.entities) {
-      if (human.species !== "human" || !human.alive || !human.armed) continue;
-      const target = this.zombies.find((zombie) => Math.hypot(zombie.tile.x - human.tile.x, zombie.tile.y - human.tile.y) <= 3);
+      if (human.species !== "human" || !human.alive || !human.armed || human.controlled) continue;
+      const target = this.zombies.find((zombie) =>
+        Math.hypot(zombie.tile.x - human.tile.x, zombie.tile.y - human.tile.y) <= 6 && canSee(this.map, human, zombie.tile)
+      );
       if (!target) continue;
-      target.hp = 0;
+      human.facing = Math.atan2(target.tile.y - human.tile.y, target.tile.x - human.tile.x);
+      this.fireBullet(human);
+    }
+  }
+
+  private fireBullet(shooter: Entity): void {
+    const from = { x: shooter.tile.x, y: shooter.tile.y };
+    const range = 8;
+    const intendedTo = {
+      x: shooter.tile.x + Math.cos(shooter.facing) * range,
+      y: shooter.tile.y + Math.sin(shooter.facing) * range
+    };
+    const hit = this.findBulletHit(shooter, from, intendedTo);
+    const to = hit ? { x: hit.tile.x, y: hit.tile.y } : intendedTo;
+    shooter.state = "shooting";
+    this.noises.push({
+      id: `gunshot-${this.bulletId + 1}`,
+      kind: "gunshot",
+      tile: shooter.tile,
+      radius: 10,
+      ageSeconds: 0
+    });
+    this.bullets.push({
+      id: `bullet-${this.bulletId + 1}`,
+      from,
+      to,
+      shooterId: shooter.id,
+      hitEntityId: hit?.id,
+      ageSeconds: 0
+    });
+    this.bulletId += 1;
+    if (hit) this.applyBulletDamage(shooter, hit, 35);
+  }
+
+  private findBulletHit(shooter: Entity, from: Vec2, to: Vec2): Entity | undefined {
+    return this.entities
+      .filter((entity) => entity.id !== shooter.id && !entity.skeleton && (entity.alive || isZombie(entity)))
+      .map((entity) => ({ entity, distanceAlongRay: distanceAlongRay(from, to, entity.tile), missDistance: pointToSegmentDistance(from, to, entity.tile) }))
+      .filter((candidate) => candidate.distanceAlongRay >= 0 && candidate.distanceAlongRay <= 1 && candidate.missDistance <= 0.55)
+      .sort((a, b) => a.distanceAlongRay - b.distanceAlongRay)[0]?.entity;
+  }
+
+  private applyBulletDamage(shooter: Entity, target: Entity, damage: number): void {
+    target.hp = Math.max(0, target.hp - damage);
+    if (isZombie(target) && target.hp <= 0) {
       target.skeleton = true;
       target.state = "downed";
-      human.zombieKills += 1;
+      shooter.zombieKills += 1;
       this.stats.zombiesKilled += 1;
+    } else if ((target.species === "human" || target.species === "dog") && target.hp <= 0) {
+      target.alive = false;
+      target.state = target.infected ? "turning" : "downed";
     }
   }
 
@@ -200,4 +261,21 @@ function hearingRange(entity: Entity): number {
 
 function normalizeRadians(value: number): number {
   return Math.atan2(Math.sin(value), Math.cos(value));
+}
+
+function distanceAlongRay(from: Vec2, to: Vec2, point: Vec2): number {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared === 0) return 0;
+  return ((point.x - from.x) * dx + (point.y - from.y) * dy) / lengthSquared;
+}
+
+function pointToSegmentDistance(from: Vec2, to: Vec2, point: Vec2): number {
+  const t = Math.max(0, Math.min(1, distanceAlongRay(from, to, point)));
+  const closest = {
+    x: from.x + (to.x - from.x) * t,
+    y: from.y + (to.y - from.y) * t
+  };
+  return Math.hypot(point.x - closest.x, point.y - closest.y);
 }
