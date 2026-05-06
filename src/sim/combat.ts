@@ -19,7 +19,7 @@ export function applyBite(attacker: Entity, target: Entity, damage: number): voi
 
 export function feedOnBody(zombie: Entity, body: Entity, biteDamagePerSecond: number): number {
   if (body.alive || body.skeleton || body.meat <= 0) return 0;
-  const cap = body.originalMeat * 0.2;
+  const cap = body.originalMeat * 0.25;
   const alreadyEaten = zombie.meatEatenByBody[body.id] ?? 0;
   const remainingForZombie = Math.max(0, cap - alreadyEaten);
   const available = (zombie.feedingRemainder ?? 0) + biteDamagePerSecond;

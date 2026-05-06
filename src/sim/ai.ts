@@ -1,4 +1,5 @@
 import { tileBlocksMovement, wrapTile } from "./map";
+import { movementSpeedFor } from "./movement";
 import { canHear, canSee, createNoise } from "./perception";
 import type { Entity, GameMap, NoiseEvent, TilePos } from "./types";
 
@@ -11,7 +12,9 @@ export function tickSimpleAi(
   noises: NoiseEvent[],
   immobilizedIds = new Set<string>()
 ): NoiseEvent[] {
+  entity.speed = movementSpeedFor(entity);
   if (entity.controlled || entity.skeleton || immobilizedIds.has(entity.id)) return [];
+  if (!entity.alive && entity.species !== "zombieHuman" && entity.species !== "zombieDog") return [];
   if (entity.species === "zombieHuman" || entity.species === "zombieDog") {
     return tickZombie(entity, map, entities);
   }

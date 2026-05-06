@@ -3,6 +3,7 @@ import { applyBite, feedOnBody, tickInfectionAndBodies } from "./combat";
 import { createInitialWorld } from "./entities";
 import { createNeighborhoodMap, tileBlocksMovement, tileBlocksSight, wrapTile } from "./map";
 import { canSee } from "./perception";
+import { Random } from "./random";
 import { createStats } from "./stats";
 import type { BulletTrace, EndFact, Entity, GameMap, HumanGroup, NoiseEvent, SimStats, Vec2 } from "./types";
 
@@ -12,6 +13,7 @@ export interface SimulationOptions {
   zombies: number;
   armedPercent: number;
   seed: number;
+  grappleEscapePercent?: number;
 }
 
 export interface EndState {
@@ -30,6 +32,8 @@ export class Simulation {
   private actionAccumulatorSeconds = 0;
   private bulletId = 0;
   private grappledIds = new Set<string>();
+  private readonly random: Random;
+  private readonly grappleEscapeChance: number;
 
   constructor(options: SimulationOptions) {
     this.map = createNeighborhoodMap();
@@ -37,6 +41,8 @@ export class Simulation {
     this.entities = world.entities;
     this.groups = world.groups;
     this.stats = createStats();
+    this.random = new Random((Math.imul(options.seed, 101) + 17) >>> 0);
+    this.grappleEscapeChance = (options.grappleEscapePercent ?? 60) / 100;
   }
 
   tick(dt: number): void {
@@ -58,7 +64,7 @@ export class Simulation {
     this.bullets = this.bullets
       .map((bullet) => ({ ...bullet, ageSeconds: bullet.ageSeconds + dt }))
       .filter((bullet) => bullet.ageSeconds < 0.22);
-    tickInfectionAndBodies(this.entities, dt, { infectionDamagePerSecond: 1, turningDelaySeconds: 8 }, this.stats);
+    tickInfectionAndBodies(this.entities, dt, { infectionDamagePerSecond: 1, turningDelaySeconds: 10 }, this.stats);
     if (Math.floor(this.stats.elapsedSeconds) !== Math.floor(previousElapsedSeconds)) {
       this.stats.zombiePopulationSamples.push(this.zombies.length);
     }
@@ -251,19 +257,23 @@ export class Simulation {
         Math.hypot(entity.tile.x - zombie.tile.x, entity.tile.y - zombie.tile.y) <= 1
       );
       if (livingTarget) {
+        if (this.random.next() < this.grappleEscapeChance) {
+          livingTarget.state = "fleeing";
+          continue;
+        }
         immobilizedIds.add(zombie.id);
         immobilizedIds.add(livingTarget.id);
         applyBite(zombie, livingTarget, 12);
         if (!livingTarget.alive) {
-          livingTarget.turnSeconds = 8;
-          feedOnBody(zombie, livingTarget, 1);
+          livingTarget.turnSeconds = 10;
+          feedOnBody(zombie, livingTarget, 3);
           fedThisTick = true;
         }
         if (fedThisTick) continue;
       }
       const body = bodies.find((candidate) => Math.hypot(candidate.tile.x - zombie.tile.x, candidate.tile.y - zombie.tile.y) <= 1);
       if (body) {
-        feedOnBody(zombie, body, 1);
+        feedOnBody(zombie, body, 3);
         fedThisTick = true;
       }
       if (!fedThisTick && zombie.state === "feeding") {

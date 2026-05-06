@@ -235,7 +235,7 @@ describe("Simulation", () => {
   });
 
   it("nearby zombies bite living humans and can start feeding after a down", () => {
-    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12 });
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12, grappleEscapePercent: 0 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     human.tile = { x: 5, y: 5 };
@@ -249,7 +249,7 @@ describe("Simulation", () => {
   });
 
   it("keeps zombies and bite targets still while grappling", () => {
-    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12 });
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 12, grappleEscapePercent: 0 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     human.tile = { x: 5, y: 5 };
@@ -264,7 +264,7 @@ describe("Simulation", () => {
   });
 
   it("blocks possessed movement out of an active grapple", () => {
-    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 27 });
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 27, grappleEscapePercent: 0 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     human.tile = { x: 5, y: 5 };
@@ -277,8 +277,62 @@ describe("Simulation", () => {
     expect(human.tile).toEqual({ x: 5, y: 5 });
   });
 
+  it("lets grappled victims escape most of the time", () => {
+    let escapes = 0;
+    for (let seed = 1; seed <= 100; seed += 1) {
+      const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed, grappleEscapePercent: 60 });
+      const human = sim.entities.find((entity) => entity.species === "human")!;
+      const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+      human.tile = { x: 5, y: 5 };
+      zombie.tile = { x: 6, y: 5 };
+
+      sim.tick(1);
+      if (!human.infected) escapes += 1;
+    }
+
+    expect(escapes).toBeGreaterThanOrEqual(50);
+    expect(escapes).toBeLessThanOrEqual(70);
+  });
+
+  it("lets three zombies leave enough meat for reanimation but four can skeletonize a downed body", () => {
+    const three = new Simulation({ humans: 2, dogs: 0, zombies: 3, armedPercent: 0, seed: 28, grappleEscapePercent: 0 });
+    const threeBody = three.entities.find((entity) => entity.species === "human")!;
+    const threeSurvivor = three.entities.find((entity) => entity.species === "human" && entity.id !== threeBody.id)!;
+    threeBody.alive = false;
+    threeBody.infected = true;
+    threeBody.state = "turning";
+    threeBody.turnSeconds = 10;
+    threeBody.tile = { x: 10, y: 10 };
+    threeSurvivor.tile = { x: 25, y: 25 };
+    three.possess(threeSurvivor.id);
+    three.entities.filter((entity) => entity.species === "zombieHuman").forEach((zombie, index) => {
+      zombie.tile = [{ x: 9, y: 10 }, { x: 11, y: 10 }, { x: 10, y: 9 }][index];
+    });
+
+    for (let tick = 0; tick < 11; tick += 1) three.tick(1);
+    expect(threeBody.skeleton).toBe(false);
+    expect(threeBody.species).toBe("zombieHuman");
+
+    const four = new Simulation({ humans: 2, dogs: 0, zombies: 4, armedPercent: 0, seed: 29, grappleEscapePercent: 0 });
+    const fourBody = four.entities.find((entity) => entity.species === "human")!;
+    const fourSurvivor = four.entities.find((entity) => entity.species === "human" && entity.id !== fourBody.id)!;
+    fourBody.alive = false;
+    fourBody.infected = true;
+    fourBody.state = "turning";
+    fourBody.turnSeconds = 10;
+    fourBody.tile = { x: 10, y: 10 };
+    fourSurvivor.tile = { x: 25, y: 25 };
+    four.possess(fourSurvivor.id);
+    four.entities.filter((entity) => entity.species === "zombieHuman").forEach((zombie, index) => {
+      zombie.tile = [{ x: 9, y: 10 }, { x: 11, y: 10 }, { x: 10, y: 9 }, { x: 10, y: 11 }][index];
+    });
+
+    for (let tick = 0; tick < 10; tick += 1) four.tick(1);
+    expect(fourBody.skeleton).toBe(true);
+  });
+
   it("lets controlled zombies infect humans by contact", () => {
-    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 16 });
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 16, grappleEscapePercent: 0 });
     const human = sim.entities.find((entity) => entity.species === "human")!;
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
     human.tile = { x: 6, y: 10 };

@@ -79,13 +79,13 @@ describe("combat and bodies", () => {
     expect(zombie.totalMeatEaten).toBe(1);
   });
 
-  it("feeding caps each zombie at 20 percent of original body meat", () => {
+  it("feeding caps each zombie at 25 percent of original body meat", () => {
     const zombie = baseEntity({ id: "z", species: "zombieHuman", name: "Undead Glen", alive: false });
     const body = baseEntity({ id: "body", name: "Glen", alive: false, meat: 100, originalMeat: 100, state: "turning" });
     feedOnBody(zombie, body, 30);
-    expect(body.meat).toBe(80);
-    expect(zombie.totalMeatEaten).toBe(20);
-    expect(zombie.meatEatenByBody.body).toBe(20);
+    expect(body.meat).toBe(75);
+    expect(zombie.totalMeatEaten).toBe(25);
+    expect(zombie.meatEatenByBody.body).toBe(25);
   });
 
   it("body becomes skeleton if meat reaches zero before turning", () => {
