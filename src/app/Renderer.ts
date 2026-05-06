@@ -1,3 +1,4 @@
+import { entityColor, entityRingColor } from "./entityPresentation";
 import { visionRadiansFor } from "../sim/perception";
 import type { Entity, GameMap } from "../sim/types";
 import type { BulletTrace } from "../sim/types";
@@ -87,7 +88,7 @@ export class Renderer {
       this.ctx.closePath();
       this.ctx.stroke();
 
-      this.ctx.strokeStyle = stateStrokeColor(entity, selected);
+      this.ctx.strokeStyle = entityRingColor(entity, selected);
       this.ctx.lineWidth = selected ? 3 : debug ? 2 : 1;
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y - 14, 13, 0, Math.PI * 2);
@@ -115,29 +116,11 @@ export class Renderer {
   }
 }
 
-function entityColor(entity: Entity): string {
-  if (entity.skeleton) return "#ffffff";
-  if (entity.species.includes("zombie")) return "#e63946";
-  if (entity.armed && entity.species === "human") return "#3a86ff";
-  if (entity.species === "human") return "#2fbf71";
-  if (entity.species === "dog") return "#d0a15f";
-  return "#f1f4ea";
-}
-
 export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCanvasElement): { x: number; y: number } {
   return {
     x: (x - y) * (TILE_W / 2) * camera.zoom + canvas.width / 2 - camera.x,
     y: (x + y) * (TILE_H / 2) * camera.zoom + 80 - camera.y
   };
-}
-
-function stateStrokeColor(entity: Entity, selected: boolean): string {
-  if (entity.state === "shooting") return "#3a86ff";
-  if (entity.state === "fleeing" || entity.state === "alerted") return "#f4d35e";
-  if (entity.state === "infected" || entity.state === "turning") return "#ef476f";
-  if (entity.state === "attacking" || entity.state === "feeding") return "#ff7a59";
-  if (selected) return "#ffffff";
-  return "#62b6cb";
 }
 
 function senseStrokeColor(entity: Entity, sense: "hearing" | "vision"): string {

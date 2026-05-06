@@ -46,6 +46,40 @@ body,
   font-size: 13px;
 }
 
+.inspect-panel {
+  display: grid;
+  gap: 3px;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(241, 244, 234, 0.16);
+}
+
+.inspect-panel[hidden] {
+  display: none;
+}
+
+.inspect-row {
+  display: grid;
+  grid-template-columns: minmax(84px, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  min-height: 18px;
+  font-size: 12px;
+}
+
+.inspect-row span {
+  color: #8f9a86;
+}
+
+.inspect-row strong {
+  max-width: 130px;
+  overflow-wrap: anywhere;
+  color: #f1f4ea;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
 .control-row {
   display: flex;
   gap: 8px;

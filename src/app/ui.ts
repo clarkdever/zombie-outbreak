@@ -1,3 +1,4 @@
+import { getEntityInspectRows, stateLabel } from "./entityPresentation";
 import type { ScenarioOverrides } from "./presets";
 import type { Simulation } from "../sim/Simulation";
 
@@ -32,6 +33,7 @@ export function createHud(options: HudOptions): HTMLElement {
       <strong data-name>Zombie Outbreak</strong>
       <span data-affiliation>Preparing simulation</span>
       <span data-state></span>
+      <div class="inspect-panel" data-inspect-panel hidden></div>
     </div>
     <div class="control-row">
       <button data-play-toggle>Pause</button>
@@ -91,7 +93,8 @@ export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, sele
   const selected = sim.entities.find((entity) => entity.id === selectedId);
   hud.querySelector("[data-name]")!.textContent = selected?.name ?? "No selection";
   hud.querySelector("[data-affiliation]")!.textContent = selected?.affiliation ?? "";
-  hud.querySelector("[data-state]")!.textContent = selected ? `${selected.species} / ${selected.state}` : "";
+  hud.querySelector("[data-state]")!.textContent = selected ? `${selected.species} / ${stateLabel(selected)}` : "";
+  updateInspectPanel(hud, selected);
   updatePlayToggleLabel(hud, speed);
   hud.classList.toggle("hud--possessing", Boolean(selected?.controlled));
   const end = hud.querySelector<HTMLElement>("[data-end]")!;
@@ -121,6 +124,23 @@ export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, sele
       histogram.append(bar);
     }
     end.append(title, reason, list, histogram);
+  }
+}
+
+function updateInspectPanel(hud: HTMLElement, selected: Simulation["entities"][number] | undefined): void {
+  const panel = hud.querySelector<HTMLElement>("[data-inspect-panel]")!;
+  panel.hidden = !selected;
+  panel.replaceChildren();
+  if (!selected) return;
+  for (const row of getEntityInspectRows(selected)) {
+    const element = document.createElement("div");
+    element.className = "inspect-row";
+    const label = document.createElement("span");
+    label.textContent = row.label;
+    const value = document.createElement("strong");
+    value.textContent = row.value;
+    element.append(label, value);
+    panel.append(element);
   }
 }
 
