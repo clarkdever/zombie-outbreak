@@ -2372,3 +2372,13 @@ git commit -m "docs: record zombie outbreak verification"
 - Do not start GPT-image-2 asset work until graybox simulation is playable.
 - Do not add map generation, interiors, ammo, seamless wrapping, or partially eaten zombie movement until the MVP loop is verified.
 - If dependency installation is blocked by network restrictions, request network permission before running `npm install`.
+
+## Sprite Implementation Notes
+
+When replacing graybox circles with sprite sheets:
+
+- Add explicit shooting animations for armed humans, including aim anticipation, muzzle flash timing, firing frame, and recovery.
+- Add being-shot/hit-reaction animations for humans, dogs, human zombies, and dog zombies. These should be separate from bite/hurt reactions so gun impacts read clearly.
+- Add bullet sprites to the effects sprite sheet: projectile/tracer, muzzle flash, flesh impact, zombie impact, missed-shot dust puff, and optional spark/ricochet.
+- Scale bullet sprites from tile size rather than raw screen pixels. Bullet length/thickness should remain readable at default zoom, shrink/grow with camera zoom, and align to the simulated bullet start/end points.
+- Preserve consistent anchors for all firearm-related sprites: muzzle flashes attach to the shooter's weapon hand/muzzle point, projectiles align to facing, and impacts attach to the collision endpoint.

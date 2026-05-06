@@ -267,17 +267,19 @@ Later generate:
 - Skeleton
 - Grass, streets, sidewalks, fences, yards
 - Cars, trees, houses, gates, and props
+- Bullet and muzzle-flash effect sprite sheet, including tracer/projectile frames, impact puffs, and hit sparks.
 
-Use palette swaps to create variety in humans and zombies. Keep animation sheets consistent in camera angle, scale, frame count, anchor point, and lighting.
+Use palette swaps to create variety in humans and zombies. Keep animation sheets consistent in camera angle, scale, frame count, anchor point, and lighting. Bullet and muzzle-flash sprites should be authored at the same isometric camera angle as the characters, with a documented pixel-to-tile scale so projectile traces read clearly without overpowering character silhouettes.
 
 Animation requirements:
 
-- Adult human male and female: idle, walk, run, panic/flee, talk/warn, aim, shoot, melee/struggle, bitten/hurt, downed/dying, infected stagger, turning, corpse.
-- Human zombie male and female: idle/shuffle, walk/chase, lunge/bite, feed, growl/alert, hit reaction, death/downed.
-- Dog: idle, walk/trot, run, bark, follow/heel, flee, bite/attack, hurt, downed/dying, infected stagger, turning, corpse.
-- Dog zombie: idle, shuffle/trot, chase, lunge/bite, feed, growl/snarl, hit reaction, death/downed.
+- Adult human male and female: idle, walk, run, panic/flee, talk/warn, aim, shoot, being shot/hit reaction, melee/struggle, bitten/hurt, downed/dying, infected stagger, turning, corpse.
+- Human zombie male and female: idle/shuffle, walk/chase, lunge/bite, feed, growl/alert, being shot/hit reaction, death/downed.
+- Dog: idle, walk/trot, run, bark, follow/heel, flee, bite/attack, being shot/hurt, downed/dying, infected stagger, turning, corpse.
+- Dog zombie: idle, shuffle/trot, chase, lunge/bite, feed, growl/snarl, being shot/hit reaction, death/downed.
 - Corpse and skeleton states: fresh downed body, partially eaten body, mostly eaten body, skeleton. Partially eaten zombie movement penalties and dedicated damaged zombie sprites remain a later backlog item.
-- Environment tiles and props do not need animation in the MVP, except optional simple effects for muzzle flash, bark/sound indicator, bite hit, and alert markers.
+- Bullet effects: projectile/tracer, muzzle flash, missed-shot dust puff, flesh impact, zombie impact, and optional ricochet/spark. These should scale with camera zoom and tile size, preserving the projectile's apparent direction and collision endpoint.
+- Environment tiles and props do not need animation in the MVP, except optional simple effects for muzzle flash, bark/sound indicator, bite hit, shot impact, and alert markers.
 
 ## Future Backlog
 
