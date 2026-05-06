@@ -1,4 +1,4 @@
-import type { Entity, SimStats } from "./types";
+import { ZOMBIE_HUMAN_VARIANT_COUNT, type Entity, type SimStats } from "./types";
 
 export interface BodyTickConfig {
   infectionDamagePerSecond: number;
@@ -86,12 +86,22 @@ function reanimate(entity: Entity, stats: SimStats): void {
     entity.species = "zombieHuman";
     entity.name = `Undead ${entity.name}`;
     entity.affiliation = "The Horde";
+    entity.zombieHumanVariant = stableVariant(entity.id, ZOMBIE_HUMAN_VARIANT_COUNT);
     stats.humansTurned += 1;
   }
   entity.state = "investigating";
   entity.infected = true;
   entity.hp = entity.maxHp;
   entity.alive = false;
+}
+
+function stableVariant(id: string, count: number): number {
+  let hash = 2166136261;
+  for (let index = 0; index < id.length; index += 1) {
+    hash ^= id.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % count;
 }
 
 function isZombie(entity: Entity): boolean {

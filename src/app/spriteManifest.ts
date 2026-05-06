@@ -20,6 +20,7 @@ export type SpriteSheetKey =
   | "armedHuman"
   | "dog"
   | "zombieHuman"
+  | "zombieArmedHuman"
   | "zombieDog"
   | "corpse"
   | "skeletonHuman"
@@ -62,6 +63,7 @@ export interface SpriteDrawPlan {
   sheet: SpriteSheetDefinition;
   clip: SpriteClip;
   frame: number;
+  variant?: number;
   flipX: boolean;
   direction: SpriteDirection;
   sourceRect: SpriteRect;
@@ -111,6 +113,7 @@ export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
   armedHuman: spriteSheet("armedHuman", "armed-human.png", HUMANOID_CLIPS, 0.66),
   dog: spriteSheet("dog", "dog.png", DOG_CLIPS, 0.52),
   zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.66),
+  zombieArmedHuman: spriteSheet("zombieArmedHuman", "zombie-armed-human.png", HUMANOID_CLIPS, 0.66),
   zombieDog: spriteSheet("zombieDog", "zombie-dog.png", DOG_CLIPS, 0.52),
   corpse: spriteSheet("corpse", "corpse.png", HUMANOID_CLIPS, 0.66),
   skeletonHuman: spriteSheet("skeletonHuman", "skeleton-human.png", HUMANOID_CLIPS, 0.66),
@@ -163,6 +166,7 @@ export function spriteSheetKeyFor(entity: Entity): SpriteSheetKey {
   if (!entity.alive && entity.species === "dog") return "dog";
   if (!entity.alive && !entity.species.includes("zombie")) return "corpse";
   if (entity.species === "human") return entity.armed ? "armedHuman" : "human";
+  if (entity.species === "zombieHuman") return entity.armed ? "zombieArmedHuman" : "zombieHuman";
   return entity.species;
 }
 
@@ -175,6 +179,7 @@ export function spriteDrawPlanFor(entity: Entity, timeSeconds: number): SpriteDr
     sheet,
     clip,
     frame: frameIndex,
+    variant: entity.species === "zombieHuman" ? entity.zombieHumanVariant : undefined,
     flipX: frame.flipX,
     direction: frame.direction,
     sourceRect: spriteFrameRect({ ...sheet, row: clip.row }, frameIndex),

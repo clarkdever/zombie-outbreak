@@ -7,6 +7,7 @@ describe("sprite atlas keys", () => {
   it("separates generated sheets by entity, direction, and animation", () => {
     expect(spriteAtlasKey("armedHuman", "left")).toBe("armedHuman:left");
     expect(spriteAtlasKey("armedHuman", "right", "shoot")).toBe("armedHuman:right:shoot");
+    expect(spriteAtlasKey("zombieArmedHuman", "right", undefined, 2)).toBe("zombieArmedHuman:v2:right");
     expect(spriteAtlasKey("skeletonHuman", undefined, "skeleton")).toBe("skeletonHuman:skeleton");
     expect(spriteAtlasKey("armedHuman")).toBe("armedHuman");
   });
@@ -52,6 +53,27 @@ describe("sprite atlas keys", () => {
     for (const direction of directions) {
       for (const animation of animations) {
         expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, animation));
+      }
+    }
+  });
+
+  it("publishes zombie human damage variants for armed and unarmed bodies", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(
+          sheet.id as SpriteSheetKey,
+          sheet.direction as SpriteDirection | undefined,
+          sheet.animation as SpriteAnimation | undefined,
+          sheet.variant
+        )
+      )
+    );
+    const directions = ["down", "left", "up", "right"] as const;
+
+    for (let variant = 0; variant < 4; variant += 1) {
+      for (const direction of directions) {
+        expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, undefined, variant));
+        expect(keys).toContain(spriteAtlasKey("zombieArmedHuman", direction, undefined, variant));
       }
     }
   });

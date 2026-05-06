@@ -1,7 +1,7 @@
 import { createNeighborhoodMap, tileBlocksMovement, wrapTile } from "./map";
 import { dogName, groupName, humanName, uniqueHumanName } from "./names";
 import { Random } from "./random";
-import type { Entity, GameMap, HumanGroup, Species, TilePos, WorldState } from "./types";
+import { ZOMBIE_HUMAN_VARIANT_COUNT, type Entity, type GameMap, type HumanGroup, type Species, type TilePos, type WorldState } from "./types";
 
 interface InitialWorldOptions {
   humans: number;
@@ -87,6 +87,7 @@ function createEntity(input: {
 }): Entity {
   const dog = input.species === "dog" || input.species === "zombieDog";
   const zombie = input.species === "zombieHuman" || input.species === "zombieDog";
+  const zombieHumanVariant = input.species === "zombieHuman" ? stableVariant(input.id, ZOMBIE_HUMAN_VARIANT_COUNT) : undefined;
   const maxHp = dog ? 60 : zombie ? 120 : 100;
   return {
     id: input.id,
@@ -116,6 +117,7 @@ function createEntity(input: {
     alive: !zombie,
     skeleton: false,
     skeletonVariant: undefined,
+    zombieHumanVariant,
     dogIdlePose: dog && !zombie ? input.dogIdlePose ?? "sit" : undefined,
     humanIdlePose: input.species === "human" ? input.humanIdlePose ?? "stand" : undefined,
     seenZombie: zombie,
@@ -132,6 +134,15 @@ function createEntity(input: {
     zombieKills: 0,
     lifetimeSeconds: 0
   };
+}
+
+function stableVariant(id: string, count: number): number {
+  let hash = 2166136261;
+  for (let index = 0; index < id.length; index += 1) {
+    hash ^= id.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % count;
 }
 
 function randomOpenTile(map: GameMap, random: Random): TilePos {

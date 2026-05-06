@@ -52,11 +52,19 @@ describe("sprite manifest contract", () => {
     expect(spriteSheetKeyFor(entity({ species: "human", armed: true }))).toBe("armedHuman");
     expect(spriteSheetKeyFor(entity({ species: "dog" }))).toBe("dog");
     expect(spriteSheetKeyFor(entity({ species: "dog", alive: false, skeleton: false }))).toBe("dog");
-    expect(spriteSheetKeyFor(entity({ species: "zombieHuman" }))).toBe("zombieHuman");
+    expect(spriteSheetKeyFor(entity({ species: "zombieHuman", armed: false }))).toBe("zombieHuman");
+    expect(spriteSheetKeyFor(entity({ species: "zombieHuman", armed: true }))).toBe("zombieArmedHuman");
     expect(spriteSheetKeyFor(entity({ species: "zombieDog" }))).toBe("zombieDog");
     expect(spriteSheetKeyFor(entity({ alive: false, skeleton: false }))).toBe("corpse");
     expect(spriteSheetKeyFor(entity({ species: "human", alive: false, skeleton: true }))).toBe("skeletonHuman");
     expect(spriteSheetKeyFor(entity({ species: "dog", alive: false, skeleton: true }))).toBe("skeletonDog");
+  });
+
+  it("uses the assigned zombie human damage variant as the sheet variant", () => {
+    const plan = spriteDrawPlanFor(entity({ species: "zombieHuman", armed: true, zombieHumanVariant: 2 }), 0.1);
+
+    expect(plan.sheet.id).toBe("zombieArmedHuman");
+    expect(plan.variant).toBe(2);
   });
 
   it("calculates source rectangles by animation row and frame column", () => {

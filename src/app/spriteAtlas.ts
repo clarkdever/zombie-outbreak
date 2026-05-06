@@ -4,10 +4,11 @@ export interface LoadedSpriteSheet {
   image: CanvasImageSource;
   direction?: SpriteDirection;
   animation?: SpriteAnimation;
+  variant?: number;
 }
 
 export interface SpriteAtlas {
-  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation): LoadedSpriteSheet | undefined;
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation, variant?: number): LoadedSpriteSheet | undefined;
 }
 
 interface GeneratedSpriteManifest {
@@ -15,6 +16,7 @@ interface GeneratedSpriteManifest {
     id: SpriteSheetKey;
     direction?: SpriteDirection;
     animation?: SpriteAnimation;
+    variant?: number;
     src: string;
   }>;
 }
@@ -22,8 +24,12 @@ interface GeneratedSpriteManifest {
 export class BrowserSpriteAtlas implements SpriteAtlas {
   private readonly sheets = new Map<string, LoadedSpriteSheet>();
 
-  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation): LoadedSpriteSheet | undefined {
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection, animation: SpriteAnimation, variant?: number): LoadedSpriteSheet | undefined {
     return (
+      this.sheets.get(spriteAtlasKey(sheetId, direction, animation, variant)) ??
+      this.sheets.get(spriteAtlasKey(sheetId, undefined, animation, variant)) ??
+      this.sheets.get(spriteAtlasKey(sheetId, direction, undefined, variant)) ??
+      this.sheets.get(spriteAtlasKey(sheetId, undefined, undefined, variant)) ??
       this.sheets.get(spriteAtlasKey(sheetId, direction, animation)) ??
       this.sheets.get(spriteAtlasKey(sheetId, undefined, animation)) ??
       this.sheets.get(spriteAtlasKey(sheetId, direction)) ??
@@ -35,19 +41,19 @@ export class BrowserSpriteAtlas implements SpriteAtlas {
     const manifest = await fetchGeneratedManifest(manifestUrl);
     if (!manifest) return;
     await Promise.all(
-      manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src, sheet.direction, sheet.animation).catch(() => undefined))
+      manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src, sheet.direction, sheet.animation, sheet.variant).catch(() => undefined))
     );
   }
 
-  private async loadSheet(sheetId: SpriteSheetKey, src: string, direction?: SpriteDirection, animation?: SpriteAnimation): Promise<void> {
+  private async loadSheet(sheetId: SpriteSheetKey, src: string, direction?: SpriteDirection, animation?: SpriteAnimation, variant?: number): Promise<void> {
     if (!SPRITE_SHEETS[sheetId]) return;
     const image = await loadImage(src);
-    this.sheets.set(spriteAtlasKey(sheetId, direction, animation), { image, direction, animation });
+    this.sheets.set(spriteAtlasKey(sheetId, direction, animation, variant), { image, direction, animation, variant });
   }
 }
 
-export function spriteAtlasKey(sheetId: SpriteSheetKey, direction?: SpriteDirection, animation?: SpriteAnimation): string {
-  return [sheetId, direction, animation].filter(Boolean).join(":");
+export function spriteAtlasKey(sheetId: SpriteSheetKey, direction?: SpriteDirection, animation?: SpriteAnimation, variant?: number): string {
+  return [sheetId, variant === undefined ? undefined : `v${variant}`, direction, animation].filter(Boolean).join(":");
 }
 
 export function createBrowserSpriteAtlas(): SpriteAtlas {

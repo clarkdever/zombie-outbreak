@@ -79,3 +79,12 @@ Terrain rows are assigned in `src/app/terrainSprites.ts`:
 - row 19: tree variants
 
 Tile variants are chosen deterministically from tile coordinates so the map has texture without flickering between renders.
+
+## Zombie Human Variants
+
+Zombie humans have separate sheet families for unarmed and armed former humans:
+
+- `zombie-human-v{0-3}-{down,left,up,right}.png`
+- `zombie-armed-human-v{0-3}-{down,left,up,right}.png`
+
+Each sheet is `384x768`, with `96x96` frames arranged in 4 columns and 8 animation rows. The renderer chooses a stable `zombieHumanVariant` when a zombie spawns or when a human reanimates, so the damage pattern does not change between animations.

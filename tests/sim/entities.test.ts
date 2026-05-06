@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GLOCK_19_WITH_SPARE_MAG_AMMO, createInitialWorld } from "../../src/sim/entities";
 import { Random } from "../../src/sim/random";
+import { ZOMBIE_HUMAN_VARIANT_COUNT } from "../../src/sim/types";
 
 describe("entity creation", () => {
   it("creates named humans, dogs, and zombies from counts", () => {
@@ -22,6 +23,15 @@ describe("entity creation", () => {
     const world = createInitialWorld({ humans: 2, dogs: 0, zombies: 2, armedPercent: 0, seed: 7 });
 
     expect(world.entities.find((entity) => entity.id === "zombie-1")?.name).toBe("Patient Zero");
+  });
+
+  it("assigns stable zombie human damage variants to generated zombies", () => {
+    const a = createInitialWorld({ humans: 2, dogs: 0, zombies: 3, armedPercent: 0, seed: 7 });
+    const b = createInitialWorld({ humans: 2, dogs: 0, zombies: 3, armedPercent: 0, seed: 7 });
+    const variants = a.entities.filter((entity) => entity.species === "zombieHuman").map((entity) => entity.zombieHumanVariant);
+
+    expect(variants).toEqual(b.entities.filter((entity) => entity.species === "zombieHuman").map((entity) => entity.zombieHumanVariant));
+    expect(variants.every((variant) => variant !== undefined && variant >= 0 && variant < ZOMBIE_HUMAN_VARIANT_COUNT)).toBe(true);
   });
 
   it("assigns unique human names across larger simulations", () => {

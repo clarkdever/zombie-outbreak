@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyBite, feedOnBody, tickInfectionAndBodies } from "../../src/sim/combat";
 import { createStats } from "../../src/sim/stats";
-import type { Entity } from "../../src/sim/types";
+import { ZOMBIE_HUMAN_VARIANT_COUNT, type Entity } from "../../src/sim/types";
 
 function baseEntity(overrides: Partial<Entity>): Entity {
   return {
@@ -96,5 +96,17 @@ describe("combat and bodies", () => {
     expect(body.skeleton).toBe(true);
     expect(body.state).toBe("downed");
     expect(stats.skeletonsCreated).toBe(1);
+  });
+
+  it("assigns a stable zombie human damage variant when a human reanimates", () => {
+    const stats = createStats();
+    const human = baseEntity({ id: "body", alive: false, state: "turning", turnSeconds: 0, infected: true, armed: true });
+
+    tickInfectionAndBodies([human], 1, { infectionDamagePerSecond: 1, turningDelaySeconds: 8 }, stats);
+
+    expect(human.species).toBe("zombieHuman");
+    expect(human.armed).toBe(true);
+    expect(human.zombieHumanVariant).toBeGreaterThanOrEqual(0);
+    expect(human.zombieHumanVariant).toBeLessThan(ZOMBIE_HUMAN_VARIANT_COUNT);
   });
 });

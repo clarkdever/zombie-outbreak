@@ -2,6 +2,7 @@ export type Species = "human" | "dog" | "zombieHuman" | "zombieDog";
 export type DogIdlePose = "sit" | "sleep";
 export type HumanIdlePose = "stand" | "sit" | "kneel";
 export const SKELETON_VARIANT_COUNT = 4;
+export const ZOMBIE_HUMAN_VARIANT_COUNT = 4;
 export type TileKind =
   | "grass"
   | "road"
@@ -80,6 +81,7 @@ export interface Entity {
   alive: boolean;
   skeleton: boolean;
   skeletonVariant?: number;
+  zombieHumanVariant?: number;
   dogIdlePose?: DogIdlePose;
   humanIdlePose?: HumanIdlePose;
   seenZombie: boolean;
