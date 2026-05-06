@@ -14,7 +14,7 @@ export function drawEntitySprite(
 ): void {
   const spriteTime = entity.lifetimeSeconds || timeSeconds;
   const plan = spriteDrawPlanFor(entity, spriteTime);
-  const sheet = atlas?.get(plan.sheet.id);
+  const sheet = atlas?.get(plan.sheet.id, plan.direction);
   if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction)) {
     drawSheetSprite(ctx, sheet.image, screen, plan);
     return;

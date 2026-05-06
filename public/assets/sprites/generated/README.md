@@ -24,4 +24,17 @@ When at least one sheet is ready, add `manifest.json` next to the images:
 }
 ```
 
+Prefer direction-specific entries once generated sheets exist:
+
+```json
+{
+  "sheets": [
+    { "id": "armedHuman", "direction": "down", "src": "/assets/sprites/generated/armed-human-down.png" },
+    { "id": "armedHuman", "direction": "up", "src": "/assets/sprites/generated/armed-human-up.png" },
+    { "id": "armedHuman", "direction": "left", "src": "/assets/sprites/generated/armed-human-side.png" },
+    { "id": "armedHuman", "direction": "right", "src": "/assets/sprites/generated/armed-human-side.png" }
+  ]
+}
+```
+
 The renderer loads this manifest at runtime. Missing sheets fall back to the code-native pixel sprites.

@@ -99,6 +99,9 @@ export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, sele
   hud.classList.toggle("hud--possessing", Boolean(selected?.controlled));
   const end = hud.querySelector<HTMLElement>("[data-end]")!;
   if (sim.endState) {
+    const key = endModalRenderKey(sim);
+    if (end.dataset.renderKey === key) return;
+    end.dataset.renderKey = key;
     const max = Math.max(1, ...sim.stats.zombiePopulationSamples);
     end.hidden = false;
     end.replaceChildren();
@@ -129,13 +132,28 @@ export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, sele
     restart.addEventListener("click", () => {
       end.hidden = true;
       end.replaceChildren();
+      delete end.dataset.renderKey;
       hud.querySelector<HTMLElement>("[data-start]")!.hidden = false;
       hud.classList.add("hud--setup");
       hud.classList.remove("hud--running", "hud--possessing");
       onRestart?.();
     });
     end.append(title, reason, list, histogram, restart);
+  } else {
+    end.hidden = true;
+    end.replaceChildren();
+    delete end.dataset.renderKey;
   }
+}
+
+export function endModalRenderKey(sim: Simulation): string {
+  if (!sim.endState) return "running";
+  return [
+    sim.endState.winner,
+    sim.endState.reason,
+    sim.stats.zombiePopulationSamples.length,
+    sim.stats.zombiePopulationSamples.at(-1) ?? 0
+  ].join("|");
 }
 
 function updateInspectPanel(hud: HTMLElement, selected: Simulation["entities"][number] | undefined): void {

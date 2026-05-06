@@ -1,38 +1,43 @@
-import { SPRITE_SHEETS, type SpriteSheetKey } from "./spriteManifest";
+import { SPRITE_SHEETS, type SpriteDirection, type SpriteSheetKey } from "./spriteManifest";
 
 export interface LoadedSpriteSheet {
   image: CanvasImageSource;
 }
 
 export interface SpriteAtlas {
-  get(sheetId: SpriteSheetKey): LoadedSpriteSheet | undefined;
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection): LoadedSpriteSheet | undefined;
 }
 
 interface GeneratedSpriteManifest {
   sheets: Array<{
     id: SpriteSheetKey;
+    direction?: SpriteDirection;
     src: string;
   }>;
 }
 
 export class BrowserSpriteAtlas implements SpriteAtlas {
-  private readonly sheets = new Map<SpriteSheetKey, LoadedSpriteSheet>();
+  private readonly sheets = new Map<string, LoadedSpriteSheet>();
 
-  get(sheetId: SpriteSheetKey): LoadedSpriteSheet | undefined {
-    return this.sheets.get(sheetId);
+  get(sheetId: SpriteSheetKey, direction: SpriteDirection): LoadedSpriteSheet | undefined {
+    return this.sheets.get(spriteAtlasKey(sheetId, direction)) ?? this.sheets.get(spriteAtlasKey(sheetId));
   }
 
   async load(manifestUrl = "/assets/sprites/generated/manifest.json"): Promise<void> {
     const manifest = await fetchGeneratedManifest(manifestUrl);
     if (!manifest) return;
-    await Promise.all(manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src).catch(() => undefined)));
+    await Promise.all(manifest.sheets.map((sheet) => this.loadSheet(sheet.id, sheet.src, sheet.direction).catch(() => undefined)));
   }
 
-  private async loadSheet(sheetId: SpriteSheetKey, src: string): Promise<void> {
+  private async loadSheet(sheetId: SpriteSheetKey, src: string, direction?: SpriteDirection): Promise<void> {
     if (!SPRITE_SHEETS[sheetId]) return;
     const image = await loadImage(src);
-    this.sheets.set(sheetId, { image });
+    this.sheets.set(spriteAtlasKey(sheetId, direction), { image });
   }
+}
+
+export function spriteAtlasKey(sheetId: SpriteSheetKey, direction?: SpriteDirection): string {
+  return direction ? `${sheetId}:${direction}` : sheetId;
 }
 
 export function createBrowserSpriteAtlas(): SpriteAtlas {

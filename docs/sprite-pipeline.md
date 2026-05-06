@@ -8,6 +8,8 @@ Sprite sheets live in `public/assets/sprites/generated/` and are discovered thro
 
 Direction is part of the contract. A complete character set needs front/down, back/up, and side views. Side views may be mirrored for left/right, but front and back need authored frames so entities do not appear to aim or walk in the wrong screen direction. Until a sheet supports all four directions, the renderer should only use it for the supported directions and fall back to the code-native sprite for the rest.
 
+Generated manifests may provide one sheet per direction. Use `direction: "down"`, `"up"`, `"left"`, or `"right"` on each manifest entry. Left and right can point at the same side-view PNG because the renderer mirrors the left-facing draw plan.
+
 Each sheet uses a higher-detail source size so the art can look SNES-or-better while still rendering at board scale:
 
 - Frame size: `96x96`
