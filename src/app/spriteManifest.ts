@@ -75,7 +75,7 @@ export const SPRITE_ANIMATION_ROWS = 8;
 export const SPRITE_ANCHOR = { x: 48, y: 76 } as const;
 
 const HUMANOID_CLIPS = clips({
-  idle: [0, 2, 2],
+  idle: [0, 4, 2],
   walk: [1, 4, 4],
   run: [2, 4, 7],
   attack: [3, 3, 8],
@@ -141,6 +141,10 @@ export function spriteFrameFor(entity: Entity, timeSeconds: number): SpriteFrame
   const frame =
     animation === "skeleton"
       ? Math.max(0, Math.min(sheet.columns - 1, entity.skeletonVariant ?? 0))
+      : entity.species === "human" && !entity.armed && animation === "idle"
+        ? (entity.humanIdlePose === "sit" || entity.humanIdlePose === "kneel" ? 2 : 0) + Math.floor(timeSeconds * clip.fps) % 2
+        : entity.species === "human" && animation === "idle"
+          ? Math.floor(timeSeconds * clip.fps) % 2
       : entity.species === "dog" && animation === "idle"
         ? (entity.dogIdlePose === "sleep" ? 2 : 0) + Math.floor(timeSeconds * clip.fps) % 2
         : clip.frames === 1

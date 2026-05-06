@@ -1,5 +1,41 @@
 import { describe, expect, it } from "vitest";
-import { entityPickBounds, visionSectorPathPoints } from "../../src/app/Renderer";
+import { compareRenderableEntities, entityPickBounds, visionSectorPathPoints } from "../../src/app/Renderer";
+import type { Entity } from "../../src/sim/types";
+
+function entity(overrides: Partial<Entity>): Entity {
+  return {
+    id: "entity",
+    name: "Pat",
+    affiliation: "Test",
+    species: "human",
+    state: "calm",
+    tile: { x: 1, y: 1 },
+    facing: 0,
+    speed: 1,
+    hp: 100,
+    maxHp: 100,
+    armed: false,
+    ammo: 0,
+    shotCooldownSeconds: 0,
+    infected: false,
+    infectionSeconds: 0,
+    turnSeconds: 0,
+    meat: 100,
+    originalMeat: 100,
+    controlled: false,
+    alive: true,
+    skeleton: false,
+    seenZombie: false,
+    stimulusMemorySeconds: 0,
+    meatEatenByBody: {},
+    totalMeatEaten: 0,
+    humansAlerted: 0,
+    zombieDamageDealt: 0,
+    zombieKills: 0,
+    lifetimeSeconds: 0,
+    ...overrides
+  };
+}
 
 describe("renderer helpers", () => {
   it("builds vision sector points along an outward arc", () => {
@@ -19,5 +55,12 @@ describe("renderer helpers", () => {
     expect(bounds.right).toBeGreaterThanOrEqual(130);
     expect(bounds.top).toBeLessThanOrEqual(36);
     expect(bounds.bottom).toBeGreaterThanOrEqual(99);
+  });
+
+  it("draws skeletons below living characters at the same depth", () => {
+    const skeleton = entity({ id: "bones", alive: false, skeleton: true, tile: { x: 5, y: 5 } });
+    const living = entity({ id: "living", alive: true, skeleton: false, tile: { x: 5, y: 5 } });
+
+    expect([living, skeleton].sort(compareRenderableEntities)).toEqual([skeleton, living]);
   });
 });

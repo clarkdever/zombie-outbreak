@@ -45,7 +45,7 @@ export class Renderer {
         this.drawTile(x, y, map.tiles[y][x].kind, camera);
       }
     }
-    for (const entity of entities) {
+    for (const entity of [...entities].sort(compareRenderableEntities)) {
       this.drawEntity(entity, camera, entity.id === selectedId, debug, timeSeconds);
     }
     for (const bullet of bullets) {
@@ -154,6 +154,20 @@ export function entityPickBounds(species: Entity["species"], screen: { x: number
     top: screen.y - topOffset,
     bottom: screen.y + bottomOffset
   };
+}
+
+export function compareRenderableEntities(a: RenderableEntity, b: RenderableEntity): number {
+  const aTile = renderTileFor(a);
+  const bTile = renderTileFor(b);
+  const floorOrder = renderFloorPriority(a) - renderFloorPriority(b);
+  if (floorOrder !== 0) return floorOrder;
+  return aTile.x + aTile.y - (bTile.x + bTile.y);
+}
+
+function renderFloorPriority(entity: RenderableEntity): number {
+  if (entity.skeleton) return 0;
+  if (!entity.alive && !entity.species.includes("zombie")) return 1;
+  return 2;
 }
 
 function senseStrokeColor(entity: Entity, sense: "hearing" | "vision"): string {

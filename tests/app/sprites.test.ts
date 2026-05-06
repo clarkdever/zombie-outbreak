@@ -68,4 +68,11 @@ describe("sprite animation state", () => {
     expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sleep" }), 0).frame).toBe(2);
     expect(spriteFrameFor(entity({ species: "dog", state: "calm", dogIdlePose: "sleep" }), 0.6).frame).toBe(3);
   });
+
+  it("keeps unarmed human idle poses within their assigned standing or seated frames", () => {
+    expect(spriteFrameFor(entity({ species: "human", armed: false, state: "calm", humanIdlePose: "stand" }), 0).frame).toBe(0);
+    expect(spriteFrameFor(entity({ species: "human", armed: false, state: "calm", humanIdlePose: "stand" }), 0.6).frame).toBe(1);
+    expect(spriteFrameFor(entity({ species: "human", armed: false, state: "calm", humanIdlePose: "sit" }), 0).frame).toBe(2);
+    expect(spriteFrameFor(entity({ species: "human", armed: false, state: "calm", humanIdlePose: "kneel" }), 0.6).frame).toBe(3);
+  });
 });

@@ -27,6 +27,19 @@ describe("sprite atlas keys", () => {
     }
   });
 
+  it("publishes generated unarmed-human direction sheets", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+
+    expect(keys).toContain(spriteAtlasKey("human", "down"));
+    expect(keys).toContain(spriteAtlasKey("human", "left"));
+    expect(keys).toContain(spriteAtlasKey("human", "up"));
+    expect(keys).toContain(spriteAtlasKey("human", "right"));
+  });
+
   it("publishes a complete zombie-human v1 animation set", () => {
     const keys = new Set(
       generatedManifest.sheets.map((sheet) =>

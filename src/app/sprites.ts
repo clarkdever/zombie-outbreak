@@ -15,8 +15,7 @@ export function drawEntitySprite(
   const spriteTime = entity.lifetimeSeconds || timeSeconds;
   const plan = spriteDrawPlanFor(entity, spriteTime);
   const sheet = atlas?.get(plan.sheet.id, plan.direction, plan.clip.animation);
-  const needsPoseFallback = entity.species === "human" && plan.clip.animation === "idle" && entity.humanIdlePose !== "stand";
-  if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction) && !needsPoseFallback) {
+  if (sheet && spriteSheetSupportsFacing(plan.sheet.id, plan.direction)) {
     drawSheetSprite(ctx, sheet.image, screen, sheet, plan);
     return;
   }

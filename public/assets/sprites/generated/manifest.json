@@ -107,6 +107,26 @@
       "src": "/assets/sprites/generated/armed-human.png"
     },
     {
+      "id": "human",
+      "direction": "down",
+      "src": "/assets/sprites/generated/human-down.png"
+    },
+    {
+      "id": "human",
+      "direction": "left",
+      "src": "/assets/sprites/generated/human-left.png"
+    },
+    {
+      "id": "human",
+      "direction": "up",
+      "src": "/assets/sprites/generated/human-up.png"
+    },
+    {
+      "id": "human",
+      "direction": "right",
+      "src": "/assets/sprites/generated/human-right.png"
+    },
+    {
       "id": "dog",
       "direction": "down",
       "src": "/assets/sprites/generated/dog-down.png"
