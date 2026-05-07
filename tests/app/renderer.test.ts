@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareRenderableEntities, entityPickBounds, terrainTileDrawOrder, visionSectorPathPoints } from "../../src/app/Renderer";
+import { compareRenderableEntities, entityPickBounds, renderSceneDrawOrder, terrainTileDrawOrder, visionSectorPathPoints } from "../../src/app/Renderer";
 import type { Entity, GameMap } from "../../src/sim/types";
 
 function entity(overrides: Partial<Entity>): Entity {
@@ -78,5 +78,28 @@ describe("renderer helpers", () => {
     expect(order.map((tile) => tile.x + tile.y)).toEqual([...order].map((tile) => tile.x + tile.y).sort((a, b) => a - b));
     expect(order.at(0)).toEqual({ x: 0, y: 0 });
     expect(order.at(-1)).toEqual({ x: 2, y: 2 });
+  });
+
+  it("depth-sorts environmental props with entities after the ground pass", () => {
+    const map: GameMap = {
+      width: 2,
+      height: 2,
+      tiles: [
+        [
+          { kind: "grass", moveCost: 1, blocksMovement: false, blocksSight: false },
+          { kind: "tree", moveCost: 1, blocksMovement: false, blocksSight: true }
+        ],
+        [
+          { kind: "grass", moveCost: 1, blocksMovement: false, blocksSight: false },
+          { kind: "grass", moveCost: 1, blocksMovement: false, blocksSight: false }
+        ]
+      ]
+    };
+    const human = entity({ tile: { x: 1, y: 1 } });
+
+    const order = renderSceneDrawOrder(map, [human]);
+
+    expect(order[0]).toMatchObject({ kind: "terrainProp", x: 1, y: 0, tileKind: "tree" });
+    expect(order.at(-1)).toMatchObject({ kind: "entity", entity: human });
   });
 });

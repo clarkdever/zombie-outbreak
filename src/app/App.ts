@@ -1,6 +1,6 @@
 import { InputController } from "./InputController";
 import { Renderer, type Camera } from "./Renderer";
-import { createHud, updateHud } from "./ui";
+import { createHud, setHudOsdHidden, updateHud } from "./ui";
 import { resolveScenarioOptions } from "./presets";
 import { VisualPositionStore } from "./visualPositions";
 import { Simulation } from "../sim/Simulation";
@@ -17,6 +17,7 @@ export class App {
   private debug = false;
   private speed = 1;
   private lastNonZeroSpeed = 1;
+  private osdHidden = false;
   private lastTime = performance.now();
   private controlledMoveAccumulator = 0.18;
 
@@ -54,6 +55,10 @@ export class App {
     const simDt = realDt * this.speed;
     this.lastTime = time;
     const input = this.input.update();
+    if (input.toggleOsd) {
+      this.osdHidden = !this.osdHidden;
+      setHudOsdHidden(this.hud, this.osdHidden);
+    }
     if (input.turn !== 0) {
       this.sim.turnPossessed(input.turn * 2.5 * realDt);
     }

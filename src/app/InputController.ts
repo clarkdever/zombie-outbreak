@@ -6,11 +6,13 @@ export interface InputState {
   move: { x: number; y: number };
   turn: number;
   shoot: boolean;
+  toggleOsd: boolean;
 }
 
 export class InputController {
   private readonly keys = new Set<string>();
   private shootQueued = false;
+  private osdToggleQueued = false;
   private clicked: { x: number; y: number } | undefined;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -20,6 +22,7 @@ export class InputController {
     });
     window.addEventListener("keydown", (event) => {
       if (event.code === "Space") this.shootQueued = true;
+      if (isOverlayToggleKey(event.key) && !event.repeat) this.osdToggleQueued = true;
     });
     window.addEventListener("keyup", (event) => this.keys.delete(event.key.toLowerCase()));
     canvas.addEventListener("click", (event) => {
@@ -37,8 +40,10 @@ export class InputController {
     };
     const turn = (this.keys.has("e") ? 1 : 0) - (this.keys.has("q") ? 1 : 0);
     const shoot = this.shootQueued;
+    const toggleOsd = this.osdToggleQueued;
     this.shootQueued = false;
-    return { keys: new Set(this.keys), edgeX: camera.x, edgeY: camera.y, clicked, move, turn, shoot };
+    this.osdToggleQueued = false;
+    return { keys: new Set(this.keys), edgeX: camera.x, edgeY: camera.y, clicked, move, turn, shoot, toggleOsd };
   }
 }
 
@@ -47,4 +52,8 @@ export function keyboardCameraVector(keys: ReadonlySet<string>): { x: number; y:
     x: (keys.has("arrowright") ? 1 : 0) - (keys.has("arrowleft") ? 1 : 0),
     y: (keys.has("arrowdown") ? 1 : 0) - (keys.has("arrowup") ? 1 : 0)
   };
+}
+
+export function isOverlayToggleKey(key: string): boolean {
+  return key.toLowerCase() === "h";
 }

@@ -24,9 +24,14 @@ body,
 
 .hud--setup .title-block,
 .hud--setup .control-row,
-.hud--setup .legend,
 .hud--setup .control-hint,
 .hud:not(.hud--possessing) .control-hint {
+  display: none;
+}
+
+.hud--osd-hidden .title-block,
+.hud--osd-hidden .control-row,
+.hud--osd-hidden .control-hint {
   display: none;
 }
 
@@ -122,54 +127,6 @@ body,
 
 .control-hint strong {
   color: #f1f4ea;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: min(560px, calc(100vw - 32px));
-  margin-top: 10px;
-  pointer-events: none;
-}
-
-.legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  border: 1px solid rgba(241, 244, 234, 0.18);
-  border-radius: 6px;
-  background: rgba(18, 22, 18, 0.78);
-  color: #d9dfd2;
-  font-size: 13px;
-}
-
-.legend-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.28);
-}
-
-.legend-swatch--human {
-  background: #2fbf71;
-}
-
-.legend-swatch--armed {
-  background: #3a86ff;
-}
-
-.legend-swatch--dog {
-  background: #d0a15f;
-}
-
-.legend-swatch--zombie {
-  background: #e63946;
-}
-
-.legend-swatch--skeleton {
-  background: #ffffff;
 }
 
 .start-modal,

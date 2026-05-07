@@ -25,6 +25,22 @@ describe("generated sprite assets", () => {
       }
     }
   });
+
+  it("publishes the terrain prop atlas with transparent background cells", () => {
+    const image = readPng("public/assets/sprites/generated/terrain-props.png");
+
+    expect(image.width).toBe(512);
+    expect(image.height).toBe(1056);
+    expect(image.pixels[3]).toBe(0);
+  });
+
+  it("publishes the road detail decal atlas with transparent background cells", () => {
+    const image = readPng("public/assets/sprites/generated/road-details.png");
+
+    expect(image.width).toBe(384);
+    expect(image.height).toBe(256);
+    expect(image.pixels[3]).toBe(0);
+  });
 });
 
 function frameBounds(image, row, column) {

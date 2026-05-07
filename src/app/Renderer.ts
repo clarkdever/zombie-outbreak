@@ -1,7 +1,21 @@
 import { entityRingColor } from "./entityPresentation";
 import { createBrowserSpriteAtlas, type SpriteAtlas } from "./spriteAtlas";
 import { drawEntitySprite } from "./sprites";
-import { TERRAIN_ATLAS_SRC, TERRAIN_FRAME_HEIGHT, TERRAIN_FRAME_WIDTH, terrainFrameFor } from "./terrainSprites";
+import {
+  TERRAIN_ATLAS_SRC,
+  TERRAIN_FRAME_HEIGHT,
+  TERRAIN_FRAME_WIDTH,
+  TERRAIN_PROP_ATLAS_SRC,
+  TERRAIN_PROP_FRAME_HEIGHT,
+  TERRAIN_PROP_FRAME_WIDTH,
+  TERRAIN_ROAD_DETAIL_ATLAS_SRC,
+  TERRAIN_ROAD_DETAIL_FRAME_HEIGHT,
+  TERRAIN_ROAD_DETAIL_FRAME_WIDTH,
+  terrainFrameFor,
+  terrainRoadDetailFrameFor,
+  terrainSpriteDrawSpecFor,
+  terrainUsesGroundTexture
+} from "./terrainSprites";
 import type { VisualEntity } from "./visualPositions";
 import { visionRadiansFor, visionRangeFor } from "../sim/perception";
 import type { Entity, GameMap, TilePos, Vec2 } from "../sim/types";
@@ -21,6 +35,8 @@ export class Renderer {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly spriteAtlas: SpriteAtlas;
   private terrainAtlas?: HTMLImageElement;
+  private terrainPropAtlas?: HTMLCanvasElement | HTMLImageElement;
+  private roadDetailAtlas?: HTMLCanvasElement | HTMLImageElement;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -30,6 +46,8 @@ export class Renderer {
     this.ctx = ctx;
     this.spriteAtlas = createBrowserSpriteAtlas();
     this.loadTerrainAtlas();
+    this.loadTerrainPropAtlas();
+    this.loadRoadDetailAtlas();
   }
 
   render(
@@ -44,10 +62,14 @@ export class Renderer {
     this.ctx.fillStyle = "#151815";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     for (const tile of terrainTileDrawOrder(map)) {
-      this.drawTile(tile.x, tile.y, map.tiles[tile.y][tile.x].kind, camera);
+      this.drawGroundTile(tile.x, tile.y, map.tiles[tile.y][tile.x].kind, camera, map);
     }
-    for (const entity of [...entities].sort(compareRenderableEntities)) {
-      this.drawEntity(entity, camera, entity.id === selectedId, debug, timeSeconds);
+    for (const item of renderSceneDrawOrder(map, entities)) {
+      if (item.kind === "terrainProp") {
+        this.drawTerrainSprite(item.x, item.y, item.tileKind, camera, map);
+      } else {
+        this.drawEntity(item.entity, camera, item.entity.id === selectedId, debug, timeSeconds);
+      }
     }
     for (const bullet of bullets) {
       this.drawBullet(bullet, camera);
@@ -63,7 +85,7 @@ export class Renderer {
     });
   }
 
-  private drawTile(x: number, y: number, kind: TileKind, camera: Camera): void {
+  private drawGroundTile(x: number, y: number, kind: TileKind, camera: Camera, map: GameMap): void {
     const p = isoToScreen(x, y, camera, this.canvas);
     const colors: Record<TileKind, string> = {
       grass: "#4c7a45",
@@ -90,20 +112,49 @@ export class Renderer {
     this.ctx.fill();
     this.ctx.strokeStyle = "rgba(0,0,0,0.22)";
     this.ctx.stroke();
-    if (this.terrainAtlas?.complete && this.terrainAtlas.naturalWidth > 0) {
-      const frame = terrainFrameFor(kind, x, y);
+    if (terrainUsesGroundTexture(kind) && terrainSpriteDrawSpecFor(kind).layer === "ground") {
+      this.drawTerrainSprite(x, y, kind, camera, map);
+    }
+    this.drawRoadDetailSprite(x, y, kind, camera, map);
+  }
+
+  private drawTerrainSprite(x: number, y: number, kind: TileKind, camera: Camera, map: GameMap): void {
+    const p = isoToScreen(x, y, camera, this.canvas);
+    const frame = terrainFrameFor(kind, x, y, map);
+    const atlas = frame.atlas === "prop" ? this.terrainPropAtlas : this.terrainAtlas;
+    const sourceWidth = frame.atlas === "prop" ? TERRAIN_PROP_FRAME_WIDTH : TERRAIN_FRAME_WIDTH;
+    const sourceHeight = frame.atlas === "prop" ? TERRAIN_PROP_FRAME_HEIGHT : TERRAIN_FRAME_HEIGHT;
+    if (atlas && isDrawableImage(atlas)) {
+      const spec = terrainSpriteDrawSpecFor(kind);
       this.ctx.drawImage(
-        this.terrainAtlas,
-        frame.column * TERRAIN_FRAME_WIDTH,
-        frame.row * TERRAIN_FRAME_HEIGHT,
-        TERRAIN_FRAME_WIDTH,
-        TERRAIN_FRAME_HEIGHT,
-        Math.round(p.x - TERRAIN_FRAME_WIDTH / 2),
-        Math.round(p.y - TERRAIN_FRAME_HEIGHT / 2 - 10),
-        TERRAIN_FRAME_WIDTH,
-        TERRAIN_FRAME_HEIGHT
+        atlas,
+        frame.column * sourceWidth,
+        frame.row * sourceHeight,
+        sourceWidth,
+        sourceHeight,
+        Math.round(p.x - spec.anchorX),
+        Math.round(p.y - spec.anchorY),
+        spec.width,
+        spec.height
       );
     }
+  }
+
+  private drawRoadDetailSprite(x: number, y: number, kind: TileKind, camera: Camera, map: GameMap): void {
+    const frame = terrainRoadDetailFrameFor(kind, x, y, map);
+    if (!frame || !this.roadDetailAtlas || !isDrawableImage(this.roadDetailAtlas)) return;
+    const p = isoToScreen(x, y, camera, this.canvas);
+    this.ctx.drawImage(
+      this.roadDetailAtlas,
+      frame.column * TERRAIN_ROAD_DETAIL_FRAME_WIDTH,
+      frame.row * TERRAIN_ROAD_DETAIL_FRAME_HEIGHT,
+      TERRAIN_ROAD_DETAIL_FRAME_WIDTH,
+      TERRAIN_ROAD_DETAIL_FRAME_HEIGHT,
+      Math.round(p.x - TERRAIN_ROAD_DETAIL_FRAME_WIDTH / 2),
+      Math.round(p.y - TERRAIN_ROAD_DETAIL_FRAME_HEIGHT / 2 - 10),
+      TERRAIN_ROAD_DETAIL_FRAME_WIDTH,
+      TERRAIN_ROAD_DETAIL_FRAME_HEIGHT
+    );
   }
 
   private drawEntity(entity: RenderableEntity, camera: Camera, selected: boolean, debug: boolean, timeSeconds: number): void {
@@ -157,6 +208,44 @@ export class Renderer {
     };
     image.src = TERRAIN_ATLAS_SRC;
   }
+
+  private loadTerrainPropAtlas(): void {
+    const image = new Image();
+    image.onload = () => {
+      this.terrainPropAtlas = createChromaKeyedCanvas(image, [255, 0, 255]);
+    };
+    image.src = TERRAIN_PROP_ATLAS_SRC;
+  }
+
+  private loadRoadDetailAtlas(): void {
+    const image = new Image();
+    image.onload = () => {
+      this.roadDetailAtlas = createChromaKeyedCanvas(image, [255, 0, 255]);
+    };
+    image.src = TERRAIN_ROAD_DETAIL_ATLAS_SRC;
+  }
+}
+
+function isDrawableImage(image: HTMLCanvasElement | HTMLImageElement): boolean {
+  return image instanceof HTMLCanvasElement || (image.complete && image.naturalWidth > 0);
+}
+
+export function createChromaKeyedCanvas(image: HTMLImageElement, key: [number, number, number]): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas;
+  ctx.drawImage(image, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+  for (let index = 0; index < data.length; index += 4) {
+    const distance = Math.max(Math.abs(data[index] - key[0]), Math.abs(data[index + 1] - key[1]), Math.abs(data[index + 2] - key[2]));
+    const dominance = Math.min(data[index], data[index + 2]) - data[index + 1];
+    if (distance < 70 || dominance > 60) data[index + 3] = 0;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
 }
 
 export function isoToScreen(x: number, y: number, camera: Camera, canvas: HTMLCanvasElement): { x: number; y: number } {
@@ -190,6 +279,43 @@ export function compareRenderableEntities(a: RenderableEntity, b: RenderableEnti
   const floorOrder = renderFloorPriority(a) - renderFloorPriority(b);
   if (floorOrder !== 0) return floorOrder;
   return aTile.x + aTile.y - (bTile.x + bTile.y);
+}
+
+type SceneDrawItem =
+  | { kind: "terrainProp"; x: number; y: number; tileKind: TileKind }
+  | { kind: "entity"; entity: RenderableEntity };
+
+export function renderSceneDrawOrder(map: GameMap, entities: RenderableEntity[]): SceneDrawItem[] {
+  const items: SceneDrawItem[] = [];
+  for (const tile of terrainTileDrawOrder(map)) {
+    const tileKind = map.tiles[tile.y][tile.x].kind;
+    if (terrainSpriteDrawSpecFor(tileKind).layer === "prop") {
+      items.push({ kind: "terrainProp", x: tile.x, y: tile.y, tileKind });
+    }
+  }
+  for (const entity of entities) {
+    items.push({ kind: "entity", entity });
+  }
+  return items.sort(compareSceneDrawItems);
+}
+
+function compareSceneDrawItems(a: SceneDrawItem, b: SceneDrawItem): number {
+  const aTile = sceneItemTile(a);
+  const bTile = sceneItemTile(b);
+  const depth = aTile.x + aTile.y - (bTile.x + bTile.y);
+  if (depth !== 0) return depth;
+  const floor = sceneItemFloorPriority(a) - sceneItemFloorPriority(b);
+  if (floor !== 0) return floor;
+  return aTile.y - bTile.y || aTile.x - bTile.x;
+}
+
+function sceneItemTile(item: SceneDrawItem): TilePos {
+  return item.kind === "terrainProp" ? { x: item.x, y: item.y } : renderTileFor(item.entity);
+}
+
+function sceneItemFloorPriority(item: SceneDrawItem): number {
+  if (item.kind === "terrainProp") return 1;
+  return renderFloorPriority(item.entity) + 2;
 }
 
 export function terrainTileDrawOrder(map: GameMap): TilePos[] {

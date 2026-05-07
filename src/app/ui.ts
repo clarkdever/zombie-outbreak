@@ -12,7 +12,40 @@ interface HudOptions {
 export function createHud(options: HudOptions): HTMLElement {
   const hud = document.createElement("div");
   hud.className = "hud hud--setup";
-  hud.innerHTML = `
+  hud.innerHTML = renderHudMarkup();
+  hud.querySelectorAll<HTMLButtonElement>("[data-speed]").forEach((button) => {
+    button.addEventListener("click", () => options.onSpeed(Number(button.dataset.speed)));
+  });
+  hud.querySelector<HTMLInputElement>("[data-debug]")?.addEventListener("change", (event) => {
+    options.onDebug((event.target as HTMLInputElement).checked);
+  });
+  hud.querySelector<HTMLButtonElement>("[data-play-toggle]")?.addEventListener("click", () => {
+    const speed = options.onPlayToggle();
+    updatePlayToggleLabel(hud, speed);
+  });
+  const changedAdvanced = new Set<string>();
+  hud.querySelectorAll<HTMLInputElement>("[data-advanced]").forEach((input) => {
+    input.addEventListener("change", () => {
+      changedAdvanced.add(input.dataset.advanced!);
+    });
+  });
+  hud.querySelector<HTMLButtonElement>("[data-start-button]")?.addEventListener("click", () => {
+    const preset = hud.querySelector<HTMLSelectElement>("[data-preset]")?.value ?? "dawn";
+    const overrides = Object.fromEntries(
+      [...hud.querySelectorAll<HTMLInputElement>("[data-advanced]")]
+        .filter((input) => changedAdvanced.has(input.dataset.advanced!))
+        .map((input) => [input.dataset.advanced!, Number(input.value)])
+    ) as ScenarioOverrides;
+    hud.querySelector<HTMLElement>("[data-start]")!.hidden = true;
+    hud.classList.remove("hud--setup");
+    hud.classList.add("hud--running");
+    options.onStart(preset, overrides);
+  });
+  return hud;
+}
+
+export function renderHudMarkup(): string {
+  return `
     <div class="start-modal" data-start>
       <h1>Zombie Outbreak</h1>
       <select data-preset>
@@ -48,45 +81,14 @@ export function createHud(options: HudOptions): HTMLElement {
       <span>Q/E turn and look</span>
       <span>Space shoot if armed</span>
       <span>Click another entity to switch</span>
-    </div>
-    <div class="legend" aria-label="Entity key">
-      <span><i class="legend-swatch legend-swatch--human"></i> Unarmed human</span>
-      <span><i class="legend-swatch legend-swatch--armed"></i> Armed human</span>
-      <span><i class="legend-swatch legend-swatch--dog"></i> Dog</span>
-      <span><i class="legend-swatch legend-swatch--zombie"></i> Zombie</span>
-      <span><i class="legend-swatch legend-swatch--skeleton"></i> Skeleton</span>
+      <span>H hide/show OSD</span>
     </div>
     <div class="end-modal" data-end hidden></div>
   `;
-  hud.querySelectorAll<HTMLButtonElement>("[data-speed]").forEach((button) => {
-    button.addEventListener("click", () => options.onSpeed(Number(button.dataset.speed)));
-  });
-  hud.querySelector<HTMLInputElement>("[data-debug]")?.addEventListener("change", (event) => {
-    options.onDebug((event.target as HTMLInputElement).checked);
-  });
-  hud.querySelector<HTMLButtonElement>("[data-play-toggle]")?.addEventListener("click", () => {
-    const speed = options.onPlayToggle();
-    updatePlayToggleLabel(hud, speed);
-  });
-  const changedAdvanced = new Set<string>();
-  hud.querySelectorAll<HTMLInputElement>("[data-advanced]").forEach((input) => {
-    input.addEventListener("change", () => {
-      changedAdvanced.add(input.dataset.advanced!);
-    });
-  });
-  hud.querySelector<HTMLButtonElement>("[data-start-button]")?.addEventListener("click", () => {
-    const preset = hud.querySelector<HTMLSelectElement>("[data-preset]")?.value ?? "dawn";
-    const overrides = Object.fromEntries(
-      [...hud.querySelectorAll<HTMLInputElement>("[data-advanced]")]
-        .filter((input) => changedAdvanced.has(input.dataset.advanced!))
-        .map((input) => [input.dataset.advanced!, Number(input.value)])
-    ) as ScenarioOverrides;
-    hud.querySelector<HTMLElement>("[data-start]")!.hidden = true;
-    hud.classList.remove("hud--setup");
-    hud.classList.add("hud--running");
-    options.onStart(preset, overrides);
-  });
-  return hud;
+}
+
+export function setHudOsdHidden(hud: HTMLElement, hidden: boolean): void {
+  hud.classList.toggle("hud--osd-hidden", hidden);
 }
 
 export function updateHud(hud: HTMLElement, sim: Simulation, speed: number, selectedId?: string, onRestart?: () => void): void {
