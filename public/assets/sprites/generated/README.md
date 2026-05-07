@@ -10,7 +10,9 @@ Drop generated sprite sheets here with this naming:
 - `corpse.png`
 - `skeleton.png`
 
-Each sheet should be `384x768`, with `96x96` frames arranged in 4 columns and 8 rows. Start with one sheet in the manifest so we can judge scale and art direction before generating the full set.
+Full legacy sheets are `384x768`, with `96x96` frames arranged in 4 columns and 8 rows. Use them only as fallbacks or source references.
+
+For new character art, prefer animation shard sheets: one direction and one animation per image, `384x96`, with four `96x96` frames. This gives the model more room to keep full-body poses readable before normalization.
 
 Complete sheets need front/down, back/up, and side views. Side views can be mirrored for left/right. The current `armed-human.png` test sheet is treated as side-view only until we generate proper front and back rows.
 
@@ -47,6 +49,17 @@ For smaller prompt sets, include both `direction` and `animation`. Animation-spe
   ]
 }
 ```
+
+Shard prompts must explicitly require:
+
+- complete head-to-toe body in every frame
+- full hair silhouette visible, never cropped
+- both shoes visible, never cropped by the frame edge
+- transparent background
+- same character proportions, outfit, palette family, and facing direction
+- no scenery, labels, poster composition, or extra characters
+
+Use higher-resolution generation/edit canvases for the prompt pass, then normalize back into `96x96` frames anchored bottom-center. Generate one direction and animation at a time. Do not ask the image model for a full `384x768` character sheet unless the user accepts a higher risk of cropped feet, missing hair, or pose drift.
 
 The renderer loads this manifest at runtime. Missing sheets fall back to the code-native pixel sprites.
 
@@ -88,3 +101,5 @@ Zombie humans have separate sheet families for unarmed and armed former humans:
 - `zombie-armed-human-v{0-3}-{down,left,up,right}.png`
 
 Each sheet is `384x768`, with `96x96` frames arranged in 4 columns and 8 animation rows. The renderer chooses a stable `zombieHumanVariant` when a zombie spawns or when a human reanimates, so the damage pattern does not change between animations.
+
+Regenerate unarmed humans first. Zombie-human variants should be derived only after the source human frames pass the head-to-toe check, otherwise the zombies inherit cropped shoes or hair.

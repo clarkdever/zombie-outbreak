@@ -41,6 +41,11 @@ describe("sprite atlas keys", () => {
     expect(keys).toContain(spriteAtlasKey("human", "right"));
   });
 
+  it("supports animation shard sheets for unarmed humans", () => {
+    expect(spriteAtlasKey("human", "down", "walk")).toBe("human:down:walk");
+    expect(spriteAtlasKey("human", "right", "idle")).toBe("human:right:idle");
+  });
+
   it("publishes a complete zombie-human v1 animation set", () => {
     const keys = new Set(
       generatedManifest.sheets.map((sheet) =>

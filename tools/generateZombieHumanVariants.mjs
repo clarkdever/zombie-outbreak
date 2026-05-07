@@ -12,7 +12,7 @@ mkdirSync(outDir, { recursive: true });
 
 for (let variant = 0; variant < variantCount; variant += 1) {
   for (const direction of directions) {
-    const unarmed = zombifySheet(readPng(join(outDir, `human-${direction}.png`)), variant, false);
+    const unarmed = zombifySheet(unarmedHumanBaseSheet(direction), variant, false);
     const armed = zombifySheet(armedHumanBaseSheet(direction), variant, true);
     writeFileSync(join(outDir, `zombie-human-v${variant}-${direction}.png`), encodePng(unarmed));
     writeFileSync(join(outDir, `zombie-armed-human-v${variant}-${direction}.png`), encodePng(armed));
@@ -20,6 +20,28 @@ for (let variant = 0; variant < variantCount; variant += 1) {
 }
 
 updateManifest();
+
+function unarmedHumanBaseSheet(direction) {
+  const canvas = createCanvas(384, 768);
+  const rowSources = [
+    ["idle", 0],
+    ["walk", 0],
+    ["run", 0],
+    ["walk", 0],
+    ["idle", 0],
+    ["walk", 0],
+    ["idle", 0],
+    ["idle", 0]
+  ];
+
+  for (let row = 0; row < rowSources.length; row += 1) {
+    const [animation, sourceRow] = rowSources[row];
+    const sheet = readPng(join(outDir, `human-${direction}-${animation}.png`));
+    copyRect(sheet, canvas, 0, sourceRow * 96, 384, 96, 0, row * 96);
+  }
+
+  return canvas;
+}
 
 function armedHumanBaseSheet(direction) {
   const canvas = createCanvas(384, 768);

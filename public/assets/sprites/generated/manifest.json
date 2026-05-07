@@ -393,6 +393,78 @@
       "src": "/assets/sprites/generated/skeleton-dog.png"
     },
     {
+      "id": "human",
+      "direction": "down",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/human-down-idle.png"
+    },
+    {
+      "id": "human",
+      "direction": "down",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/human-down-walk.png"
+    },
+    {
+      "id": "human",
+      "direction": "down",
+      "animation": "run",
+      "src": "/assets/sprites/generated/human-down-run.png"
+    },
+    {
+      "id": "human",
+      "direction": "left",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/human-left-idle.png"
+    },
+    {
+      "id": "human",
+      "direction": "left",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/human-left-walk.png"
+    },
+    {
+      "id": "human",
+      "direction": "left",
+      "animation": "run",
+      "src": "/assets/sprites/generated/human-left-run.png"
+    },
+    {
+      "id": "human",
+      "direction": "up",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/human-up-idle.png"
+    },
+    {
+      "id": "human",
+      "direction": "up",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/human-up-walk.png"
+    },
+    {
+      "id": "human",
+      "direction": "up",
+      "animation": "run",
+      "src": "/assets/sprites/generated/human-up-run.png"
+    },
+    {
+      "id": "human",
+      "direction": "right",
+      "animation": "idle",
+      "src": "/assets/sprites/generated/human-right-idle.png"
+    },
+    {
+      "id": "human",
+      "direction": "right",
+      "animation": "walk",
+      "src": "/assets/sprites/generated/human-right-walk.png"
+    },
+    {
+      "id": "human",
+      "direction": "right",
+      "animation": "run",
+      "src": "/assets/sprites/generated/human-right-run.png"
+    },
+    {
       "id": "zombieHuman",
       "variant": 0,
       "direction": "down",
