@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { compareRenderableEntities, entityPickBounds, visionSectorPathPoints } from "../../src/app/Renderer";
-import type { Entity } from "../../src/sim/types";
+import { compareRenderableEntities, entityPickBounds, terrainTileDrawOrder, visionSectorPathPoints } from "../../src/app/Renderer";
+import type { Entity, GameMap } from "../../src/sim/types";
 
 function entity(overrides: Partial<Entity>): Entity {
   return {
@@ -62,5 +62,21 @@ describe("renderer helpers", () => {
     const living = entity({ id: "living", alive: true, skeleton: false, tile: { x: 5, y: 5 } });
 
     expect([living, skeleton].sort(compareRenderableEntities)).toEqual([skeleton, living]);
+  });
+
+  it("draws terrain from back to front so tall tiles are not buried by floor tiles", () => {
+    const map: GameMap = {
+      width: 3,
+      height: 3,
+      tiles: Array.from({ length: 3 }, () =>
+        Array.from({ length: 3 }, () => ({ kind: "grass", moveCost: 1, blocksMovement: false, blocksSight: false }))
+      )
+    };
+
+    const order = terrainTileDrawOrder(map);
+
+    expect(order.map((tile) => tile.x + tile.y)).toEqual([...order].map((tile) => tile.x + tile.y).sort((a, b) => a - b));
+    expect(order.at(0)).toEqual({ x: 0, y: 0 });
+    expect(order.at(-1)).toEqual({ x: 2, y: 2 });
   });
 });

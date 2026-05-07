@@ -43,10 +43,8 @@ export class Renderer {
   ): void {
     this.ctx.fillStyle = "#151815";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    for (let y = 0; y < map.height; y += 1) {
-      for (let x = 0; x < map.width; x += 1) {
-        this.drawTile(x, y, map.tiles[y][x].kind, camera);
-      }
+    for (const tile of terrainTileDrawOrder(map)) {
+      this.drawTile(tile.x, tile.y, map.tiles[tile.y][tile.x].kind, camera);
     }
     for (const entity of [...entities].sort(compareRenderableEntities)) {
       this.drawEntity(entity, camera, entity.id === selectedId, debug, timeSeconds);
@@ -192,6 +190,20 @@ export function compareRenderableEntities(a: RenderableEntity, b: RenderableEnti
   const floorOrder = renderFloorPriority(a) - renderFloorPriority(b);
   if (floorOrder !== 0) return floorOrder;
   return aTile.x + aTile.y - (bTile.x + bTile.y);
+}
+
+export function terrainTileDrawOrder(map: GameMap): TilePos[] {
+  const tiles: TilePos[] = [];
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      tiles.push({ x, y });
+    }
+  }
+  return tiles.sort((a, b) => {
+    const depth = a.x + a.y - (b.x + b.y);
+    if (depth !== 0) return depth;
+    return a.y - b.y || a.x - b.x;
+  });
 }
 
 function renderFloorPriority(entity: RenderableEntity): number {
