@@ -1,169 +1,262 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { deflateSync } from "node:zlib";
+import { deflateSync, inflateSync } from "node:zlib";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const outDir = join(root, "public/assets/sprites/generated");
 const directions = ["down", "left", "up", "right"];
-const families = [
-  { id: "zombieHuman", filePrefix: "zombie-human", armed: false },
-  { id: "zombieArmedHuman", filePrefix: "zombie-armed-human", armed: true }
-];
+const variantCount = 4;
 
 mkdirSync(outDir, { recursive: true });
 
-for (const family of families) {
-  for (let variant = 0; variant < 4; variant += 1) {
-    for (const direction of directions) {
-      const pngPath = join(outDir, `${family.filePrefix}-v${variant}-${direction}.png`);
-      writeFileSync(pngPath, renderSheet(family.armed, variant, direction));
-    }
+for (let variant = 0; variant < variantCount; variant += 1) {
+  for (const direction of directions) {
+    const unarmed = zombifySheet(readPng(join(outDir, `human-${direction}.png`)), variant, false);
+    const armed = zombifySheet(armedHumanBaseSheet(direction), variant, true);
+    writeFileSync(join(outDir, `zombie-human-v${variant}-${direction}.png`), encodePng(unarmed));
+    writeFileSync(join(outDir, `zombie-armed-human-v${variant}-${direction}.png`), encodePng(armed));
   }
 }
 
-const manifestPath = join(outDir, "manifest.json");
-const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-const generatedEntries = [];
-for (const family of families) {
-  for (let variant = 0; variant < 4; variant += 1) {
-    for (const direction of directions) {
-      generatedEntries.push({
-        id: family.id,
-        variant,
-        direction,
-        src: `/assets/sprites/generated/${family.filePrefix}-v${variant}-${direction}.png`
-      });
-    }
-  }
-}
-const generatedSrcs = new Set(generatedEntries.map((entry) => entry.src));
-manifest.sheets = [
-  ...manifest.sheets.filter((entry) => !generatedSrcs.has(entry.src)),
-  ...generatedEntries
-];
-writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+updateManifest();
 
-function renderSheet(armed, variant, direction) {
+function armedHumanBaseSheet(direction) {
   const canvas = createCanvas(384, 768);
+  const rowSources = [
+    ["idle", 0],
+    ["walk", 0],
+    ["run", 0],
+    ["walk", 0],
+    ["shoot", 0],
+    ["walk", 0],
+    ["idle", 0],
+    ["idle", 0]
+  ];
+
+  for (let row = 0; row < rowSources.length; row += 1) {
+    const [animation, sourceRow] = rowSources[row];
+    const sheet = readPng(join(outDir, `armed-human-${direction}-${animation}.png`));
+    copyRect(sheet, canvas, 0, sourceRow * 96, 384, 96, 0, row * 96);
+  }
+
+  return canvas;
+}
+
+function zombifySheet(source, variant, armed) {
+  const target = cloneCanvas(source);
+  const palette = zombiePalette(variant);
+
+  for (let index = 0; index < target.pixels.length; index += 4) {
+    const alpha = target.pixels[index + 3];
+    if (alpha === 0) continue;
+    const r = target.pixels[index];
+    const g = target.pixels[index + 1];
+    const b = target.pixels[index + 2];
+
+    if (isSkinPixel(r, g, b)) {
+      const shade = Math.max(0.65, Math.min(1.35, (r + g + b) / 480));
+      target.pixels[index] = clamp(palette.skin[0] * shade);
+      target.pixels[index + 1] = clamp(palette.skin[1] * shade);
+      target.pixels[index + 2] = clamp(palette.skin[2] * shade);
+    } else if (isBlueUniformPixel(r, g, b)) {
+      const shade = Math.max(0.72, Math.min(1.12, (r + g + b) / 350));
+      target.pixels[index] = clamp(palette.uniform[0] * shade);
+      target.pixels[index + 1] = clamp(palette.uniform[1] * shade);
+      target.pixels[index + 2] = clamp(palette.uniform[2] * shade);
+    } else if (isGreenShirtPixel(r, g, b)) {
+      const shade = Math.max(0.72, Math.min(1.18, (r + g + b) / 360));
+      target.pixels[index] = clamp(palette.shirt[0] * shade);
+      target.pixels[index + 1] = clamp(palette.shirt[1] * shade);
+      target.pixels[index + 2] = clamp(palette.shirt[2] * shade);
+    } else if (r > 20 || g > 20 || b > 20) {
+      target.pixels[index] = clamp(r * 0.88);
+      target.pixels[index + 1] = clamp(g * 0.9);
+      target.pixels[index + 2] = clamp(b * 0.82);
+    }
+  }
+
   for (let row = 0; row < 8; row += 1) {
     for (let column = 0; column < 4; column += 1) {
-      drawFrame(canvas, armed, variant, direction, row, column, column * 96, row * 96);
+      addZombieDamage(target, variant, row, column, armed);
     }
   }
-  return encodePng(canvas);
+
+  return target;
 }
 
-function drawFrame(canvas, armed, variant, direction, row, column, ox, oy) {
-  const palette = zombiePalette(armed, variant);
-  const walkPhase = column % 2 === 0 ? -2 : 2;
-  const runPhase = column % 2 === 0 ? -4 : 4;
-  const attackReach = row === 3 ? 6 + column * 2 : row === 5 ? 3 + column : 0;
-  const bob = row === 2 && column % 2 === 0 ? -2 : row === 1 && column % 2 === 0 ? -1 : 0;
-  const legPhase = row === 2 ? runPhase : row === 1 ? walkPhase : 0;
-  const downed = row === 6;
-  const skeleton = row === 7;
-  const centerX = direction === "left" ? 45 : direction === "right" ? 51 : 48;
-  const yShift = direction === "up" ? -2 : 0;
-  const flip = direction === "left" ? -1 : 1;
-  const rect = (x, y, w, h, color) => drawRect(canvas, ox + centerX + x * flip - (flip < 0 ? w : 0), oy + y + yShift, w, h, color);
+function addZombieDamage(canvas, variant, row, column, armed) {
+  const bounds = frameBounds(canvas, row, column);
+  if (!bounds) return;
+  const originX = column * 96;
+  const originY = row * 96;
+  const cx = Math.round((bounds.minX + bounds.maxX) / 2);
+  const top = bounds.minY;
+  const height = bounds.maxY - bounds.minY + 1;
+  const wounds = damageLayout(variant, row, armed);
 
-  if (skeleton) {
-    rect(-12, 69, 24, 6, "#11140f");
-    rect(-10, 67, 20, 5, "#e8ece4");
-    rect(8, 64, 8, 8, "#ffffff");
-    drawDamage(canvas, ox + centerX, oy + 66, variant);
-    return;
+  for (const wound of wounds) {
+    const x = originX + cx + Math.round(wound.x * (bounds.maxX - bounds.minX + 1));
+    const y = originY + top + Math.round(wound.y * height);
+    drawTear(canvas, x, y, wound.w, wound.h, variant);
   }
 
-  if (downed) {
-    rect(-14, 68, 28, 7, "#11140f");
-    rect(-12, 66, 23, 6, palette.cloth);
-    rect(8, 61, 10, 10, palette.skin);
-    drawDamage(canvas, ox + centerX, oy + 64, variant);
-    if (armed) rect(13, 70, 13, 4, "#1f2325");
-    return;
+  if (row !== 6 && row !== 7) {
+    drawRect(canvas, originX + cx - 2 + (variant % 2), originY + top + 12, 2, 2, "#d7e8a4", true);
+    drawRect(canvas, originX + cx + 3 - (variant % 2), originY + top + 12, 2, 2, "#d7e8a4", true);
   }
-
-  const torsoY = 39 + bob;
-  const headY = 27 + bob;
-  const armY = 44 + bob;
-  const legY = 57 + bob;
-  const width = armed ? 15 : 19;
-
-  rect(-width / 2 - 2, torsoY - 2, width + 4, 23, "#11140f");
-  rect(-width / 2, torsoY, width, 20, palette.cloth);
-  rect(-7, headY - 2, 14, 12, "#11140f");
-  rect(-6, headY, 12, 9, palette.skin);
-  rect(-4, headY + 9, 9, 3, palette.neck);
-  rect(-7, headY - 4, 13, 4, palette.hair);
-  rect(-8, legY, 5, 14 + legPhase, "#11140f");
-  rect(3, legY, 5, 14 - legPhase, "#11140f");
-  rect(-7, legY, 4, 12 + legPhase, palette.pants);
-  rect(4, legY, 4, 12 - legPhase, palette.pants);
-  rect(-11 - attackReach, armY, 5, 17, "#11140f");
-  rect(6 + attackReach, armY, 5, 17, "#11140f");
-  rect(-10 - attackReach, armY + 1, 3, 14, palette.skin);
-  rect(7 + attackReach, armY + 1, 3, 14, palette.skin);
-
-  if (armed) {
-    rect(10 + attackReach, armY + 9, 13, 4, "#1f2325");
-    rect(19 + attackReach, armY + 8, 4, 2, "#8b8f87");
-    rect(-6, torsoY + 4, 12, 3, "#1e3d6d");
-  }
-
-  drawDamage(canvas, ox + centerX, oy + torsoY, variant);
 }
 
-function zombiePalette(armed, variant) {
+function damageLayout(variant, row, armed) {
+  const attackBias = row === 3 || row === 5 ? 0.07 : 0;
+  const layouts = [
+    [{ x: -0.2, y: 0.42, w: 7, h: 4 }, { x: 0.08, y: 0.18, w: 4, h: 3 }, { x: 0.2, y: 0.68, w: 4, h: 7 }],
+    [{ x: 0.16, y: 0.36, w: 8, h: 5 }, { x: -0.16, y: 0.62, w: 5, h: 4 }, { x: -0.03, y: 0.22, w: 4, h: 3 }],
+    [{ x: -0.05, y: 0.48, w: 9, h: 5 }, { x: 0.22, y: 0.3, w: 4, h: 8 }, { x: -0.22, y: 0.72, w: 5, h: 4 }],
+    [{ x: -0.24, y: 0.34, w: 5, h: 9 }, { x: 0.1, y: 0.46, w: 7, h: 4 }, { x: 0.18, y: 0.2, w: 6, h: 3 }]
+  ];
+  return layouts[variant].map((wound) => ({
+    ...wound,
+    y: Math.min(0.84, wound.y + attackBias),
+    w: armed ? Math.max(3, wound.w - 1) : wound.w
+  }));
+}
+
+function drawTear(canvas, x, y, width, height, variant) {
+  const dark = ["#2b1818", "#3b1d20", "#251515", "#441e1a"][variant];
+  const gore = ["#7d191f", "#9a2a2e", "#6e1620", "#b03a32"][variant];
+  drawRect(canvas, x, y, width, height, dark, true);
+  drawRect(canvas, x + 1, y, Math.max(1, width - 2), 2, gore, true);
+  drawRect(canvas, x + Math.max(1, Math.floor(width / 2)), y + height, 2, 3, gore, true);
+}
+
+function updateManifest() {
+  const manifestPath = join(outDir, "manifest.json");
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  const entries = [];
+
+  for (const family of [
+    { id: "zombieHuman", filePrefix: "zombie-human" },
+    { id: "zombieArmedHuman", filePrefix: "zombie-armed-human" }
+  ]) {
+    for (let variant = 0; variant < variantCount; variant += 1) {
+      for (const direction of directions) {
+        entries.push({
+          id: family.id,
+          variant,
+          direction,
+          src: `/assets/sprites/generated/${family.filePrefix}-v${variant}-${direction}.png`
+        });
+      }
+    }
+  }
+
+  const srcs = new Set(entries.map((entry) => entry.src));
+  manifest.sheets = [
+    ...manifest.sheets.filter((entry) => !srcs.has(entry.src)),
+    ...entries
+  ];
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+}
+
+function zombiePalette(variant) {
   return {
-    skin: ["#8fa773", "#a6ad7a", "#7d9b78", "#9cb989"][variant],
-    neck: "#6f805d",
-    hair: ["#3b2518", "#201612", "#5a3520", "#2b201a"][variant],
-    cloth: armed ? ["#234f85", "#1b436f", "#2a5d8f", "#183955"][variant] : ["#3f8f62", "#4d7c48", "#6a7941", "#2f7b68"][variant],
-    pants: armed ? ["#172334", "#111a27", "#1d2c3f", "#202728"][variant] : ["#223227", "#2b2d26", "#332b28", "#1d302d"][variant]
+    skin: [
+      [126, 157, 100],
+      [149, 165, 105],
+      [109, 149, 107],
+      [156, 179, 130]
+    ][variant],
+    shirt: [
+      [70, 107, 56],
+      [84, 101, 54],
+      [63, 116, 77],
+      [92, 111, 62]
+    ][variant],
+    uniform: [
+      [35, 68, 96],
+      [43, 70, 82],
+      [48, 82, 104],
+      [31, 58, 75]
+    ][variant]
   };
 }
 
-function drawDamage(canvas, cx, cy, variant) {
-  const wounds = [
-    [[-8, 6, 5, 4], [4, -8, 4, 3], [6, 17, 3, 6]],
-    [[5, 4, 6, 5], [-6, 14, 4, 4], [-2, -5, 3, 3]],
-    [[-3, 10, 7, 5], [7, -1, 3, 8], [-8, 18, 4, 3]],
-    [[-9, 2, 4, 8], [2, 8, 5, 4], [4, -7, 5, 3]]
-  ][variant];
-  const gore = ["#7d191f", "#9a2a2e", "#6e1620", "#b03a32"][variant];
-  const wound = ["#2b1818", "#3b1d20", "#251515", "#441e1a"][variant];
-  for (const [dx, dy, w, h] of wounds) {
-    drawRect(canvas, cx + dx, cy + dy, w, h, wound);
-    drawRect(canvas, cx + dx + 1, cy + dy, Math.max(1, w - 2), 2, gore);
-  }
+function isSkinPixel(r, g, b) {
+  return r > 130 && g > 70 && b > 45 && r > g + 18 && g > b * 0.78;
 }
 
-function createCanvas(width, height) {
-  return { width, height, pixels: new Uint8Array(width * height * 4) };
+function isBlueUniformPixel(r, g, b) {
+  return b > 65 && b > r + 18 && g > r * 0.8;
 }
 
-function drawRect(canvas, x, y, width, height, color) {
-  const rgba = hexToRgba(color);
-  const left = Math.max(0, Math.round(x));
-  const top = Math.max(0, Math.round(y));
-  const right = Math.min(canvas.width, Math.round(x + width));
-  const bottom = Math.min(canvas.height, Math.round(y + height));
-  for (let py = top; py < bottom; py += 1) {
-    for (let px = left; px < right; px += 1) {
-      const index = (py * canvas.width + px) * 4;
-      canvas.pixels[index] = rgba[0];
-      canvas.pixels[index + 1] = rgba[1];
-      canvas.pixels[index + 2] = rgba[2];
-      canvas.pixels[index + 3] = rgba[3];
+function isGreenShirtPixel(r, g, b) {
+  return g > 65 && g >= r * 0.88 && g > b * 0.9 && r < 145 && b < 120;
+}
+
+function frameBounds(canvas, row, column) {
+  const startX = column * 96;
+  const startY = row * 96;
+  let minX = 96;
+  let minY = 96;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < 96; y += 1) {
+    for (let x = 0; x < 96; x += 1) {
+      if (alphaAt(canvas, startX + x, startY + y) > 0) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
     }
   }
+  return maxX === -1 ? undefined : { minX, minY, maxX, maxY };
 }
 
-function hexToRgba(hex) {
-  const value = Number.parseInt(hex.slice(1), 16);
-  return [(value >> 16) & 255, (value >> 8) & 255, value & 255, 255];
+function readPng(path) {
+  const buffer = readFileSync(path);
+  let pos = 8;
+  let width = 0;
+  let height = 0;
+  const idat = [];
+
+  while (pos < buffer.length) {
+    const length = buffer.readUInt32BE(pos);
+    const type = buffer.toString("ascii", pos + 4, pos + 8);
+    const data = buffer.subarray(pos + 8, pos + 8 + length);
+    if (type === "IHDR") {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+    }
+    if (type === "IDAT") idat.push(data);
+    pos += 12 + length;
+  }
+
+  const raw = inflateSync(Buffer.concat(idat));
+  const stride = width * 4;
+  const pixels = new Uint8Array(width * height * 4);
+  let rawPos = 0;
+
+  for (let y = 0; y < height; y += 1) {
+    const filter = raw[rawPos];
+    rawPos += 1;
+    for (let x = 0; x < stride; x += 1) {
+      const index = y * stride + x;
+      const left = x >= 4 ? pixels[index - 4] : 0;
+      const up = y > 0 ? pixels[index - stride] : 0;
+      const upLeft = y > 0 && x >= 4 ? pixels[index - stride - 4] : 0;
+      let value = raw[rawPos];
+      rawPos += 1;
+      if (filter === 1) value = (value + left) & 255;
+      if (filter === 2) value = (value + up) & 255;
+      if (filter === 3) value = (value + Math.floor((left + up) / 2)) & 255;
+      if (filter === 4) value = (value + paeth(left, up, upLeft)) & 255;
+      pixels[index] = value;
+    }
+  }
+
+  return { width, height, pixels };
 }
 
 function encodePng(canvas) {
@@ -179,6 +272,68 @@ function encodePng(canvas) {
     chunk("IDAT", deflateSync(scanlines)),
     chunk("IEND", Buffer.alloc(0))
   ]);
+}
+
+function createCanvas(width, height) {
+  return { width, height, pixels: new Uint8Array(width * height * 4) };
+}
+
+function cloneCanvas(canvas) {
+  return { width: canvas.width, height: canvas.height, pixels: new Uint8Array(canvas.pixels) };
+}
+
+function copyRect(source, target, sx, sy, width, height, dx, dy) {
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const sourceIndex = ((sy + y) * source.width + sx + x) * 4;
+      const targetIndex = ((dy + y) * target.width + dx + x) * 4;
+      target.pixels[targetIndex] = source.pixels[sourceIndex];
+      target.pixels[targetIndex + 1] = source.pixels[sourceIndex + 1];
+      target.pixels[targetIndex + 2] = source.pixels[sourceIndex + 2];
+      target.pixels[targetIndex + 3] = source.pixels[sourceIndex + 3];
+    }
+  }
+}
+
+function drawRect(canvas, x, y, width, height, color, onlyOnExistingPixels = false) {
+  const rgba = hexToRgba(color);
+  const left = Math.max(0, Math.round(x));
+  const top = Math.max(0, Math.round(y));
+  const right = Math.min(canvas.width, Math.round(x + width));
+  const bottom = Math.min(canvas.height, Math.round(y + height));
+  for (let py = top; py < bottom; py += 1) {
+    for (let px = left; px < right; px += 1) {
+      if (onlyOnExistingPixels && alphaAt(canvas, px, py) === 0) continue;
+      const index = (py * canvas.width + px) * 4;
+      canvas.pixels[index] = rgba[0];
+      canvas.pixels[index + 1] = rgba[1];
+      canvas.pixels[index + 2] = rgba[2];
+      canvas.pixels[index + 3] = rgba[3];
+    }
+  }
+}
+
+function alphaAt(canvas, x, y) {
+  return canvas.pixels[(y * canvas.width + x) * 4 + 3];
+}
+
+function hexToRgba(hex) {
+  const value = Number.parseInt(hex.slice(1), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255, 255];
+}
+
+function clamp(value) {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function paeth(left, up, upLeft) {
+  const p = left + up - upLeft;
+  const pa = Math.abs(p - left);
+  const pb = Math.abs(p - up);
+  const pc = Math.abs(p - upLeft);
+  if (pa <= pb && pa <= pc) return left;
+  if (pb <= pc) return up;
+  return upLeft;
 }
 
 function chunk(type, data) {
