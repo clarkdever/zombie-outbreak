@@ -82,6 +82,21 @@ describe("entity creation", () => {
     }
   });
 
+  it("does not spawn two living sprites onto the same tile", () => {
+    const world = createInitialWorld({
+      humans: 24,
+      dogs: 12,
+      zombies: 8,
+      armedPercent: 50,
+      seed: 24
+    });
+    const occupiedTiles = world.entities
+      .filter((entity) => !entity.skeleton)
+      .map((entity) => `${entity.tile.x},${entity.tile.y}`);
+
+    expect(new Set(occupiedTiles).size).toBe(occupiedTiles.length);
+  });
+
   it("keeps dog spawn tiles inside map bounds", () => {
     for (let seed = 1; seed <= 200; seed += 1) {
       const world = createInitialWorld({ humans: 4, dogs: 4, zombies: 0, armedPercent: 0, seed });

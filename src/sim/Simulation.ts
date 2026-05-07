@@ -89,7 +89,8 @@ export class Simulation {
           this.noises,
           immobilizedIds,
           () => this.random.pick(["sit", "sleep"]),
-          () => this.random.pick(["stand", "sit", "kneel"])
+          () => this.random.pick(["stand", "sit", "kneel"]),
+          (movingEntity, tile) => !tileBlocksMovement(this.map, tile) && !this.tileOccupiedByOther(movingEntity, tile)
         )
       );
     }
@@ -113,7 +114,7 @@ export class Simulation {
       x: controlled.tile.x + worldDelta.x,
       y: controlled.tile.y + worldDelta.y
     });
-    if (!tileBlocksMovement(this.map, candidate)) {
+    if (!tileBlocksMovement(this.map, candidate) && !this.tileOccupiedByOther(controlled, candidate)) {
       controlled.tile = candidate;
     }
   }
@@ -290,6 +291,7 @@ export class Simulation {
       entity.grappleTargetId = undefined;
       entity.grappledById = undefined;
       entity.grappleVictimSpecies = undefined;
+      entity.grappleVictimArmed = undefined;
     }
     const bodies = this.entities.filter((entity) => !entity.alive && !entity.skeleton && entity.meat > 0 && !this.zombies.includes(entity));
     for (const zombie of this.zombies) {
@@ -308,6 +310,7 @@ export class Simulation {
         immobilizedIds.add(livingTarget.id);
         zombie.grappleTargetId = livingTarget.id;
         zombie.grappleVictimSpecies = livingTarget.species === "dog" ? "dog" : "human";
+        zombie.grappleVictimArmed = livingTarget.species === "human" ? livingTarget.armed : undefined;
         livingTarget.grappledById = zombie.id;
         if (livingTarget.species === "dog" || livingTarget.species === "human") {
           livingTarget.seenZombie = true;
@@ -345,6 +348,15 @@ export class Simulation {
     );
   }
 
+  private tileOccupiedByOther(entity: Entity, tile: Vec2): boolean {
+    return this.entities.some((other) =>
+      other.id !== entity.id &&
+      other.tile.x === tile.x &&
+      other.tile.y === tile.y &&
+      !isGrapplePair(entity, other)
+    );
+  }
+
   private alertHumansByContact(): void {
     const alertedHumans = this.entities.filter((entity) => entity.species === "human" && entity.alive && entity.state === "alerted");
     for (const human of this.entities) {
@@ -368,6 +380,10 @@ export class Simulation {
 
 function isZombie(entity: Entity): boolean {
   return entity.species === "zombieHuman" || entity.species === "zombieDog";
+}
+
+function isGrapplePair(a: Entity, b: Entity): boolean {
+  return a.grappleTargetId === b.id || b.grappleTargetId === a.id || a.grappledById === b.id || b.grappledById === a.id;
 }
 
 function hearingRange(entity: Entity): number {

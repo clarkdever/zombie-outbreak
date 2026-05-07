@@ -92,6 +92,7 @@ export interface Entity {
   grappleTargetId?: string;
   grappledById?: string;
   grappleVictimSpecies?: "human" | "dog";
+  grappleVictimArmed?: boolean;
   meatEatenByBody: Record<string, number>;
   totalMeatEaten: number;
   humansAlerted: number;

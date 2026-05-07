@@ -64,11 +64,34 @@ describe("sprite atlas keys", () => {
       )
     );
     const directions = ["down", "left", "up", "right"] as const;
-    const animations = ["idle", "walk", "run", "attack", "feed", "attackHuman", "feedHuman", "attackDog", "feedDog"] as const;
+    const animations = ["idle", "walk", "run", "attack", "feed", "attackUnarmedHuman", "feedUnarmedHuman", "attackArmedHuman", "feedArmedHuman", "attackDog", "feedDog"] as const;
 
     for (const direction of directions) {
       for (const animation of animations) {
         expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, animation));
+      }
+    }
+  });
+
+  it("publishes grapple animation sheets for zombie human damage variants", () => {
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(
+          sheet.id as SpriteSheetKey,
+          sheet.direction as SpriteDirection | undefined,
+          sheet.animation as SpriteAnimation | undefined,
+          sheet.variant
+        )
+      )
+    );
+    const directions = ["down", "left", "up", "right"] as const;
+    const animations = ["attackUnarmedHuman", "attackArmedHuman", "attackDog", "feedUnarmedHuman", "feedArmedHuman", "feedDog"] as const;
+
+    for (let variant = 0; variant < 4; variant += 1) {
+      for (const direction of directions) {
+        for (const animation of animations) {
+          expect(keys).toContain(spriteAtlasKey("zombieHuman", direction, animation, variant));
+        }
       }
     }
   });

@@ -103,6 +103,34 @@ describe("Simulation", () => {
     expect(zombie.tile.x).toBe(6);
   });
 
+  it("blocks possessed movement into another occupied sprite tile", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 0, armedPercent: 0, seed: 18 });
+    const mover = sim.entities[0];
+    const blocker = sim.entities[1];
+    mover.tile = { x: 10, y: 10 };
+    mover.facing = 0;
+    blocker.tile = { x: 11, y: 10 };
+    sim.possess(mover.id);
+
+    sim.movePossessed({ x: 0, y: -1 });
+
+    expect(mover.tile).toEqual({ x: 10, y: 10 });
+  });
+
+  it("blocks autonomous movement into another occupied sprite tile", () => {
+    const sim = new Simulation({ humans: 2, dogs: 0, zombies: 1, armedPercent: 0, seed: 19 });
+    const target = sim.entities.find((entity) => entity.id === "human-1")!;
+    const blocker = sim.entities.find((entity) => entity.id === "human-2")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    target.tile = { x: 10, y: 10 };
+    blocker.tile = { x: 6, y: 10 };
+    zombie.tile = { x: 5, y: 10 };
+
+    sim.tick(1);
+
+    expect(zombie.tile).toEqual({ x: 5, y: 10 });
+  });
+
   it("possessed zombies can be moved by the player", () => {
     const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 0, seed: 11 });
     const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
@@ -376,7 +404,21 @@ describe("Simulation", () => {
 
     expect(zombie.grappleTargetId).toBe(human.id);
     expect(zombie.grappleVictimSpecies).toBe("human");
+    expect(zombie.grappleVictimArmed).toBe(false);
     expect(human.grappledById).toBe(zombie.id);
+  });
+
+  it("marks whether a grappled human victim is armed", () => {
+    const sim = new Simulation({ humans: 1, dogs: 0, zombies: 1, armedPercent: 100, seed: 20, grappleEscapePercent: 0 });
+    const human = sim.entities.find((entity) => entity.species === "human")!;
+    const zombie = sim.entities.find((entity) => entity.species === "zombieHuman")!;
+    human.tile = { x: 5, y: 5 };
+    zombie.tile = { x: 6, y: 5 };
+
+    sim.tick(1);
+
+    expect(zombie.grappleVictimSpecies).toBe("human");
+    expect(zombie.grappleVictimArmed).toBe(true);
   });
 
   it("clears grapple pair marks when the victim escapes", () => {
@@ -393,6 +435,7 @@ describe("Simulation", () => {
 
     expect(zombie.grappleTargetId).toBeUndefined();
     expect(zombie.grappleVictimSpecies).toBeUndefined();
+    expect(zombie.grappleVictimArmed).toBeUndefined();
     expect(human.grappledById).toBeUndefined();
   });
 

@@ -18,6 +18,7 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
   const random = new Random(options.seed);
   const map = createNeighborhoodMap();
   const entities: Entity[] = [];
+  const occupiedTiles = new Set<string>();
   const usedNames = new Set<string>();
   const groups: HumanGroup[] = [{
     id: "group-1",
@@ -34,37 +35,42 @@ export function createInitialWorld(options: InitialWorldOptions): WorldState {
       name,
       affiliation: groups[0].name,
       species: "human",
-      tile: randomOpenTile(map, random),
+      tile: randomOpenTile(map, random, occupiedTiles),
       armed: random.next() * 100 < options.armedPercent,
       groupId: groups[0].id,
       humanIdlePose: random.pick(["stand", "sit", "kneel"])
     });
     groups[0].memberIds.push(human.id);
     entities.push(human);
+    occupiedTiles.add(tileKey(human.tile));
   }
 
   for (let index = 0; index < options.dogs; index += 1) {
     const owner = entities[index % Math.max(1, entities.length)];
-    entities.push(createEntity({
+    const dog = createEntity({
       id: `dog-${index + 1}`,
       name: dogName(index),
       affiliation: owner?.name ?? "No One",
       species: "dog",
-      tile: owner ? nearbyOpenTile(map, owner.tile, random) : randomOpenTile(map, random),
+      tile: owner ? nearbyOpenTile(map, owner.tile, random, occupiedTiles) : randomOpenTile(map, random, occupiedTiles),
       ownerId: owner?.id,
       dogIdlePose: random.pick(["sit", "sleep"])
-    }));
+    });
+    occupiedTiles.add(tileKey(dog.tile));
+    entities.push(dog);
   }
 
   for (let index = 0; index < options.zombies; index += 1) {
     const former = humanName(options.humans + index);
-    entities.push(createEntity({
+    const zombie = createEntity({
       id: `zombie-${index + 1}`,
       name: index === 0 ? "Patient Zero" : `Undead ${former}`,
       affiliation: "The Horde",
       species: "zombieHuman",
-      tile: randomOpenTile(map, random)
-    }));
+      tile: randomOpenTile(map, random, occupiedTiles)
+    });
+    occupiedTiles.add(tileKey(zombie.tile));
+    entities.push(zombie);
   }
 
   const firstArmed = entities.find((entity) => entity.species === "human" && entity.armed);
@@ -127,6 +133,7 @@ function createEntity(input: {
     grappleTargetId: undefined,
     grappledById: undefined,
     grappleVictimSpecies: undefined,
+    grappleVictimArmed: undefined,
     meatEatenByBody: {},
     totalMeatEaten: 0,
     humansAlerted: 0,
@@ -145,22 +152,26 @@ function stableVariant(id: string, count: number): number {
   return (hash >>> 0) % count;
 }
 
-function randomOpenTile(map: GameMap, random: Random): TilePos {
+function randomOpenTile(map: GameMap, random: Random, occupiedTiles = new Set<string>()): TilePos {
   for (let attempt = 0; attempt < 500; attempt += 1) {
     const tile = { x: random.int(map.width), y: random.int(map.height) };
-    if (!tileBlocksMovement(map, tile)) return tile;
+    if (!tileBlocksMovement(map, tile) && !occupiedTiles.has(tileKey(tile))) return tile;
   }
   return { x: 1, y: 1 };
 }
 
-function nearbyOpenTile(map: GameMap, center: TilePos, random: Random): TilePos {
+function nearbyOpenTile(map: GameMap, center: TilePos, random: Random, occupiedTiles = new Set<string>()): TilePos {
   const options: TilePos[] = [];
   for (let dx = -2; dx <= 2; dx += 1) {
     for (let dy = -2; dy <= 2; dy += 1) {
       if (Math.hypot(dx, dy) > 2) continue;
       const tile = wrapTile(map, { x: center.x + dx, y: center.y + dy });
-      if (!tileBlocksMovement(map, tile)) options.push(tile);
+      if (!tileBlocksMovement(map, tile) && !occupiedTiles.has(tileKey(tile))) options.push(tile);
     }
   }
-  return options.length > 0 ? random.pick(options) : randomOpenTile(map, random);
+  return options.length > 0 ? random.pick(options) : randomOpenTile(map, random, occupiedTiles);
+}
+
+function tileKey(tile: TilePos): string {
+  return `${tile.x},${tile.y}`;
 }

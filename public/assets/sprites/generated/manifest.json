@@ -655,6 +655,1590 @@
       "variant": 3,
       "direction": "right",
       "src": "/assets/sprites/generated/zombie-armed-human-v3-right.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "down",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-down-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "left",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-left-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "up",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-up-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedUnarmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-unarmed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedArmedHuman",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-armed-human.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "attackDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-attack-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 0,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 1,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 2,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
+    },
+    {
+      "id": "zombieArmedHuman",
+      "direction": "right",
+      "animation": "feedDog",
+      "variant": 3,
+      "src": "/assets/sprites/generated/zombie-human-right-feed-dog.png"
     }
   ]
 }

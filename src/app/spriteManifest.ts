@@ -5,11 +5,15 @@ export type SpriteAnimation =
   | "run"
   | "attack"
   | "attackHuman"
+  | "attackUnarmedHuman"
+  | "attackArmedHuman"
   | "attackDog"
   | "bark"
   | "shoot"
   | "feed"
   | "feedHuman"
+  | "feedUnarmedHuman"
+  | "feedArmedHuman"
   | "feedDog"
   | "downed"
   | "skeleton"
@@ -82,11 +86,15 @@ const HUMANOID_CLIPS = clips({
   run: [2, 4, 7],
   attack: [3, 3, 8],
   attackHuman: [3, 3, 8],
+  attackUnarmedHuman: [3, 3, 8],
+  attackArmedHuman: [3, 3, 8],
   attackDog: [3, 3, 8],
   bark: [3, 3, 8],
   shoot: [4, 2, 12],
   feed: [5, 3, 5],
   feedHuman: [5, 3, 5],
+  feedUnarmedHuman: [5, 3, 5],
+  feedArmedHuman: [5, 3, 5],
   feedDog: [5, 3, 5],
   downed: [6, 1, 1],
   skeleton: [7, 1, 1]
@@ -98,11 +106,15 @@ const DOG_CLIPS = clips({
   run: [2, 4, 8],
   attack: [3, 3, 8],
   attackHuman: [3, 3, 8],
+  attackUnarmedHuman: [3, 3, 8],
+  attackArmedHuman: [3, 3, 8],
   attackDog: [3, 3, 8],
   bark: [5, 3, 7],
   shoot: [0, 2, 2],
   feed: [4, 3, 5],
   feedHuman: [4, 3, 5],
+  feedUnarmedHuman: [4, 3, 5],
+  feedArmedHuman: [4, 3, 5],
   feedDog: [4, 3, 5],
   downed: [6, 1, 1],
   skeleton: [7, 1, 1]
@@ -124,10 +136,12 @@ export function spriteAnimationFor(entity: Entity): SpriteAnimation {
   if (entity.skeleton) return "skeleton";
   if (!entity.alive && !entity.species.includes("zombie")) return "downed";
   if (entity.state === "shooting") return "shoot";
-  if (entity.state === "feeding" && entity.grappleVictimSpecies === "human") return "feedHuman";
+  if (entity.state === "feeding" && entity.grappleVictimSpecies === "human" && entity.grappleVictimArmed) return "feedArmedHuman";
+  if (entity.state === "feeding" && entity.grappleVictimSpecies === "human") return "feedUnarmedHuman";
   if (entity.state === "feeding" && entity.grappleVictimSpecies === "dog") return "feedDog";
   if (entity.state === "feeding") return "feed";
-  if (entity.state === "attacking" && entity.grappleVictimSpecies === "human") return "attackHuman";
+  if (entity.state === "attacking" && entity.grappleVictimSpecies === "human" && entity.grappleVictimArmed) return "attackArmedHuman";
+  if (entity.state === "attacking" && entity.grappleVictimSpecies === "human") return "attackUnarmedHuman";
   if (entity.state === "attacking" && entity.grappleVictimSpecies === "dog") return "attackDog";
   if (entity.state === "attacking") return "attack";
   if (entity.species === "dog" && entity.state === "alerted" && (entity.seesStimulus || entity.hearsStimulus)) return "bark";
