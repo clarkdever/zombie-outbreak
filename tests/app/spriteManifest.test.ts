@@ -88,12 +88,13 @@ describe("sprite manifest contract", () => {
     expect(plan.anchor).toEqual(SPRITE_ANCHOR);
   });
 
-  it("raises the oversized unarmed human sheet so it does not sink into the tile floor", () => {
+  it("scales unarmed humans to the same height as armed humans and aligns their feet", () => {
     const human = spriteDrawPlanFor(entity({ species: "human", armed: false, state: "alerted" }), 0.1);
     const armed = spriteDrawPlanFor(entity({ species: "human", armed: true, state: "alerted" }), 0.1);
 
     expect(human.sheet.id).toBe("human");
-    expect(human.anchor.y).toBeGreaterThan(armed.anchor.y);
+    expect(human.destination.height).toBe(armed.destination.height);
+    expect(human.anchor.y).toBe(78);
   });
 
   it("uses the assigned skeleton variant as the static frame", () => {

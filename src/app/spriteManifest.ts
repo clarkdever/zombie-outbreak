@@ -109,7 +109,7 @@ const DOG_CLIPS = clips({
 });
 
 export const SPRITE_SHEETS: Record<SpriteSheetKey, SpriteSheetDefinition> = {
-  human: spriteSheet("human", "human.png", HUMANOID_CLIPS, 0.66, { x: 48, y: 88 }),
+  human: spriteSheet("human", "human.png", HUMANOID_CLIPS, 0.66, { x: 48, y: 78 }),
   armedHuman: spriteSheet("armedHuman", "armed-human.png", HUMANOID_CLIPS, 0.66),
   dog: spriteSheet("dog", "dog.png", DOG_CLIPS, 0.52),
   zombieHuman: spriteSheet("zombieHuman", "zombie-human.png", HUMANOID_CLIPS, 0.66),

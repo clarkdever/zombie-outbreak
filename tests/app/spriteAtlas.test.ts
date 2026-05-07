@@ -42,8 +42,19 @@ describe("sprite atlas keys", () => {
   });
 
   it("supports animation shard sheets for unarmed humans", () => {
-    expect(spriteAtlasKey("human", "down", "walk")).toBe("human:down:walk");
-    expect(spriteAtlasKey("human", "right", "idle")).toBe("human:right:idle");
+    const keys = new Set(
+      generatedManifest.sheets.map((sheet) =>
+        spriteAtlasKey(sheet.id as SpriteSheetKey, sheet.direction as SpriteDirection | undefined, sheet.animation as SpriteAnimation | undefined)
+      )
+    );
+    const directions = ["down", "left", "up", "right"] as const;
+    const animations = ["idle", "walk", "run"] as const;
+
+    for (const direction of directions) {
+      for (const animation of animations) {
+        expect(keys).toContain(spriteAtlasKey("human", direction, animation));
+      }
+    }
   });
 
   it("publishes a complete zombie-human v1 animation set", () => {
